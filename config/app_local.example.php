@@ -9,6 +9,12 @@ use function Cake\Core\env;
  * into source code version control.
  */
 return [
+    // Set these two values in app_local.php for local administrator sign-in.
+    // Never commit real production credentials.
+    'Foleys' => [
+        'adminUsername' => env('ADMIN_USERNAME', ''),
+        'adminPassword' => env('ADMIN_PASSWORD', ''),
+    ],
     /*
      * Debug Level:
      *

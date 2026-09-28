@@ -6,8 +6,8 @@ namespace App\Service;
 /** Calculates prices server-side so browser values can never be trusted. */
 final class OrderPricingService
 {
-    /** @param array<int, array<string, mixed>> $items @param array<string, mixed>|null $discountRule */
-    public function calculate(array $items, ?array $discountRule): array
+    /** @param array<int, array<string, mixed>> $items @param array<int, array<string, mixed>> $discountRules */
+    public function calculate(array $items, array $discountRules = []): array
     {
         $lines = [];
         $subtotal = 0;
@@ -25,16 +25,31 @@ final class OrderPricingService
         }
 
         $discount = 0;
-        if ($discountRule !== null && $itemCount >= (int)$discountRule['minimum_item_count']) {
-            $discount = match ($discountRule['discount_type']) {
-                'percentage' => (int)round($subtotal * ((int)$discountRule['discount_value'] / 100)),
-                'fixed' => (int)$discountRule['discount_value'],
+        $appliedDiscounts = [];
+        foreach ($discountRules as $rule) {
+            $qualifyingCount = $itemCount;
+            if (!empty($rule['qualifying_item_name'])) {
+                $qualifyingCount = array_sum(array_map(
+                    fn (array $item): int => $item['item_name'] === $rule['qualifying_item_name'] ? (int)$item['quantity'] : 0,
+                    $lines,
+                ));
+            }
+            if ($qualifyingCount < (int)$rule['minimum_item_count']) {
+                continue;
+            }
+            $amount = match ($rule['discount_type']) {
+                'percentage' => (int)round($subtotal * ((int)$rule['discount_value'] / 100)),
+                'fixed' => (int)$rule['discount_value'],
                 default => 0,
             };
+            if ($amount > 0) {
+                $appliedDiscounts[] = ['name' => (string)$rule['name'], 'amount_cents' => $amount];
+                $discount += $amount;
+            }
         }
         $discount = min($subtotal, max(0, $discount));
 
-        return compact('lines', 'subtotal', 'discount', 'itemCount') + [
+        return compact('lines', 'subtotal', 'discount', 'itemCount', 'appliedDiscounts') + [
             'total' => $subtotal - $discount,
         ];
     }

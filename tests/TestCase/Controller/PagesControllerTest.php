@@ -38,7 +38,7 @@ class PagesControllerTest extends TestCase
         Configure::write('debug', true);
         $this->get('/pages/home');
         $this->assertResponseOk();
-        $this->assertResponseContains('CakePHP');
+        $this->assertResponseContains('Crisp collars, pristine robes');
         $this->assertResponseContains('<html>');
     }
 

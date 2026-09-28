@@ -31,6 +31,10 @@ use Cake\View\Exception\MissingTemplateException;
  */
 class PagesController extends AppController
 {
+    public function home()
+    {
+        $this->viewBuilder()->disableAutoLayout();
+    }
     /**
      * Displays a view
      *

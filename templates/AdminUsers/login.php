@@ -1,0 +1,2 @@
+<?php $this->assign('title', 'Administrator sign in'); ?>
+<section class="notice-panel" style="max-width:480px;margin:3rem auto"><h1>Administrator sign in</h1><p>Use the administrator credentials configured for this environment.</p><?= $this->Form->create() ?><?= $this->Form->control('username', ['required' => true]) ?><?= $this->Form->control('password', ['type' => 'password', 'required' => true]) ?><?= $this->Form->button('Sign in', ['class' => 'button-primary']) ?><?= $this->Form->end() ?></section>

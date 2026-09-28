@@ -1,0 +1,5 @@
+document.querySelectorAll('[data-item-builder]').forEach((builder) => {
+  const options = JSON.parse(builder.dataset.options); let index = 0;
+  const add = () => { const fragment = builder.querySelector('template').content.cloneNode(true); const row = fragment.querySelector('.builder-row'); row.querySelectorAll('[name]').forEach((el) => el.name = el.name.replace('INDEX', index)); const select = row.querySelector('select'); options.forEach((item) => { const option = new Option(item.name, item.id); option.dataset.price = item.price; select.add(option); }); const refresh = () => { const option = select.options[select.selectedIndex]; row.querySelector('.row-price').textContent = new Intl.NumberFormat('en-AU', {style:'currency',currency:'AUD'}).format((option.dataset.price * row.querySelector('input').value)/100); }; select.addEventListener('change', refresh); row.querySelector('input').addEventListener('input', refresh); row.querySelector('.remove-row').addEventListener('click', () => row.remove()); builder.querySelector('.builder-rows').append(row); index++; refresh(); };
+  builder.querySelector('.add-row').addEventListener('click', add);
+});

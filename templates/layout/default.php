@@ -15,6 +15,7 @@
  */
 
 $cakeDescription = "Foley's Dry Cleaning";
+$isAdmin = (bool)$this->request->getSession()->read('Foleys.admin');
 ?>
 <!DOCTYPE html>
 <html>
@@ -36,10 +37,14 @@ $cakeDescription = "Foley's Dry Cleaning";
 <body>
     <nav class="top-nav">
         <div class="top-nav-title">
-            <a href="<?= $this->Url->build('/') ?>">Foley's <span>Dry Cleaning</span></a>
+            <a href="<?= $this->Url->build('/') ?>">FOLEY'S <span style="color: #2bc866">LIST</span><small>DRY CLEANING SERVICE</small></a>
         </div>
         <div class="top-nav-links">
-            <a href="<?= $this->Url->build('/') ?>">New collection request</a>
+            <?php if ($isAdmin): ?>
+            <?= $this->Html->link('Sign out as administrator', ['controller' => 'AdminUsers', 'action' => 'logout'], ['class' => 'admin-sign-out']) ?>
+            <?php else: ?>
+                <?= $this->Html->link('Sign in as administrator', ['controller' => 'AdminUsers', 'action' => 'login'], ['class' => 'admin-sign-in']) ?>
+            <?php endif; ?>
         </div>
     </nav>
     <main class="main">
@@ -48,7 +53,6 @@ $cakeDescription = "Foley's Dry Cleaning";
             <?= $this->fetch('content') ?>
         </div>
     </main>
-    <footer>
-    </footer>
+    <footer><strong>Foley's List dry cleaning portal</strong><span> A dedicated premium service for members of Foley's List.</span></footer>
 </body>
 </html>
