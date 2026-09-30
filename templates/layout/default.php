@@ -16,6 +16,7 @@
 
 $cakeDescription = "Foley's Dry Cleaning";
 $isAdmin = (bool)$this->request->getSession()->read('Foleys.admin');
+$isLoginPage = $this->request->getParam('controller') === 'AdminUsers' && $this->request->getParam('action') === 'login';
 ?>
 <!DOCTYPE html>
 <html>
@@ -34,6 +35,7 @@ $isAdmin = (bool)$this->request->getSession()->read('Foleys.admin');
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
 </head>
+
 <body>
     <nav class="top-nav">
         <div class="top-nav-title">
@@ -41,8 +43,12 @@ $isAdmin = (bool)$this->request->getSession()->read('Foleys.admin');
         </div>
         <div class="top-nav-links">
             <?php if ($isAdmin): ?>
-            <?= $this->Html->link('Sign out as administrator', ['controller' => 'AdminUsers', 'action' => 'logout'], ['class' => 'admin-sign-out']) ?>
-            <?php else: ?>
+                <?= $this->Html->link('Incoming requests', '/admin/incoming-requests') ?>
+                <?= $this->Html->link('Manage pricing', '/admin/manage-pricing') ?>
+                <?= $this->Html->link('Weekly report', '/admin/weekly-report') ?>
+                <?= $this->Html->link('Analytics', '/admin/analytics') ?>
+                <?= $this->Html->link('Sign out as administrator', ['controller' => 'AdminUsers', 'action' => 'logout'], ['class' => 'admin-sign-in']) ?>
+            <?php elseif (!$isLoginPage): ?>
                 <?= $this->Html->link('Sign in as administrator', ['controller' => 'AdminUsers', 'action' => 'login'], ['class' => 'admin-sign-in']) ?>
             <?php endif; ?>
         </div>

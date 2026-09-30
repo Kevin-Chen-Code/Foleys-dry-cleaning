@@ -38,14 +38,14 @@ final class OrdersController extends AppController
             'email' => trim((string)$this->request->getData('email')) ?: null,
             'notes' => trim((string)$this->request->getData('notes')) ?: null,
             'status' => 'submitted', 'subtotal_cents' => $pricing['subtotal'], 'discount_cents' => $pricing['discount'],
-            'total_cents' => $pricing['total'], 'submitted_at' => FrozenTime::now(),
+            'total_cents' => $pricing['total'], 'submitted_at' => FrozenTime::now(), 'created' => FrozenTime::now(),
         ]);
         if ($order->hasErrors()) { $this->set('order', $order); return; }
         $orderItems = $this->fetchTable('OrderItems');
         $orders->getConnection()->transactional(function () use ($orders, $orderItems, $order, $pricing): void {
             if (!$orders->save($order)) { throw new \RuntimeException('The collection request could not be saved.'); }
             foreach ($pricing['lines'] as $line) {
-                if (!$orderItems->save($orderItems->newEntity($line + ['order_id' => $order->id]))) { throw new \RuntimeException('An item in the collection request could not be saved.'); }
+                if (!$orderItems->save($orderItems->newEntity($line + ['order_id' => $order->id, 'created' => FrozenTime::now()]))) { throw new \RuntimeException('An item in the collection request could not be saved.'); }
             }
         });
         $this->request->getSession()->write('Foleys.lastOrder', ['name' => $order->barrister_name, 'total' => $pricing['total']]);

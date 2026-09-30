@@ -16,7 +16,7 @@ final class AdminUsersController extends AppController
                 $this->request->getSession()->write('Foleys.admin', $username);
                 return $this->redirect('/');
             }
-            $this->Flash->error('The administrator details are not valid, or an administrator account has not been configured yet.');
+            $this->Flash->error('Incorrect username or password.');
         }
     }
 

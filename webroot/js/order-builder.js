@@ -1,5 +1,27 @@
-document.querySelectorAll('[data-item-builder]').forEach((builder) => {
-  const options = JSON.parse(builder.dataset.options); let index = 0;
-  const add = () => { const fragment = builder.querySelector('template').content.cloneNode(true); const row = fragment.querySelector('.builder-row'); row.querySelectorAll('[name]').forEach((el) => el.name = el.name.replace('INDEX', index)); const select = row.querySelector('select'); options.forEach((item) => { const option = new Option(item.name, item.id); option.dataset.price = item.price; select.add(option); }); const refresh = () => { const option = select.options[select.selectedIndex]; row.querySelector('.row-price').textContent = new Intl.NumberFormat('en-AU', {style:'currency',currency:'AUD'}).format((option.dataset.price * row.querySelector('input').value)/100); }; select.addEventListener('change', refresh); row.querySelector('input').addEventListener('input', refresh); row.querySelector('.remove-row').addEventListener('click', () => row.remove()); builder.querySelector('.builder-rows').append(row); index++; refresh(); };
-  builder.querySelector('.add-row').addEventListener('click', add);
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[data-item-builder]').forEach((builder) => {
+    const items = JSON.parse(builder.dataset.options); let index = 0;
+    const dialog = builder.querySelector('.item-dialog');
+    const itemSelect = builder.querySelector('.dialog-item');
+    items.forEach((item) => itemSelect.add(new Option(item.name, item.id)));
+    const money = (cents) => new Intl.NumberFormat('en-AU', {style: 'currency', currency: 'AUD'}).format(cents / 100);
+    const refresh = () => {
+      let cents = 0;
+      builder.querySelectorAll('.builder-row').forEach((row) => cents += Number(row.dataset.price) * Number(row.dataset.quantity));
+      document.querySelectorAll('[data-live-subtotal],[data-live-total]').forEach((target) => target.textContent = money(cents));
+    };
+    const addRow = (item, quantity) => {
+      const row = document.createElement('div'); row.className = 'builder-row'; row.dataset.price = item.price; row.dataset.quantity = quantity;
+      row.innerHTML = `<input type="hidden" name="items[${index}][service_item_id]" value="${item.id}"><input type="hidden" name="items[${index}][quantity]" value="${quantity}"><strong>${item.name}</strong><span>${quantity} × ${money(item.price)}</span><span class="row-price">${money(item.price * quantity)}</span><button type="button" class="remove-row">Remove</button>`;
+      row.querySelector('.remove-row').addEventListener('click', () => { row.remove(); refresh(); });
+      builder.querySelector('.builder-rows').append(row); index++; refresh();
+    };
+    builder.querySelector('.add-row').addEventListener('click', () => { dialog.showModal(); });
+    builder.querySelector('.cancel-add').addEventListener('click', () => { dialog.close(); });
+    builder.querySelector('.confirm-add').addEventListener('click', (event) => {
+      event.preventDefault(); const item = items.find((entry) => entry.id === Number(itemSelect.value)); const quantity = Math.max(1, Number(builder.querySelector('.dialog-quantity').value || 1));
+      addRow(item, quantity); dialog.close();
+    });
+    refresh();
+  });
 });

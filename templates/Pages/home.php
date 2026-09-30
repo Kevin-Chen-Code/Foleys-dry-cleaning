@@ -10,19 +10,27 @@ $isAdmin = (bool)$this->request->getSession()->read('Foleys.admin');
 <style>
 :root{--navy:#10213a;--deep:#09162b;--green:#2bc866;--ink:#1b304d;--paper:#f6f7f9}*{box-sizing:border-box}html,body{margin:0;width:100%;min-height:100%;font-family:Arial,sans-serif;background:var(--paper);color:var(--ink)}a{text-decoration:none}.site-header{height:78px;background:#193451;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 5%;width:100%}.brand{font-weight:800;font-size:1.25rem;color:#fff}.brand b{color:#55cfbd}.brand small{display:block;color:#38dc71;font-size:.45rem;letter-spacing:.1em;margin-top:3px}.sign-in{background:#294564;color:#fff;padding:.7rem 1rem;border-radius:5px;font-size:.82rem;font-weight:700}.hero{width:100%;min-height:455px;padding:70px max(6%,calc((100% - 1180px)/2));background:linear-gradient(90deg,#0c1b33ef,#0b1a31d7),radial-gradient(circle at 80% 25%,#314b6d,#09162b 65%);color:#fff}.eyebrow{text-transform:uppercase;color:#59dfa0;font-weight:800;font-size:.7rem;letter-spacing:.08em}.hero h1{font:3.7rem/1.04 Georgia,serif;margin:16px 0 22px;max-width:680px}.hero p{font-size:1.08rem;line-height:1.65;color:#d1dbea;max-width:590px}.button{display:inline-block;margin:20px 8px 0 0;padding:15px 28px;border-radius:5px;font-size:.86rem;font-weight:800;letter-spacing:.03em}.button-primary{background:#2bc866;color:#fff}.button-dark{background:#050911;color:#fff}.how{max-width:1180px;margin:0 auto;padding:62px 24px 70px;text-align:center}.how h2{font:2.7rem Georgia,serif;margin:16px 0 34px}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;text-align:left}.step{background:#fff;border:1px solid #dbe2eb;border-radius:10px;padding:23px;min-height:210px}.number{width:35px;height:35px;border-radius:50%;display:grid;place-items:center;background:#fff1c4;color:#a77509;font-weight:800}.step h3{font:1.35rem Georgia,serif;margin:20px 0 12px}.step p{line-height:1.55;color:#526579}.site-footer{background:#0c1b33;color:#d5ddeb;padding:32px 5%;font-size:.9rem}.site-footer strong{color:#fff;font-size:1rem}@media(max-width:720px){.hero{padding:55px 7%}.hero h1{font-size:2.65rem}.steps{grid-template-columns:1fr}.site-header{padding:0 6%}}
 </style>
+<style>.admin-links{display:flex;align-items:center;gap:14px}.admin-links a{color:#fff;font-size:.78rem}@media(max-width:720px){.admin-links a:not(.sign-in){display:none}}</style>
 </head>
 
 <body>
 <header class="site-header">
     <a class="brand" href="/">
         FOLEY'S <b style="color: #2bc866">LIST</b>
-        <small>DRY CLEANING SERVICE</small></a>
+        <small>DRY CLEANING SERVICE</small>
+    </a>
         <?php if ($isAdmin): ?>
-            <a class="sign-in" href="/admin/logout">Sign out of administrator mode</a>
-            <?php else: ?>
-                <a class="sign-in" href="/admin/login">Sign in as administrator</a>
-                <?php endif; ?>
-            </header>
+            <div class="admin-links">
+                <a href="/admin/incoming-requests">Incoming requests</a>
+                <a href="/admin/manage-pricing">Manage pricing</a>
+                <a href="/admin/weekly-report">Weekly report</a>
+                <a href="/admin/analytics">Analytics</a>
+                <a class="sign-in" href="/admin/logout">Sign out as administrator</a>
+            </div>
+        <?php else: ?>
+            <a class="sign-in" href="/admin/login">Sign in as administrator</a>
+        <?php endif; ?>
+    </header>
 <main>
     <section class="hero">
         <div class="eyebrow">Chambers priority care</div>

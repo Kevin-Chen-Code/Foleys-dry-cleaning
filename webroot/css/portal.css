@@ -1,6 +1,7 @@
 :root { --navy: #152b45; --teal: #147a78; --cream: #f5f4ef; --ink: #20303e; }
 body { background: #f7f8fa; color: var(--ink); font-family: Arial, sans-serif; }
 .top-nav { background: var(--navy); padding: 1.4rem 4vw; display:flex; justify-content:space-between; align-items:center; }
+.top-nav{height:78px;background:#193451;padding:0 5%;width:100%}.top-nav-links{display:flex;align-items:center;gap:14px}.top-nav-links>a{font-size:.78rem;color:#fff}.top-nav-title{font-size:1.25rem}.admin-sign-in{background:#294564!important;color:#fff!important;padding:.7rem 1rem!important;border-radius:5px;font-weight:700}
 .top-nav a { color: #fff; text-decoration:none; } .top-nav-title { font-size:1.3rem; font-weight:700; } .top-nav-title span { color:#75d4ca; }
 .main { max-width: 1080px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }.container { max-width: none; }.top-nav small{display:block;font-size:.45rem;color:#3dd376;letter-spacing:.08em}.admin-sign-in{background:#263a55;padding:.6rem .85rem;border-radius:4px;font-size:.8rem}
 .portal-hero { padding: 2rem 0 1rem; max-width: 680px; }.portal-hero h1, .notice-panel h1 { margin: .3rem 0 .8rem; color:var(--navy); }

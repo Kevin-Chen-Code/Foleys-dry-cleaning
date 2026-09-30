@@ -60,6 +60,11 @@ return function (RouteBuilder $routes): void {
         $builder->connect('/request', ['controller' => 'Orders', 'action' => 'add']);
         $builder->connect('/admin/login', ['controller' => 'AdminUsers', 'action' => 'login']);
         $builder->connect('/admin/logout', ['controller' => 'AdminUsers', 'action' => 'logout']);
+        $builder->connect('/admin/analytics', ['controller' => 'Dashboard', 'action' => 'analytics']);
+        $builder->connect('/admin/incoming-requests', ['controller' => 'Dashboard', 'action' => 'incomingRequests']);
+        $builder->connect('/admin/manage-pricing', ['controller' => 'Dashboard', 'action' => 'managePricing']);
+        $builder->connect('/admin/weekly-report', ['controller' => 'Dashboard', 'action' => 'weeklyReport']);
+        $builder->connect('/admin/weekly-report.csv', ['controller' => 'Dashboard', 'action' => 'weeklyReportCsv']);
         $builder->connect('/request/received', ['controller' => 'Orders', 'action' => 'received']);
 
         /*
