@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Service\OrderPricingService;
+use App\Service\NotificationService;
 use Cake\I18n\FrozenTime;
 
 final class OrdersController extends AppController
@@ -48,6 +49,10 @@ final class OrdersController extends AppController
                 if (!$orderItems->save($orderItems->newEntity($line + ['order_id' => $order->id, 'created' => FrozenTime::now()]))) { throw new \RuntimeException('An item in the collection request could not be saved.'); }
             }
         });
+        $emailProblem = (new NotificationService())->sendRequestSubmitted($order, $pricing['lines']);
+        if ($emailProblem !== null) {
+            $this->Flash->warning($emailProblem);
+        }
         $this->request->getSession()->write('Foleys.lastOrder', ['name' => $order->barrister_name, 'total' => $pricing['total']]);
         $this->redirect(['action' => 'received']);
     }

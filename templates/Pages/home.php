@@ -35,7 +35,7 @@ $isAdmin = (bool)$this->request->getSession()->read('Foleys.admin');
     <section class="hero">
         <div class="eyebrow">Chambers priority care</div>
         <h1>Crisp collars, pristine robes,<br>impeccable timing</h1>
-        <p>Submit your pieces online, leave them with clerks, and retrieve them court-ready.</p>
+        <p>Introducing our dry cleaning dispatch service for members of Foley's List. Submit your pieces online, leave them with clerks, and retrieve them in absolute court-ready perfection.</p>
         <a class="button button-primary" href="/request">SUBMIT A REQUEST</a>
         <a class="button button-dark" href="/prices">VIEW PRICES</a>
     </section>
@@ -61,7 +61,15 @@ $isAdmin = (bool)$this->request->getSession()->read('Foleys.admin');
     </section>
 </main>
 <footer class="site-footer">
-    <strong>Foley's List dry cleaning portal</strong> &nbsp; A dedicated premium service for members of Foley's List.
+    <h3>
+        Foley's List dry cleaning portal:
+    </h3>
+    <p>
+        A dedicated premium service for members of Foley's List, ensuring pristine court presentation and garment care daily.
+    </p>
+    <p>
+        © 2026 Foley's List Pty Ltd. All rights reserved. 
+    </p>
 </footer>
 </body>
 </html>

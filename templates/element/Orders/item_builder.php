@@ -1,16 +1,22 @@
-<section class="items-card" data-item-builder data-options="<?= h(json_encode(array_map(fn($item) => ['id' => (int)$item->id, 'name' => $item->name, 'price' => (int)$item->unit_price_cents], $items))) ?>">
+<section class="items-card" data-item-builder data-options="<?= h(json_encode(array_map(fn($item) => ['id' => (int)$item->id, 'name' => $item->name, 'description' => $item->description, 'price' => (int)$item->unit_price_cents], $items))) ?>">
     <h2>Items</h2>
+    <!-- UI: column labels keep each selected garment's details easy to scan. -->
+    <div class="builder-headings" aria-hidden="true">
+        <span>Item</span><span>Quantity</span><span>Total</span><span></span>
+    </div>
     <div class="builder-rows"></div>
     <button type="button" class="add-row">Add items</button>
-    <dialog class="item-dialog">
-        <div>
+    <dialog class="item-dialog add-item-dialog">
+        <div class="dialog-content">
             <h2>Add an item</h2>
-            <label>Garment <select class="dialog-item"></select></label>
-            <label>Quantity <input class="dialog-quantity" type="number" min="1" value="1"></label>
-            <div>
-                <button type="button" class="cancel-add">Cancel</button>
+            <div class="dialog-fields">
+                <label>Garment <select class="dialog-item"></select></label>
+                <label>Quantity <input class="dialog-quantity" type="number" min="1" value="1"></label>
+            </div>
+            <div class="dialog-actions">
                 <button type="button" class="confirm-add">Add item</button>
-        </div>
+                <button type="button" class="cancel-add">Cancel</button>
+            </div>
         </div>
     </dialog>
 </section>

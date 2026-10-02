@@ -59,6 +59,16 @@ $isLoginPage = $this->request->getParam('controller') === 'AdminUsers' && $this-
             <?= $this->fetch('content') ?>
         </div>
     </main>
-    <footer><strong>Foley's List dry cleaning portal</strong><span> A dedicated premium service for members of Foley's List.</span></footer>
+    <footer>
+        <h3>
+            Foley's List dry cleaning portal:
+        </h3>
+        <p>
+            A dedicated premium service for members of Foley's List, ensuring pristine court presentation and garment care daily.
+        </p>
+        <p>
+            © 2026 Foley's List Pty Ltd. All rights reserved. 
+        </p>
+    </footer>
 </body>
 </html>

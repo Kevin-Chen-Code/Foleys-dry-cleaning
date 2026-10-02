@@ -1,4 +1,54 @@
-:root { --navy: #152b45; --teal: #147a78; --cream: #f5f4ef; --ink: #20303e; }
+:root { --navy: #152b45; --teal: #147a78; --green: #2bc866; --cream: #f5f4ef; --ink: #20303e; }
+
+/* Shared controls: an explicit colour prevents browser-default link and button styles. */
+.button-primary, .button, .csv-download {
+  display: inline-block;
+  padding: .65rem 1rem;
+  border: 1px solid var(--green) !important;
+  border-radius: .35rem;
+  background: var(--green) !important;
+  color: #fff !important;
+  font: inherit;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.action-button {
+  display: inline-block;
+  padding: .45rem .7rem;
+  border: 1px solid var(--navy) !important;
+  border-radius: .3rem;
+  background: var(--navy) !important;
+  color: #fff !important;
+  font: inherit;
+  font-size: .85rem;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.delete-button {
+  display: inline-block;
+  padding: .45rem .7rem;
+  border: 1px solid #b42318 !important;
+  border-radius: .3rem;
+  background: #b42318 !important;
+  color: #fff !important;
+  font: inherit;
+  font-size: .85rem;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.report-summary { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+
+.items-card table { width: 100%; }
+.items-card th, .items-card td { padding: .75rem; vertical-align: top; }
+.items-card td:last-child { white-space: nowrap; }
+.items-card td form { display: inline-block; margin: 0 0 0 .35rem; }
 body { background: #f7f8fa; color: var(--ink); font-family: Arial, sans-serif; }
 .top-nav { background: var(--navy); padding: 1.4rem 4vw; display:flex; justify-content:space-between; align-items:center; }
 .top-nav{height:78px;background:#193451;padding:0 5%;width:100%}.top-nav-links{display:flex;align-items:center;gap:14px}.top-nav-links>a{font-size:.78rem;color:#fff}.top-nav-title{font-size:1.25rem}.admin-sign-in{background:#294564!important;color:#fff!important;padding:.7rem 1rem!important;border-radius:5px;font-weight:700}

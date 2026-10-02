@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Service\WeeklyReportService;
 use Cake\I18n\FrozenTime;
 
 final class DashboardController extends AdminController
@@ -52,27 +53,29 @@ final class DashboardController extends AdminController
 
     public function weeklyReport()
     {
-        $orders = $this->fetchTable('Orders')->find()->orderBy(['submitted_at' => 'DESC'])->all()->toList();
-        $items = $this->fetchTable('OrderItems')->find()->all()->toList();
-        $itemsByOrder = [];
-        foreach ($items as $item) { $itemsByOrder[(int)$item->order_id][] = $item; }
-        $this->set(compact('orders', 'itemsByOrder'));
+        $settingsTable = $this->fetchTable('EmailSettings');
+        $settings = $settingsTable->find()->first() ?? $settingsTable->newEmptyEntity();
+        if ($this->request->is('post')) {
+            $settingsTable->patchEntity($settings, [
+                'mailbox' => trim((string)$this->request->getData('mailbox')) ?: null,
+                'reporting_day' => (string)$this->request->getData('reporting_day'),
+                'created' => $settings->isNew() ? FrozenTime::now() : $settings->created,
+                'updated' => FrozenTime::now(),
+            ]);
+            if ($settingsTable->save($settings)) {
+                $this->Flash->success('Email settings saved.');
+            } else {
+                $this->Flash->error('Email settings could not be saved. Please check the mailbox address.');
+            }
+            return $this->redirect(['action' => 'weeklyReport']);
+        }
+        ['orders' => $orders, 'itemsByOrder' => $itemsByOrder] = (new WeeklyReportService())->data();
+        $this->set(compact('orders', 'itemsByOrder', 'settings'));
     }
 
     public function weeklyReportCsv()
     {
-        $orders = $this->fetchTable('Orders')->find()->orderBy(['submitted_at' => 'DESC'])->all()->toList();
-        $items = $this->fetchTable('OrderItems')->find()->all()->toList();
-        $itemsByOrder = [];
-        foreach ($items as $item) { $itemsByOrder[(int)$item->order_id][] = $item; }
-        $stream = fopen('php://temp', 'r+');
-        fputcsv($stream, ['Barrister', 'Submitted', 'Item type', 'Quantity', 'Cost']);
-        foreach ($orders as $order) {
-            foreach ($itemsByOrder[(int)$order->id] ?? [] as $item) {
-                fputcsv($stream, [$order->barrister_name, $order->submitted_at?->format('Y-m-d'), $item->item_name, $item->quantity, number_format($item->line_total_cents / 100, 2, '.', '')]);
-            }
-        }
-        rewind($stream); $csv = stream_get_contents($stream); fclose($stream);
-        return $this->response->withType('csv')->withDownload('foleys-weekly-report.csv')->withStringBody($csv ?: '');
+        $csv = (new WeeklyReportService())->csv();
+        return $this->response->withType('csv')->withDownload('foleys-weekly-report.csv')->withStringBody($csv);
     }
 }

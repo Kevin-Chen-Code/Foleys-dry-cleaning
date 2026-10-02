@@ -1,1 +1,87 @@
-.item-dialog{border:0;border-radius:12px;padding:1.5rem;min-width:320px;box-shadow:0 16px 48px #0006}.item-dialog::backdrop{background:#08152a99}.item-dialog label{display:block;margin:1rem 0}.item-dialog select,.item-dialog input{display:block;width:100%;margin-top:.4rem}.item-dialog div{display:flex;justify-content:flex-end;gap:.75rem}.item-dialog button,.dialog-action{background:#2bc866;border:1px solid #2bc866;color:#fff;border-radius:4px;padding:.65rem 1rem;font-weight:700}.cancel-add,.dialog-link{background:#eef2f5!important;border-color:#d2d9df!important;color:#23364c!important}.builder-row{display:grid;grid-template-columns:minmax(150px,2fr) minmax(120px,1fr) minmax(95px,1fr) auto;gap:1rem;align-items:center;padding:.8rem 0;border-top:1px solid #e4e8e7}.builder-row strong,.builder-row span{line-height:1.3}.success-overlay{position:fixed;inset:0;background:#08152a99;display:grid;place-items:center;padding:1rem;z-index:100}.success-dialog{background:#fff;border-radius:12px;box-shadow:0 16px 48px #0006;max-width:480px;padding:2rem;text-align:center}.success-dialog h1{color:#152b45}.dialog-action,.dialog-link{display:inline-block;margin:.5rem}.dialog-link{border:1px solid #d2d9df;border-radius:4px;padding:.65rem 1rem}@media(max-width:700px){.builder-row{grid-template-columns:1fr 1fr}.builder-row .remove-row{grid-column:2}}
+.item-dialog {
+  width: min(92vw, 760px);
+  border: 0;
+  border-radius: 14px;
+  padding: 2rem;
+  box-shadow: 0 16px 48px #0006;
+}
+.item-dialog::backdrop { background: #08152a99; }
+.item-dialog h2 { margin: 0; color: #152b45; }
+.item-dialog input, .item-dialog select { box-sizing: border-box; }
+.dialog-actions { display: flex; align-items: center; gap: .75rem; margin-top: 1.5rem; }
+.item-dialog button, .dialog-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.8rem;
+  background: #2bc866;
+  border: 1px solid #2bc866;
+  color: #fff;
+  border-radius: 4px;
+  padding: .65rem 1rem;
+  font: inherit;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+.item-dialog .cancel-add, .dialog-link {
+  background: #eef2f5 !important;
+  border-color: #d2d9df !important;
+  color: #23364c !important;
+}
+
+/* The public Add item popup: title, fields, then its actions on separate rows. */
+.add-item-dialog { width: min(92vw, 520px); }
+.add-item-dialog .dialog-content { display: block; }
+.add-item-dialog h2 { font-size: 2rem; margin-bottom: 1.25rem; }
+.add-item-dialog .dialog-fields { display: grid; grid-template-columns: minmax(170px, 1fr) minmax(160px, 1fr); gap: .75rem; }
+.add-item-dialog label { display: grid; gap: .4rem; margin: 0; font-weight: 700; }
+.add-item-dialog select, .add-item-dialog input { width: 100%; margin: 0; }
+.add-item-dialog .dialog-actions { margin-top: 1.25rem; }
+
+/* UI: Admin edit popups are sized to their fields, removing unused white space. */
+.pricing-editor-dialog { width: min(92vw, 480px); }
+.pricing-editor-dialog form > .input {
+  display: grid;
+  grid-template-columns: 185px minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.pricing-editor-dialog form > .input > label { margin: 0; font-weight: 700; }
+.pricing-editor-dialog form > .input > input, .pricing-editor-dialog form > .input > select { width: 100%; margin: 0; }
+.pricing-editor-dialog .active-field { display: grid; grid-template-columns: 185px auto; align-items: center; gap: 1rem; margin: 1rem 0; }
+.pricing-editor-dialog .active-field label { margin: 0; font-weight: 700; }
+.pricing-editor-dialog .active-field input { width: 1.45rem; height: 1.45rem; margin: 0; }
+.pricing-editor-dialog .dialog-actions { justify-content: flex-start; }
+.confirm-dialog { width: min(92vw, 430px); }
+
+/* UI: Add garment Active control matches the aligned Active control in the edit popup. */
+.add-garment-active-field { display: grid; grid-template-columns: 185px auto; align-items: center; gap: 1rem; margin: 1rem 0; }
+.add-garment-active-field label { margin: 0; font-weight: 700; }
+.add-garment-active-field input { width: 1.45rem; height: 1.45rem; margin: 0; }
+
+/* UI: one shared, tighter column map shifts headers and matching values left together. */
+[data-item-builder] { --item-list-columns: minmax(150px, 1.55fr) 110px 95px 105px; }
+.builder-headings { display: grid; grid-template-columns: var(--item-list-columns); gap: 1rem; padding: .7rem 0; border-bottom: 1px solid #e4e8e7; color: #58656d; font-size: 1.55rem; font-weight: 700; text-transform: uppercase; }
+/* UI: aligns the Remove control with the other values in each submitted-item row. */
+.builder-row { display: grid; grid-template-columns: var(--item-list-columns); gap: 1rem; align-items: center; padding: .8rem 0; border-top: 1px solid #e4e8e7; }
+.builder-row strong, .builder-row span { line-height: 1.3; }
+.builder-item-details { display: grid; gap: .25rem; }
+.builder-item-details small { color: #65727a; line-height: 1.3; }
+.builder-row .remove-row { align-self: center; margin: 0; }
+.success-overlay { position: fixed; inset: 0; background: #08152a99; display: grid; place-items: center; padding: 1rem; z-index: 100; }
+.success-dialog { background: #fff; border-radius: 12px; box-shadow: 0 16px 48px #0006; max-width: 480px; padding: 2rem; text-align: center; }
+.success-dialog h1 { color: #152b45; }
+.dialog-action, .dialog-link { display: inline-flex; margin: .5rem; text-decoration: none; }
+.dialog-link { border: 1px solid #d2d9df; border-radius: 4px; padding: .65rem 1rem; }
+
+@media (max-width: 760px) {
+  .add-item-dialog .dialog-fields { grid-template-columns: 1fr; }
+  .add-item-dialog .dialog-actions { margin-top: 1.25rem; }
+  .pricing-editor-dialog form > .input { grid-template-columns: 1fr; gap: .4rem; }
+  .pricing-editor-dialog form > .input.checkbox { grid-template-columns: auto 1fr; }
+  .builder-row { grid-template-columns: 1fr 1fr; }
+  .builder-headings { display: none; }
+  .builder-row .remove-row { grid-column: 2; }
+}
