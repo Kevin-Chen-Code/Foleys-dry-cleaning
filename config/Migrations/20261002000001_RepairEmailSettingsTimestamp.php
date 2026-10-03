@@ -5,6 +5,10 @@ final class RepairEmailSettingsTimestamp extends \Migrations\BaseMigration
 {
     public function up(): void
     {
+        // PostgreSQL stores CURRENT_TIMESTAMP correctly; only SQLite needs this repair.
+        if ($this->getAdapter()->getAdapterType() !== 'sqlite') {
+            return;
+        }
         $this->execute("UPDATE email_settings SET created = datetime('now') WHERE created = 'CURRENT_TIMESTAMP'");
         $this->execute("UPDATE email_settings SET updated = datetime('now') WHERE updated = 'CURRENT_TIMESTAMP'");
     }

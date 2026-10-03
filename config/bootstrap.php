@@ -96,6 +96,12 @@ if (file_exists(CONFIG . 'app_local.php')) {
     Configure::load('app_local', 'default');
 }
 
+// Neon provides PostgreSQL URLs with a `postgresql://` scheme; CakePHP expects `postgres://`.
+$databaseUrl = (string)Configure::read('Datasources.default.url', '');
+if (str_starts_with($databaseUrl, 'postgresql://')) {
+    Configure::write('Datasources.default.url', 'postgres://' . substr($databaseUrl, strlen('postgresql://')));
+}
+
 /*
  * When debug = true the metadata cache should only last for a short time.
  */
