@@ -1,0 +1,9 @@
+.git
+.DS_Store
+config/app_local.php
+config/.env
+logs
+tmp
+vendor
+tests
+.phpunit.cache

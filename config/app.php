@@ -81,6 +81,12 @@ return [
         'salt' => env('SECURITY_SALT'),
     ],
 
+    // Render supplies these values as environment variables; local app_local.php can override them.
+    'Foleys' => [
+        'adminUsername' => env('ADMIN_USERNAME', ''),
+        'adminPassword' => env('ADMIN_PASSWORD', ''),
+    ],
+
     /*
      * Apply timestamps with the last modified time to static assets (js, css, images).
      * Will append a querystring parameter containing the time the file was modified.
@@ -288,6 +294,7 @@ return [
         'default' => [
             'className' => Connection::class,
             'driver' => Mysql::class,
+            'url' => env('DATABASE_URL', null),
             'persistent' => false,
             'timezone' => 'UTC',
 

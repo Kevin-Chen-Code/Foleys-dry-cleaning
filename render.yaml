@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: foleys-dry-cleaning
+    runtime: docker
+    plan: free
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: SECURITY_SALT
+        generateValue: true
+      - key: DEBUG
+        value: "false"

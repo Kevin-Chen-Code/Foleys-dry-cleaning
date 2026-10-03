@@ -100,6 +100,7 @@ if (file_exists(CONFIG . 'app_local.php')) {
 $databaseUrl = (string)Configure::read('Datasources.default.url', '');
 if (str_starts_with($databaseUrl, 'postgresql://')) {
     Configure::write('Datasources.default.url', 'postgres://' . substr($databaseUrl, strlen('postgresql://')));
+    Configure::write('Datasources.default.encoding', 'utf8');
 }
 
 /*
