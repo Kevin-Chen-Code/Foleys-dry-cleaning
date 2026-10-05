@@ -3,11 +3,10 @@
     <h1>Submit your dry cleaning request here</h1>
     <p>Register your chambers garments. Collection takes place daily at 11:00 am.</p>
 </section>
-<?= $this->Form->create($order ?? null, ['class' => 'builder-form']) ?>
+<?= $this->Form->create($order ?? null, ['class' => 'builder-form', 'novalidate' => true]) ?>
 <section class="items-card">
-    <label>Barrister name *</label>
-    <?= $this->Form->control('barrister_name', ['label' => false, 'required' => true, 'placeholder' => 'Please enter your name as registered with Foley’s List']) ?>
-    <?= $this->Form->control('email', ['label' => 'Email address (optional)', 'type' => 'email']) ?>
+    <!-- UI: Requests are identified by the required email address, not a name field. -->
+    <?= $this->Form->control('email', ['label' => 'Email address *', 'type' => 'email', 'required' => true]) ?>
 </section>
 <?= $this->element('Orders/item_builder', ['items' => $items]) ?>
 <aside class="pricing-summary">

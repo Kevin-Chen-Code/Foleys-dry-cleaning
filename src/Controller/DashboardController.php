@@ -69,8 +69,8 @@ final class DashboardController extends AdminController
             }
             return $this->redirect(['action' => 'weeklyReport']);
         }
-        ['orders' => $orders, 'itemsByOrder' => $itemsByOrder] = (new WeeklyReportService())->data();
-        $this->set(compact('orders', 'itemsByOrder', 'settings'));
+        ['orders' => $orders, 'itemsByOrder' => $itemsByOrder, 'discountedCostsByOrder' => $discountedCostsByOrder] = (new WeeklyReportService())->data();
+        $this->set(compact('orders', 'itemsByOrder', 'discountedCostsByOrder', 'settings'));
     }
 
     public function weeklyReportCsv()

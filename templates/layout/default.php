@@ -27,7 +27,8 @@ $isLoginPage = $this->request->getParam('controller') === 'AdminUsers' && $this-
         <?= $cakeDescription ?>:
         <?= $this->fetch('title') ?>
     </title>
-    <?= $this->Html->meta('icon') ?>
+    <!-- Branding: replaces CakePHP's default browser-tab icon. -->
+    <link rel="icon" type="image/png" href="/img/foleys-list-icon.png">
 
     <?= $this->Html->css(['normalize.min', 'milligram.min', 'portal']) ?>
 
@@ -39,7 +40,9 @@ $isLoginPage = $this->request->getParam('controller') === 'AdminUsers' && $this-
 <body>
     <nav class="top-nav">
         <div class="top-nav-title">
-            <a href="<?= $this->Url->build('/') ?>">FOLEY'S <span style="color: #2bc866">LIST</span><small>DRY CLEANING SERVICE</small></a>
+            <a href="<?= $this->Url->build('/') ?>" aria-label="Foley's List home page">
+                <img class="top-nav-logo" src="/img/foleys-list-logo.png" alt="Foley's List">
+            </a>
         </div>
         <div class="top-nav-links">
             <?php if ($isAdmin): ?>

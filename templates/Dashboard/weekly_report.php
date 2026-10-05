@@ -15,17 +15,19 @@ $total = array_sum(array_map(fn($order) => (int)$order->total_cents, $orders));
     </div>
     <table>
         <thead>
-            <tr><th>Barrister</th><th>Submitted</th><th>Item type</th><th>Quantity</th><th>Cost</th></tr>
+            <tr><th>Barrister</th><th>Submitted</th><th>Item type</th><th>Quantity</th><th>Cost</th><th>Discounted cost</th></tr>
         </thead>
         <tbody>
         <?php foreach ($orders as $order): ?>
-            <?php foreach ($itemsByOrder[(int)$order->id] ?? [] as $item): ?>
+            <?php foreach ($itemsByOrder[(int)$order->id] ?? [] as $index => $item): ?>
                 <tr>
-                    <td><?= h($order->barrister_name) ?></td>
+                    <td><?= $order->email ? h($order->email) : '&mdash;' ?></td>
                     <td><?= h($order->submitted_at?->format('d M Y')) ?></td>
                     <td><?= h($item->item_name) ?></td>
                     <td><?= (int)$item->quantity ?></td>
                     <td>$<?= number_format($item->line_total_cents / 100, 2) ?></td>
+                    <!-- UI: allocated values add up to the request's final discounted total. -->
+                    <td>$<?= number_format(($discountedCostsByOrder[(int)$order->id][$index] ?? 0) / 100, 2) ?></td>
                 </tr>
             <?php endforeach; ?>
         <?php endforeach; ?>

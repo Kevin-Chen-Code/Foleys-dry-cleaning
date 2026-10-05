@@ -25,8 +25,9 @@ final class NotificationService
             fn(array $line): string => sprintf('- %s: %d x $%0.2f = $%0.2f', $line['item_name'], $line['quantity'], $line['unit_price_cents'] / 100, $line['line_total_cents'] / 100),
             $lines,
         );
+        $barrister = $order->email ?: 'with no email address provided';
         $body = "Dear team,\n\n"
-            . sprintf("Barrister %s has submitted a request for dry cleaning, consisting of the following item(s):\n", $order->barrister_name)
+            . sprintf("A barrister (%s) has submitted a request for dry cleaning, consisting of the following item(s):\n", $barrister)
             . implode("\n", $itemLines)
             . sprintf("\n\nFinal price: $%0.2f\n\nKind regards,\nDry cleaning system", $order->total_cents / 100);
 

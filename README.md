@@ -84,3 +84,14 @@ Other environment agnostic settings can be changed in `config/app.php`.
 The app skeleton uses [Milligram](https://milligram.io/) (v1.3) minimalist CSS
 framework by default. You can, however, replace it with any other library or
 custom styles.
+
+## Contributors
+
+Andrew Turner (CEO):
+Strategic vision and quality control
+
+Amanda Tougher (Administration manager):
+Strategic vision and quality control
+
+Kevin Chen (IT business analyst)
+Project manager and developer

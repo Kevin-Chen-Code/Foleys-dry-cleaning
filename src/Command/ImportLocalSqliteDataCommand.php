@@ -26,6 +26,12 @@ final class ImportLocalSqliteDataCommand extends Command
         foreach ($tables as $table) {
             $data[$table] = $sqlite->query("SELECT * FROM {$table} ORDER BY id")->fetchAll();
         }
+        // Older SQLite databases contain a name column that is no longer part
+        // of requests; retain only the email identifier on import.
+        foreach ($data['orders'] as &$order) {
+            unset($order['barrister_name']);
+        }
+        unset($order);
         foreach (['service_items', 'discount_rules'] as $table) {
             foreach ($data[$table] as &$row) {
                 $row['active'] = (int)$row['active'] === 1 ? 'true' : 'false';

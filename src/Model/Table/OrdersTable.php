@@ -18,8 +18,9 @@ final class OrdersTable extends Table
     public function validationDefault(Validator $validator): Validator
     {
         return $validator
-            ->scalar('barrister_name')->maxLength('barrister_name', 150)->requirePresence('barrister_name', 'create')->notEmptyString('barrister_name', 'Please enter your name.')
-            ->email('email', false, 'Please enter a valid email address.')->allowEmptyString('email')
+            ->requirePresence('email', 'create', 'Please enter your email address to proceed')
+            ->notEmptyString('email', 'Please enter your email address to proceed')
+            ->email('email', false, 'Please enter your email address to proceed')
             ->scalar('notes')->maxLength('notes', 2000)->allowEmptyString('notes');
     }
 }
