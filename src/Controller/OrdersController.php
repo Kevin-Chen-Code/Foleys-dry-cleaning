@@ -23,7 +23,8 @@ final class OrdersController extends AppController
     {
         $items = $this->activeItems();
         if ($this->request->is('post')) { $this->submit($items); }
-        $this->set(compact('items'));
+        $rules = $this->activeRules();
+        $this->set(compact('items', 'rules'));
     }
 
     public function received() {}

@@ -1,15 +1,50 @@
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[data-item-builder]').forEach((builder) => {
-    const items = JSON.parse(builder.dataset.options); let index = 0;
+    const items = JSON.parse(builder.dataset.options);
+    const discountRules = JSON.parse(builder.dataset.discountRules || '[]');
+    let index = 0;
     const dialog = builder.querySelector('.item-dialog');
     const itemSelect = builder.querySelector('.dialog-item');
     items.forEach((item) => itemSelect.add(new Option(item.name, item.id)));
     const escapeHtml = (text) => String(text).replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[character]));
     const money = (cents) => new Intl.NumberFormat('en-AU', {style: 'currency', currency: 'AUD'}).format(cents / 100);
     const refresh = () => {
-      let cents = 0;
-      builder.querySelectorAll('.builder-row').forEach((row) => cents += Number(row.dataset.price) * Number(row.dataset.quantity));
-      document.querySelectorAll('[data-live-subtotal],[data-live-total]').forEach((target) => target.textContent = money(cents));
+      const selectedItems = [];
+      let subtotal = 0;
+      builder.querySelectorAll('.builder-row').forEach((row) => {
+        const item = items.find((entry) => entry.id === Number(row.dataset.serviceItemId));
+        const quantity = Number(row.dataset.quantity);
+        if (item && quantity > 0) {
+          selectedItems.push({item, quantity});
+          subtotal += item.price * quantity;
+        }
+      });
+
+      const itemCount = selectedItems.reduce((total, line) => total + line.quantity, 0);
+      const appliedDiscounts = discountRules.reduce((applied, rule) => {
+        const qualifyingCount = rule.qualifying_item_name
+          ? selectedItems.filter((line) => line.item.name === rule.qualifying_item_name).reduce((total, line) => total + line.quantity, 0)
+          : itemCount;
+        if (qualifyingCount < Number(rule.minimum_item_count)) return applied;
+
+        const amount = rule.discount_type === 'percentage'
+          ? Math.round(subtotal * (Number(rule.discount_value) / 100))
+          : rule.discount_type === 'fixed' ? Number(rule.discount_value) : 0;
+        return amount > 0 ? [...applied, {name: rule.name, amount}] : applied;
+      }, []);
+      const discount = Math.min(subtotal, appliedDiscounts.reduce((total, rule) => total + rule.amount, 0));
+
+      document.querySelectorAll('[data-live-subtotal]').forEach((target) => target.textContent = money(subtotal));
+      document.querySelectorAll('[data-live-total]').forEach((target) => target.textContent = money(subtotal - discount));
+      document.querySelectorAll('[data-live-discounts]').forEach((list) => {
+        list.replaceChildren();
+        appliedDiscounts.forEach((rule) => {
+          const entry = document.createElement('li');
+          entry.textContent = `${rule.name} (-${money(rule.amount)})`;
+          list.append(entry);
+        });
+        list.hidden = appliedDiscounts.length === 0;
+      });
     };
     const addRow = (item, quantity) => {
       const existing = builder.querySelector(`.builder-row[data-service-item-id="${item.id}"]`);

@@ -8,13 +8,16 @@
     <!-- UI: Requests are identified by the required email address, not a name field. -->
     <?= $this->Form->control('email', ['label' => 'Email address *', 'type' => 'email', 'required' => true]) ?>
 </section>
-<?= $this->element('Orders/item_builder', ['items' => $items]) ?>
+<?= $this->element('Orders/item_builder', ['items' => $items, 'rules' => $rules]) ?>
 <aside class="pricing-summary">
     <h2>Pricing summary</h2>
-    <p>Subtotal <strong data-live-subtotal>$0.00</strong></p>
+    <p> Pre-discount price: <strong data-live-subtotal>$0.00</strong></p>
     <hr>
-    <h3>Total cost <strong data-live-total>$0.00</strong></h3>
+    <p> Post-discount price: <strong data-live-total>$0.00</strong></p>
     <p>Discounts are calculated securely when you submit.</p>
+
+    <!-- UI: eligible rule names appear here as items are added to the request. -->
+    <ul class="applied-discounts" data-live-discounts hidden></ul>
     <?= $this->Form->button('Submit request', ['class' => 'button-primary']) ?>
 </aside>
 <?= $this->Form->end() ?>
