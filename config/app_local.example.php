@@ -85,21 +85,16 @@ return [
         ],
     ],
 
-    /*
-     * Email configuration.
-     *
-     * Host and credential configuration in case you are using SmtpTransport
-     *
-     * See app.php for more configuration options.
-     */
+    // For reliable email delivery on Render, add RESEND_API_KEY and EMAIL_FROM
+    // to the service environment instead of storing credentials in this file.
     'EmailTransport' => [
         'default' => [
-            'host' => 'localhost',
-            'port' => 25,
-            'username' => null,
-            'password' => null,
-            'client' => null,
-            'url' => env('EMAIL_TRANSPORT_DEFAULT_URL', null),
+            'apiKey' => env('RESEND_API_KEY', ''),
+        ],
+    ],
+    'Email' => [
+        'default' => [
+            'from' => env('RESEND_API_KEY') ? env('EMAIL_FROM', '') : 'you@localhost',
         ],
     ],
 ];

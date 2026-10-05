@@ -17,29 +17,39 @@ final class NotificationService
     {
         $settings = FactoryLocator::get('Table')->get('EmailSettings')->find()->first();
         $mailbox = trim((string)($settings?->mailbox ?? ''));
-        if ($mailbox === '') {
-            return null;
-        }
+        $barristerEmail = trim((string)($order->email ?? ''));
 
         $itemLines = array_map(
             fn(array $line): string => sprintf('- %s: %d x $%0.2f = $%0.2f', $line['item_name'], $line['quantity'], $line['unit_price_cents'] / 100, $line['line_total_cents'] / 100),
             $lines,
         );
-        $barrister = $order->email ?: 'with no email address provided';
-        $body = "Dear team,\n\n"
-            . sprintf("A barrister (%s) has submitted a request for dry cleaning, consisting of the following item(s):\n", $barrister)
-            . implode("\n", $itemLines)
-            . sprintf("\n\nFinal price: $%0.2f\n\nKind regards,\nDry cleaning system", $order->total_cents / 100);
+        $items = implode("\n", $itemLines);
+        $teamBody = "Dear team,\n\n"
+            . sprintf("A barrister (%s) has submitted a request for dry cleaning:\n", $barristerEmail)
+            . $items
+            . sprintf("\n\nFinal price: $%0.2f\n\nKind regards,\nFoley's List dry cleaning portal", $order->total_cents / 100);
+        $barristerBody = "Dear barrister,\n\n"
+            . "Thank you for submitting your dry-cleaning request. We have received the following item(s):\n"
+            . $items
+            . sprintf("\n\nFinal price: $%0.2f\n\nKind regards,\nFoley's List dry cleaning portal", $order->total_cents / 100);
 
         try {
-            (new Mailer('default'))
-                ->setTo($mailbox)
-                ->setSubject('New dry cleaning request')
-                ->deliver($body);
+            if ($mailbox !== '') {
+                (new Mailer('default'))
+                    ->setTo($mailbox)
+                    ->setSubject('New dry cleaning request')
+                    ->deliver($teamBody);
+            }
+            if ($barristerEmail !== '' && $barristerEmail !== $mailbox) {
+                (new Mailer('default'))
+                    ->setTo($barristerEmail)
+                    ->setSubject('Your dry cleaning request')
+                    ->deliver($barristerBody);
+            }
             return null;
         } catch (Throwable $exception) {
             Log::error('Dry-cleaning request email could not be sent: ' . $exception->getMessage());
-            return 'Your request was saved, but its notification email could not be delivered. Check the SMTP settings.';
+            return 'Your request was saved, but its notification email could not be delivered. Check the outgoing email configuration.';
         }
     }
 

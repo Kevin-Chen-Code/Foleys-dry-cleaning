@@ -5,6 +5,7 @@ use Cake\Database\Connection;
 use Cake\Database\Driver\Mysql;
 use Cake\Log\Engine\FileLog;
 use Cake\Mailer\Transport\MailTransport;
+use App\Mailer\Transport\ResendTransport;
 use function Cake\Core\env;
 
 return [
@@ -227,7 +228,9 @@ return [
      */
     'EmailTransport' => [
         'default' => [
-            'className' => MailTransport::class,
+            // Render Free blocks SMTP ports; use Resend's HTTPS API when configured.
+            'className' => env('RESEND_API_KEY') ? ResendTransport::class : MailTransport::class,
+            'apiKey' => env('RESEND_API_KEY', ''),
             /*
              * The keys host, port, timeout, username, password, client and tls
              * are used in SMTP transports
@@ -258,7 +261,7 @@ return [
     'Email' => [
         'default' => [
             'transport' => 'default',
-            'from' => 'you@localhost',
+            'from' => env('RESEND_API_KEY') ? env('EMAIL_FROM', '') : 'you@localhost',
             /*
              * Will by default be set to config value of App.encoding, if that exists otherwise to UTF-8.
              */
