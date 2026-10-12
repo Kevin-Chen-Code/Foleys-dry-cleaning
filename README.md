@@ -95,3 +95,36 @@ Strategic vision and quality control
 
 Kevin Chen (IT business analyst)
 Project manager and developer
+
+## Automatic email delivery
+
+The portal sends notifications through Resend over HTTPS. PHP `mail()` and SMTP
+are not suitable for this Render Free deployment.
+
+1. In Resend, add and verify a sending domain that you control. Have the domain's
+   DNS administrator add the exact records shown by Resend. An API key alone
+   does not verify the domain. HTTP 403 with “Domain not verified” means this step
+   is incomplete.
+2. Set `RESEND_API_KEY` and `EMAIL_FROM` on the server running the app. `EMAIL_FROM`
+   accepts an address or `Foley's List <sender@your-verified-domain>`.
+   Render variables do not configure localhost; set the same variables in the
+   local PHP server environment, or use the ignored `config/app_local.php`.
+   Never commit keys or place them in browser JavaScript.
+3. Deploy the updated code. In the administrator Weekly report page, save the
+   nominated mailbox and use **Send test email**. Delivery errors appear in
+   Render's service Logs; locally they appear in `logs/error.log` (or
+   `logs/cli-error.log` for commands). Successful API acceptance logs an email ID.
+   Check the matching email in Resend for its delivered/bounced status.
+
+Each saved request attempts the team notification and barrister confirmation
+independently. Email failure leaves the request saved and shows a warning.
+Weekly report messages include the CSV attachment; scheduling still requires
+running `bin/cake send_weekly_report` on the selected day.
+
+## Form security
+
+Email and login values are validated on the server. CakePHP ORM binds database
+values; templates use escaped HTML/FormHelper output. Passwords are compared
+exactly and are never altered by stripping HTML or SQL-looking punctuation.
+CSRF checks remain enabled. Regression tests cover injection payloads and safely
+stored addresses containing valid punctuation.

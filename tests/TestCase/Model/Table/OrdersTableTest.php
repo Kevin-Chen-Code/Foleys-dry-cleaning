@@ -6,6 +6,7 @@ namespace App\Test\TestCase\Model\Table;
 use App\Model\Table\OrdersTable;
 use Cake\TestSuite\TestCase;
 use Cake\Validation\Validator;
+use Cake\Event\Event;
 
 final class OrdersTableTest extends TestCase
 {
@@ -22,5 +23,19 @@ final class OrdersTableTest extends TestCase
         $this->assertSame($expected, $missingErrors['email']['_required']);
         $this->assertSame($expected, $blankErrors['email']['_empty']);
         $this->assertSame($expected, $invalidErrors['email']['email']);
+    }
+
+    public function testEmailCleanupPreservesValidAddressAndRejectsUnsafeInput(): void
+    {
+        $table = new OrdersTable(['table' => 'orders']);
+        $validator = $table->validationDefault(new Validator());
+        $data = new \ArrayObject(['email' => '  Kevin+collection@example.com  ']);
+        $table->beforeMarshal(new Event('Model.beforeMarshal', $table), $data, new \ArrayObject());
+
+        $this->assertSame('Kevin+collection@example.com', $data['email']);
+        $this->assertSame([], $validator->validate($data->getArrayCopy(), true));
+        foreach ([['email' => ['someone@example.com']], ['email' => "someone@example.com\r\nBcc: other@example.com"], ['email' => '<script>alert(1)</script>'], ['email' => "\tsomeone@example.com"]] as $invalid) {
+            $this->assertArrayHasKey('email', $validator->validate($invalid, true));
+        }
     }
 }

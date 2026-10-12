@@ -94,7 +94,7 @@ return [
     ],
     'Email' => [
         'default' => [
-            'from' => env('RESEND_API_KEY') ? env('EMAIL_FROM', '') : 'you@localhost',
+            'from' => env('EMAIL_FROM', ''),
         ],
     ],
 ];

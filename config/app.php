@@ -4,7 +4,6 @@ use Cake\Cache\Engine\FileEngine;
 use Cake\Database\Connection;
 use Cake\Database\Driver\Mysql;
 use Cake\Log\Engine\FileLog;
-use Cake\Mailer\Transport\MailTransport;
 use App\Mailer\Transport\ResendTransport;
 use function Cake\Core\env;
 
@@ -228,8 +227,8 @@ return [
      */
     'EmailTransport' => [
         'default' => [
-            // Render Free blocks SMTP ports; use Resend's HTTPS API when configured.
-            'className' => env('RESEND_API_KEY') ? ResendTransport::class : MailTransport::class,
+            // Fail clearly when unconfigured; PHP mail() cannot provide delivery on Render.
+            'className' => ResendTransport::class,
             'apiKey' => env('RESEND_API_KEY', ''),
             /*
              * The keys host, port, timeout, username, password, client and tls
@@ -261,7 +260,7 @@ return [
     'Email' => [
         'default' => [
             'transport' => 'default',
-            'from' => env('RESEND_API_KEY') ? env('EMAIL_FROM', '') : 'you@localhost',
+            'from' => env('EMAIL_FROM', ''),
             /*
              * Will by default be set to config value of App.encoding, if that exists otherwise to UTF-8.
              */

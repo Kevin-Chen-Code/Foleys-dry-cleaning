@@ -38,6 +38,12 @@ $total = array_sum(array_map(fn($order) => (int)$order->total_cents, $orders));
 <section class="items-card email-settings-card">
     <h2>Email settings</h2>
     <p>New requests are emailed to this mailbox. The weekly CSV report is sent on the selected day when the scheduled report command runs.</p>
+    <?php if (!$emailDelivery['ready']): ?>
+        <p><strong>Email delivery needs attention:</strong></p>
+        <ul><?php foreach ($emailDelivery['issues'] as $issue): ?><li><?= h($issue) ?></li><?php endforeach; ?></ul>
+    <?php else: ?>
+        <p>The sender and API key are configured. Send a test to check delivery to your saved mailbox.</p>
+    <?php endif; ?>
     <!-- UI: visibly confirms the values that were last saved to the database. -->
     <?php if ($settings->mailbox): ?>
         <p><strong>Saved mailbox:</strong> <?= h($settings->mailbox) ?> &middot; <strong>Saved schedule:</strong> <?= h(ucfirst($settings->reporting_day)) ?></p>
@@ -50,5 +56,8 @@ $total = array_sum(array_map(fn($order) => (int)$order->total_cents, $orders));
         'thursday' => 'Thursday', 'friday' => 'Friday', 'saturday' => 'Saturday', 'sunday' => 'Sunday',
     ], 'value' => $settings->reporting_day]) ?>
     <?= $this->Form->button('Save email settings', ['class' => 'button-primary']) ?>
+    <?= $this->Form->end() ?>
+    <?= $this->Form->create(null, ['url' => '/admin/test-email']) ?>
+    <?= $this->Form->button('Send test email', ['class' => 'button-primary', 'disabled' => !$emailDelivery['ready'] || !$settings->mailbox]) ?>
     <?= $this->Form->end() ?>
 </section>

@@ -96,6 +96,32 @@ if (file_exists(CONFIG . 'app_local.php')) {
     Configure::load('app_local', 'default');
 }
 
+// Deployment secrets take precedence over old local mail transport settings.
+$resendApiKey = trim((string)env('RESEND_API_KEY', ''));
+if ($resendApiKey !== '') {
+    Configure::write('EmailTransport.default.className', \App\Mailer\Transport\ResendTransport::class);
+    Configure::write('EmailTransport.default.apiKey', $resendApiKey);
+    Configure::write('EmailTransport.default.url', null);
+}
+// CakePHP requires a separate address/name pair, while Resend accepts Name <address>.
+$emailFrom = env('EMAIL_FROM', Configure::read('Email.default.from', ''));
+if (is_string($emailFrom)) {
+    $emailFrom = trim($emailFrom);
+    if (preg_match('/^([^<>\r\n]+)\s*<([^<>\r\n]+)>$/', $emailFrom, $senderParts) === 1) {
+        $emailFrom = [trim($senderParts[2]) => trim($senderParts[1], " \"")];
+    }
+    Configure::write('Email.default.from', $emailFrom);
+}
+unset($resendApiKey, $emailFrom, $senderParts);
+
+// Render captures stdout/stderr; do not hide email errors in container-only files.
+if (filter_var(env('RENDER', false), FILTER_VALIDATE_BOOLEAN)) {
+    foreach (['debug' => 'php://stdout', 'error' => 'php://stderr'] as $logger => $stream) {
+        Configure::write('Log.' . $logger . '.className', \Cake\Log\Engine\ConsoleLog::class);
+        Configure::write('Log.' . $logger . '.stream', $stream);
+    }
+}
+
 // Neon provides PostgreSQL URLs with a `postgresql://` scheme; CakePHP expects `postgres://`.
 $databaseUrl = (string)Configure::read('Datasources.default.url', '');
 if (str_starts_with($databaseUrl, 'postgresql://')) {

@@ -36,7 +36,7 @@ final class OrdersController extends AppController
         $pricing = (new OrderPricingService())->calculate($submitted, $this->activeRules());
         $orders = $this->fetchTable('Orders');
         $order = $orders->patchEntity($orders->newEmptyEntity(), [
-            'email' => trim((string)$this->request->getData('email')) ?: null,
+            'email' => $this->request->getData('email'),
             'notes' => trim((string)$this->request->getData('notes')) ?: null,
             'status' => 'submitted', 'subtotal_cents' => $pricing['subtotal'], 'discount_cents' => $pricing['discount'],
             'total_cents' => $pricing['total'], 'submitted_at' => FrozenTime::now(), 'created' => FrozenTime::now(),
@@ -53,7 +53,7 @@ final class OrdersController extends AppController
         if ($emailProblem !== null) {
             $this->Flash->warning($emailProblem);
         }
-        $this->request->getSession()->write('Foleys.lastOrder', ['total' => $pricing['total']]);
+        $this->request->getSession()->write('Foleys.lastOrder', ['total' => $pricing['total'], 'emailProblem' => $emailProblem]);
         $this->redirect(['action' => 'received']);
     }
 

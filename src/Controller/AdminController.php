@@ -7,13 +7,13 @@ use Cake\Event\EventInterface;
 
 abstract class AdminController extends AppController
 {
-    public function beforeFilter(EventInterface $event)
+    public function beforeFilter(EventInterface $event): void
     {
         parent::beforeFilter($event);
         if (!$this->request->getSession()->read('Foleys.admin')) {
             $this->Flash->error('Please sign in as an administrator first.');
-            return $this->redirect('/admin/login');
+            $event->setResult($this->redirect('/admin/login'));
+            $event->stopPropagation();
         }
-        return null;
     }
 }

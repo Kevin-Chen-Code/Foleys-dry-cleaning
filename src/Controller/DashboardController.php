@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Service\WeeklyReportService;
+use App\Service\NotificationService;
 use Cake\I18n\FrozenTime;
 
 final class DashboardController extends AdminController
@@ -70,7 +71,22 @@ final class DashboardController extends AdminController
             return $this->redirect(['action' => 'weeklyReport']);
         }
         ['orders' => $orders, 'itemsByOrder' => $itemsByOrder, 'discountedCostsByOrder' => $discountedCostsByOrder] = (new WeeklyReportService())->data();
-        $this->set(compact('orders', 'itemsByOrder', 'discountedCostsByOrder', 'settings'));
+        $emailDelivery = (new NotificationService())->deliveryStatus();
+        $this->set(compact('orders', 'itemsByOrder', 'discountedCostsByOrder', 'settings', 'emailDelivery'));
+    }
+
+    public function testEmail()
+    {
+        $this->request->allowMethod(['post']);
+        $notifications = new NotificationService();
+        if (!$notifications->deliveryStatus()['ready']) {
+            $this->Flash->error('Complete the email delivery configuration shown in Email settings before sending a test.');
+        } elseif ($notifications->sendTestEmail()) {
+            $this->Flash->success('The email provider accepted the test email for your saved mailbox. Check its inbox and Resend delivery status.');
+        } else {
+            $this->Flash->error('The test email could not be sent. Check the saved mailbox and the delivery error in the server logs.');
+        }
+        return $this->redirect(['action' => 'weeklyReport']);
     }
 
     public function weeklyReportCsv()
