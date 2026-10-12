@@ -29,13 +29,13 @@ final class OrdersTable extends Table
         return $validator
             ->requirePresence('email', 'create', 'Please enter your email address to proceed')
             ->notEmptyString('email', 'Please enter your email address to proceed')
-            ->scalar('email', 'Please enter your email address to proceed')
-            ->maxLength('email', 254, 'Please enter your email address to proceed')
+            ->scalar('email', 'Please a valid email address to proceed')
+            ->maxLength('email', 254, 'Please a valid email address to proceed')
             ->add('email', 'noControlCharacters', [
                 'rule' => static fn ($value): bool => is_string($value) && preg_match('/[\x00-\x1F\x7F]/', $value) === 0,
-                'message' => 'Please enter your email address to proceed',
+                'message' => 'Please a valid email address to proceed',
             ])
-            ->email('email', false, 'Please enter your email address to proceed')
+            ->email('email', false, 'Please a valid email address to proceed')
             ->scalar('notes')->maxLength('notes', 2000)->allowEmptyString('notes');
     }
 }

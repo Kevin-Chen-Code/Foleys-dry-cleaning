@@ -22,7 +22,7 @@ final class OrdersTableTest extends TestCase
 
         $this->assertSame($expected, $missingErrors['email']['_required']);
         $this->assertSame($expected, $blankErrors['email']['_empty']);
-        $this->assertSame($expected, $invalidErrors['email']['email']);
+        $this->assertSame('Please a valid email address to proceed', $invalidErrors['email']['email']);
     }
 
     public function testEmailCleanupPreservesValidAddressAndRejectsUnsafeInput(): void

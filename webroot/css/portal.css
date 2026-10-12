@@ -1,5 +1,13 @@
 :root { --navy: #152b45; --teal: #147a78; --green: #2bc866; --cream: #f5f4ef; --ink: #20303e; }
 
+/* Login notices sit below the Sign in heading; request field errors use the same red. */
+.login-messages .message,
+.builder-form .error-message {
+  color: #b42318;
+  text-align: left;
+}
+.login-messages .message { margin: 0 0 1rem; }
+
 /* Shared controls: an explicit colour prevents browser-default link and button styles. */
 .button-primary, .button, .csv-download {
   display: inline-block;

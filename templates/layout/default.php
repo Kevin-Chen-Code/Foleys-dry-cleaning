@@ -58,7 +58,9 @@ $isLoginPage = $this->request->getParam('controller') === 'AdminUsers' && $this-
     </nav>
     <main class="main">
         <div class="container">
-            <?= $this->Flash->render() ?>
+            <?php if (!$isLoginPage): ?>
+                <?= $this->Flash->render() ?>
+            <?php endif; ?>
             <?= $this->fetch('content') ?>
         </div>
     </main>
