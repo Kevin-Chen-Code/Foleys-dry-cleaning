@@ -10,32 +10,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const money = (cents) => new Intl.NumberFormat('en-AU', {style: 'currency', currency: 'AUD'}).format(cents / 100);
     const refresh = () => {
       const selectedItems = [];
-      let subtotal = 0;
       builder.querySelectorAll('.builder-row').forEach((row) => {
         const item = items.find((entry) => entry.id === Number(row.dataset.serviceItemId));
         const quantity = Number(row.dataset.quantity);
         if (item && quantity > 0) {
           selectedItems.push({item, quantity});
-          subtotal += item.price * quantity;
         }
       });
 
-      const itemCount = selectedItems.reduce((total, line) => total + line.quantity, 0);
-      const appliedDiscounts = discountRules.reduce((applied, rule) => {
-        const qualifyingCount = rule.qualifying_item_name
-          ? selectedItems.filter((line) => line.item.name === rule.qualifying_item_name).reduce((total, line) => total + line.quantity, 0)
-          : itemCount;
-        if (qualifyingCount < Number(rule.minimum_item_count)) return applied;
-
-        const amount = rule.discount_type === 'percentage'
-          ? Math.round(subtotal * (Number(rule.discount_value) / 100))
-          : rule.discount_type === 'fixed' ? Number(rule.discount_value) : 0;
-        return amount > 0 ? [...applied, {name: rule.name, amount}] : applied;
-      }, []);
-      const discount = Math.min(subtotal, appliedDiscounts.reduce((total, rule) => total + rule.amount, 0));
+      const {subtotal, total, appliedDiscounts} = window.FoleysPricing.calculate(selectedItems, discountRules);
 
       document.querySelectorAll('[data-live-subtotal]').forEach((target) => target.textContent = money(subtotal));
-      document.querySelectorAll('[data-live-total]').forEach((target) => target.textContent = money(subtotal - discount));
+      document.querySelectorAll('[data-live-total]').forEach((target) => target.textContent = money(total));
       document.querySelectorAll('[data-live-discounts]').forEach((list) => {
         list.replaceChildren();
         appliedDiscounts.forEach((rule) => {

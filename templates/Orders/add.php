@@ -1,4 +1,4 @@
-<?php $this->assign('title', 'Submit a request'); $this->Html->script('order-builder', ['block' => true]); $this->Html->css('item-dialog', ['block' => true]); ?>
+<?php $this->assign('title', 'Submit a request'); $this->Html->script(['order-pricing', 'order-builder'], ['block' => true]); $this->Html->css('item-dialog', ['block' => true]); ?>
 <section class="page-heading">
     <h1>Submit your dry cleaning request here</h1>
     <p>Register your chambers garments. Collection takes place daily at the schedule outlined <?= $this->Html->link('here', 'https://google.com', ['target' => '_blank', 'rel' => 'noopener noreferrer']) ?>.</p>

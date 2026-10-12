@@ -40,7 +40,7 @@
 .add-item-dialog .dialog-actions { margin-top: 1.25rem; }
 
 /* UI: Admin edit popups are sized to their fields, removing unused white space. */
-.pricing-editor-dialog { width: min(92vw, 480px); }
+.pricing-editor-dialog { width: min(92vw, 480px); white-space: normal; }
 .pricing-editor-dialog form > .input {
   display: grid;
   grid-template-columns: 185px minmax(0, 1fr);
@@ -54,12 +54,37 @@
 .pricing-editor-dialog .active-field label { margin: 0; font-weight: 700; }
 .pricing-editor-dialog .active-field input { width: 1.45rem; height: 1.45rem; margin: 0; }
 .pricing-editor-dialog .dialog-actions { justify-content: flex-start; }
+
+/* Discount editors: full-width controls prevent long rule names and labels crowding. */
+.discount-editor-dialog {
+  box-sizing: border-box;
+  width: min(94vw, 800px);
+  max-height: calc(100dvh - 4rem);
+  overflow-y: auto;
+  padding: clamp(1.6rem, 3vw, 3rem);
+}
+.items-card .discount-editor-dialog form { display: block; width: 100%; margin: 0; min-width: 0; }
+.discount-editor-dialog form > .input {
+  grid-template-columns: minmax(0, 1fr);
+  gap: .6rem;
+  margin: 0 0 1.6rem;
+}
+.discount-editor-dialog form > .input > label { line-height: 1.4; overflow-wrap: anywhere; }
+.discount-editor-dialog form > .input > input,
+.discount-editor-dialog form > .input > select { min-width: 0; max-width: 100%; }
+.discount-editor-dialog [data-price-cap-note] {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.55;
+  margin: 1.8rem 0 0;
+}
+.discount-editor-dialog .dialog-actions { flex-wrap: wrap; gap: 1rem; margin-top: 2rem; }
 .confirm-dialog { width: min(92vw, 430px); }
 
-/* UI: Add garment Active control matches the aligned Active control in the edit popup. */
-.add-garment-active-field { display: grid; grid-template-columns: 185px auto; align-items: center; gap: 1rem; margin: 1rem 0; }
-.add-garment-active-field label { margin: 0; font-weight: 700; }
-.add-garment-active-field input { width: 1.45rem; height: 1.45rem; margin: 0; }
+/* UI: checkbox-first rows keep a small gap and let long labels wrap. */
+.add-garment-active-field { display: grid; grid-template-columns: 1.45rem minmax(0, 1fr); align-items: start; gap: .6rem; margin: 1rem 0; }
+.add-garment-active-field label { margin: 0; font-weight: 700; line-height: 1.4; overflow-wrap: anywhere; }
+.add-garment-active-field input { width: 1.45rem; height: 1.45rem; margin: .3rem 0 0; }
 
 /* UI: one shared, tighter column map shifts headers and matching values left together. */
 [data-item-builder] { --item-list-columns: minmax(150px, 1.55fr) 110px 95px 105px; }

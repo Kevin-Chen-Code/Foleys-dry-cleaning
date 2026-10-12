@@ -8,6 +8,18 @@ use Cake\TestSuite\TestCase;
 
 final class OrderPricingServiceTest extends TestCase
 {
+    public function testPriceCapScenarios(): void
+    {
+        $cases = json_decode(file_get_contents(ROOT . '/tests/fixtures/price-cap-cases.json'), true, 512, JSON_THROW_ON_ERROR);
+        foreach ($cases as $case) {
+            $result = (new OrderPricingService())->calculate($case['items'], $case['rules']);
+            $this->assertSame($case['subtotal'], $result['subtotal'], $case['name']);
+            $this->assertSame($case['total'], $result['total'], $case['name']);
+            $this->assertSame($case['subtotal'] - $case['total'], $result['discount'], $case['name']);
+            $this->assertSame($case['names'], array_column($result['appliedDiscounts'], 'name'), $case['name']);
+        }
+    }
+
     public function testCalculatesLinesAndPercentageDiscountAtThreshold(): void
     {
         $result = (new OrderPricingService())->calculate([

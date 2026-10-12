@@ -5,6 +5,7 @@ namespace App\Controller;
 
 use App\Service\WeeklyReportService;
 use App\Service\NotificationService;
+use App\Model\Table\DiscountRulesTable;
 use Cake\I18n\FrozenTime;
 
 final class DashboardController extends AdminController
@@ -34,15 +35,24 @@ final class DashboardController extends AdminController
             } elseif ($action === 'save_item') {
                 $id = (int)$this->request->getData('id');
                 $entity = $id ? $itemsTable->get($id) : $itemsTable->newEmptyEntity();
-                $itemsTable->patchEntity($entity, ['name' => trim((string)$this->request->getData('name')), 'description' => trim((string)$this->request->getData('description')) ?: null, 'unit_price_cents' => (int)round((float)$this->request->getData('price') * 100), 'active' => (bool)$this->request->getData('active'), 'position' => (int)$this->request->getData('position'), 'created' => $id ? $entity->created : FrozenTime::now()]);
+                $itemsTable->patchEntity($entity, ['name' => trim((string)$this->request->getData('name')), 'description' => trim((string)$this->request->getData('description')) ?: null, 'unit_price_cents' => (int)round((float)$this->request->getData('price') * 100), 'active' => (bool)$this->request->getData('active'), 'price_cap_eligible' => (bool)$this->request->getData('price_cap_eligible'), 'position' => (int)$this->request->getData('position'), 'created' => $id ? $entity->created : FrozenTime::now()]);
                 $itemsTable->save($entity);
             } elseif ($action === 'delete_rule') {
                 $rulesTable->delete($rulesTable->get((int)$this->request->getData('id')));
             } elseif ($action === 'save_rule') {
                 $id = (int)$this->request->getData('id');
                 $entity = $id ? $rulesTable->get($id) : $rulesTable->newEmptyEntity();
-                $rulesTable->patchEntity($entity, ['name' => trim((string)$this->request->getData('name')), 'minimum_item_count' => (int)$this->request->getData('minimum_item_count'), 'discount_type' => (string)$this->request->getData('discount_type'), 'discount_value' => (int)$this->request->getData('discount_value'), 'active' => true, 'created' => $id ? $entity->created : FrozenTime::now()]);
-                $rulesTable->save($entity);
+                $type = (string)$this->request->getData('discount_type');
+                $value = DiscountRulesTable::formValueToStorage($this->request->getData('discount_value'), $type);
+                if ($value === null) {
+                    $this->Flash->error('Enter a percentage from 0 to 100, or a dollar amount with at most two decimal places.');
+                    return $this->redirect(['action' => 'managePricing']);
+                }
+                $rulesTable->patchEntity($entity, ['name' => trim((string)$this->request->getData('name')), 'minimum_item_count' => $this->request->getData('minimum_item_count'), 'discount_type' => $type, 'discount_value' => $value, 'active' => true, 'created' => $id ? $entity->created : FrozenTime::now()]);
+                if (!$rulesTable->save($entity)) {
+                    $this->Flash->error('Discount rule could not be saved. Enter a name and a minimum item count of at least 1.');
+                    return $this->redirect(['action' => 'managePricing']);
+                }
             }
             $this->Flash->success('Pricing configuration saved.');
             return $this->redirect($this->request->getRequestTarget());

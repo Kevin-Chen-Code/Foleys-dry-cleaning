@@ -1,0 +1,262 @@
+[
+  {
+    "name": "Mixed types reach the threshold",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 1500,
+        "quantity": 1
+      },
+      {
+        "item_name": "Blouse",
+        "unit_price_cents": 1200,
+        "quantity": 1
+      },
+      {
+        "item_name": "Pant",
+        "unit_price_cents": 1800,
+        "quantity": 1
+      }
+    ],
+    "rules": [
+      {
+        "name": "3+ eligible for $30",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3000
+      }
+    ],
+    "subtotal": 4500,
+    "total": 3000,
+    "names": [
+      "3+ eligible for $30"
+    ]
+  },
+  {
+    "name": "Four eligible items share one cap",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 1500,
+        "quantity": 4
+      }
+    ],
+    "rules": [
+      {
+        "name": "3+ eligible for $30",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3000
+      }
+    ],
+    "subtotal": 6000,
+    "total": 3000,
+    "names": [
+      "3+ eligible for $30"
+    ]
+  },
+  {
+    "name": "Six eligible items share one cap",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 1500,
+        "quantity": 6
+      }
+    ],
+    "rules": [
+      {
+        "name": "3+ eligible for $30",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3000
+      }
+    ],
+    "subtotal": 9000,
+    "total": 3000,
+    "names": [
+      "3+ eligible for $30"
+    ]
+  },
+  {
+    "name": "Bar robes and jabots charged separately",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 1500,
+        "quantity": 3
+      },
+      {
+        "item_name": "Bar Robe",
+        "unit_price_cents": 5000,
+        "quantity": 1,
+        "price_cap_eligible": true
+      },
+      {
+        "item_name": "Jabots",
+        "unit_price_cents": 800,
+        "quantity": 2,
+        "price_cap_eligible": true
+      }
+    ],
+    "rules": [
+      {
+        "name": "3+ eligible for $30",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3000
+      }
+    ],
+    "subtotal": 11100,
+    "total": 9600,
+    "names": [
+      "3+ eligible for $30"
+    ]
+  },
+  {
+    "name": "Excluded garments do not qualify request",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 1500,
+        "quantity": 2
+      },
+      {
+        "item_name": "bar robe",
+        "unit_price_cents": 5000,
+        "quantity": 1
+      },
+      {
+        "item_name": "Jabot",
+        "unit_price_cents": 800,
+        "quantity": 1
+      }
+    ],
+    "rules": [
+      {
+        "name": "3+ eligible for $30",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3000
+      }
+    ],
+    "subtotal": 8800,
+    "total": 8800,
+    "names": []
+  },
+  {
+    "name": "Cap never raises a cheaper total",
+    "items": [
+      {
+        "item_name": "Tie",
+        "unit_price_cents": 500,
+        "quantity": 3
+      }
+    ],
+    "rules": [
+      {
+        "name": "3+ eligible for $30",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3000
+      }
+    ],
+    "subtotal": 1500,
+    "total": 1500,
+    "names": []
+  },
+  {
+    "name": "Stored exclusion survives renaming",
+    "items": [
+      {
+        "item_name": "Court garment",
+        "unit_price_cents": 5000,
+        "quantity": 3,
+        "price_cap_eligible": false
+      }
+    ],
+    "rules": [
+      {
+        "name": "3+ eligible for $30",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3000
+      }
+    ],
+    "subtotal": 15000,
+    "total": 15000,
+    "names": []
+  },
+  {
+    "name": "All regular rules stack with cap",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 1500,
+        "quantity": 3
+      }
+    ],
+    "rules": [
+      {
+        "name": "Cap",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3000
+      },
+      {
+        "name": "10% off",
+        "minimum_item_count": 3,
+        "discount_type": "percentage",
+        "discount_value": 10
+      },
+      {
+        "name": "$2 off",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 200
+      }
+    ],
+    "subtotal": 4500,
+    "total": 2350,
+    "names": [
+      "Cap",
+      "10% off",
+      "$2 off"
+    ]
+  },
+  {
+    "name": "Multiple caps cannot discount excluded items twice",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 1500,
+        "quantity": 3
+      },
+      {
+        "item_name": "Bar robe",
+        "unit_price_cents": 5000,
+        "quantity": 1
+      }
+    ],
+    "rules": [
+      {
+        "name": "$30 cap",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3000
+      },
+      {
+        "name": "$20 cap",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 2000
+      }
+    ],
+    "subtotal": 9500,
+    "total": 7000,
+    "names": [
+      "$30 cap",
+      "$20 cap"
+    ]
+  }
+]

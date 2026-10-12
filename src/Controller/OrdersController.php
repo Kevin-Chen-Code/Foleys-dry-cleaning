@@ -11,7 +11,7 @@ final class OrdersController extends AppController
 {
     public function quote()
     {
-        $items = $this->activeItems(); $pricing = null;
+        $items = $this->catalogueItems(); $pricing = null;
         if ($this->request->is('post')) {
             $pricing = (new OrderPricingService())->calculate($this->submittedItems($items), $this->activeRules());
             if ($pricing['lines'] === []) { $this->Flash->error('Add at least one item before viewing a quote.'); }
@@ -21,7 +21,7 @@ final class OrdersController extends AppController
 
     public function add()
     {
-        $items = $this->activeItems();
+        $items = $this->catalogueItems();
         if ($this->request->is('post')) { $this->submit($items); }
         $rules = $this->activeRules();
         $this->set(compact('items', 'rules'));
@@ -57,7 +57,7 @@ final class OrdersController extends AppController
         $this->redirect(['action' => 'received']);
     }
 
-    private function activeItems(): array { return $this->fetchTable('ServiceItems')->find()->where(['active' => true])->orderBy(['position' => 'ASC'])->all()->toList(); }
+    private function catalogueItems(): array { return $this->fetchTable('ServiceItems')->find()->orderBy(['position' => 'ASC', 'id' => 'ASC'])->all()->toList(); }
     private function activeRules(): array { return $this->fetchTable('DiscountRules')->find()->where(['active' => true])->orderBy(['minimum_item_count' => 'ASC'])->all()->map(fn ($rule) => $rule->toArray())->toList(); }
     private function submittedItems(array $items): array
     {
@@ -65,7 +65,7 @@ final class OrdersController extends AppController
         $submitted = [];
         foreach ((array)$this->request->getData('items') as $data) {
             $id = (int)($data['service_item_id'] ?? 0); $quantity = filter_var($data['quantity'] ?? 0, FILTER_VALIDATE_INT) ?: 0;
-            if ($quantity > 0 && isset($catalogue[$id])) { $item = $catalogue[$id]; $submitted[] = ['service_item_id' => $id, 'item_name' => $item->name, 'unit_price_cents' => (int)$item->unit_price_cents, 'quantity' => $quantity]; }
+            if ($quantity > 0 && isset($catalogue[$id])) { $item = $catalogue[$id]; $submitted[] = ['service_item_id' => $id, 'item_name' => $item->name, 'unit_price_cents' => (int)$item->unit_price_cents, 'quantity' => $quantity, 'price_cap_eligible' => OrderPricingService::isPriceCapEligible($item->toArray())]; }
         }
         return $submitted;
     }

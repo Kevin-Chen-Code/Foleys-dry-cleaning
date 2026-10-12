@@ -1,6 +1,8 @@
 <?php
 $this->assign('title', 'Manage pricing');
 $this->Html->css('item-dialog', ['block' => true]); // UI: styles the pricing edit popups.
+$this->Html->script('manage-pricing', ['block' => true]);
+$discountTypes = ['percentage' => 'Percentage', 'fixed' => 'Fixed dollar amount', 'price_cap' => 'Price cap (excluding bar robes and jabots)'];
 ?>
 
 <section class="page-heading">
@@ -34,6 +36,7 @@ $this->Html->css('item-dialog', ['block' => true]); // UI: styles the pricing ed
                             <label for="item-active-<?= (int)$item->id ?>">Active</label>
                             <?= $this->Form->checkbox('active', ['id' => 'item-active-' . (int)$item->id, 'checked' => $item->active]) ?>
                         </div>
+                        <?= $this->Form->control('price_cap_eligible', ['type' => 'checkbox', 'label' => 'Eligible for price-cap deals', 'checked' => \App\Service\OrderPricingService::isPriceCapEligible($item->toArray()), 'disabled' => \App\Service\OrderPricingService::isExcludedGarment($item->name)]) ?>
                         <div class="dialog-actions">
                             <?= $this->Form->button('Save changes', ['class' => 'button-primary']) ?>
                             <button type="button" class="cancel-add" onclick="this.closest('dialog').close()">Cancel</button>
@@ -65,11 +68,17 @@ $this->Html->css('item-dialog', ['block' => true]); // UI: styles the pricing ed
     <?= $this->Form->control('price', ['type' => 'number', 'step' => '0.01']) ?>
     <?= $this->Form->control('description') ?>
     <?= $this->Form->control('position', ['type' => 'number', 'value' => 100]) ?>
+   
     <!-- UI: keeps the Add garment Active label and checkbox aligned like the edit popup. -->
     <div class="add-garment-active-field">
-        <label for="new-item-active">Active</label>
         <?= $this->Form->checkbox('active', ['id' => 'new-item-active', 'checked' => true]) ?>
+        <label for="new-item-active">Active</label>
     </div>
+    <div class="add-garment-active-field add-price-cap-eligibility-field">
+        <?= $this->Form->checkbox('price_cap_eligible', ['id' => 'new-item-eligible', 'checked' => true]) ?>
+        <label for="new-item-eligible">Eligible for price-cap deals</label>
+    </div>
+    <p class="form-note">Bar robes and jabots are always excluded from price-cap deals.</p>
     <?= $this->Form->button('Save garment', ['class' => 'button-primary']) ?>
     <?= $this->Form->end() ?>
 </section>
@@ -84,17 +93,18 @@ $this->Html->css('item-dialog', ['block' => true]); // UI: styles the pricing ed
         <?php foreach ($rules as $rule): ?>
             <tr>
                 <td><?= h($rule->name) ?></td>
-                <td><?= (int)$rule->discount_value ?><?= $rule->discount_type === 'percentage' ? '%' : ' cents' ?></td>
+                <td><?= $rule->discount_type === 'percentage' ? (int)$rule->discount_value . '%' : '$' . number_format($rule->discount_value / 100, 2) ?><?= $rule->discount_type === 'price_cap' ? ' cap' : '' ?></td>
                 <td>
                     <button type="button" class="action-button" onclick="this.nextElementSibling.showModal()">Edit</button>
-                    <dialog class="item-dialog pricing-editor-dialog">
-                        <?= $this->Form->create(null) ?>
+                    <dialog class="item-dialog pricing-editor-dialog discount-editor-dialog">
+                        <?= $this->Form->create(null, ['data-discount-editor' => true]) ?>
                         <?= $this->Form->hidden('action', ['value' => 'save_rule']) ?>
                         <?= $this->Form->hidden('id', ['value' => $rule->id]) ?>
                         <?= $this->Form->control('name', ['value' => $rule->name]) ?>
-                        <?= $this->Form->control('minimum_item_count', ['type' => 'number', 'value' => $rule->minimum_item_count]) ?>
-                        <?= $this->Form->control('discount_type', ['options' => ['percentage' => 'Percentage', 'fixed' => 'Fixed cents'], 'value' => $rule->discount_type]) ?>
-                        <?= $this->Form->control('discount_value', ['type' => 'number', 'value' => $rule->discount_value]) ?>
+                        <?= $this->Form->control('minimum_item_count', ['label' => 'Minimum item count', 'type' => 'number', 'min' => 1, 'step' => 1, 'required' => true, 'value' => $rule->minimum_item_count]) ?>
+                        <?= $this->Form->control('discount_type', ['options' => $discountTypes, 'value' => $rule->discount_type]) ?>
+                        <?= $this->Form->control('discount_value', ['label' => $rule->discount_type === 'percentage' ? 'Discount (%)' : ($rule->discount_type === 'price_cap' ? 'Maximum eligible total ($)' : 'Discount amount ($)'), 'type' => 'number', 'min' => 0, 'required' => true, 'step' => $rule->discount_type === 'percentage' ? '1' : '0.01', 'value' => $rule->discount_type === 'percentage' ? $rule->discount_value : number_format($rule->discount_value / 100, 2, '.', '')]) ?>
+                        <p data-price-cap-note<?= $rule->discount_type === 'price_cap' ? '' : ' hidden' ?>>Once the minimum eligible count is reached, all eligible garments together are capped at this amount. Bar robes and jabots are charged separately and do not count toward the threshold. Other eligible discounts also apply.</p>
                         <div class="dialog-actions">
                             <?= $this->Form->button('Save changes', ['class' => 'button-primary']) ?>
                             <button type="button" class="cancel-add" onclick="this.closest('dialog').close()">Cancel</button>
@@ -120,12 +130,13 @@ $this->Html->css('item-dialog', ['block' => true]); // UI: styles the pricing ed
     </table>
 
     <h3>Add discount rule</h3>
-    <?= $this->Form->create() ?>
+    <?= $this->Form->create(null, ['data-discount-editor' => true]) ?>
     <?= $this->Form->hidden('action', ['value' => 'save_rule']) ?>
     <?= $this->Form->control('name') ?>
-    <?= $this->Form->control('minimum_item_count', ['type' => 'number']) ?>
-    <?= $this->Form->control('discount_type', ['options' => ['percentage' => 'Percentage', 'fixed' => 'Fixed cents']]) ?>
-    <?= $this->Form->control('discount_value', ['type' => 'number']) ?>
+    <?= $this->Form->control('minimum_item_count', ['label' => 'Minimum item count', 'type' => 'number', 'min' => 1, 'step' => 1, 'required' => true]) ?>
+    <?= $this->Form->control('discount_type', ['options' => $discountTypes]) ?>
+    <?= $this->Form->control('discount_value', ['label' => 'Discount (%)', 'type' => 'number', 'min' => 0, 'step' => 1, 'required' => true]) ?>
+    <p data-price-cap-note hidden>Once the minimum eligible count is reached, all eligible garments together are capped at this amount. Bar robes and jabots are charged separately and do not count toward the threshold. Other eligible discounts also apply.</p>
     <?= $this->Form->button('Save discount rule', ['class' => 'button-primary']) ?>
     <?= $this->Form->end() ?>
 </section>
