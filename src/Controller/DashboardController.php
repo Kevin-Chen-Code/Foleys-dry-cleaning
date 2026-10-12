@@ -35,7 +35,9 @@ final class DashboardController extends AdminController
             } elseif ($action === 'save_item') {
                 $id = (int)$this->request->getData('id');
                 $entity = $id ? $itemsTable->get($id) : $itemsTable->newEmptyEntity();
-                $itemsTable->patchEntity($entity, ['name' => trim((string)$this->request->getData('name')), 'description' => trim((string)$this->request->getData('description')) ?: null, 'unit_price_cents' => (int)round((float)$this->request->getData('price') * 100), 'active' => (bool)$this->request->getData('active'), 'price_cap_eligible' => (bool)$this->request->getData('price_cap_eligible'), 'position' => (int)$this->request->getData('position'), 'created' => $id ? $entity->created : FrozenTime::now()]);
+                // Keep existing display order; append new garments automatically.
+                $position = $id ? (int)$entity->position : (int)($itemsTable->find()->select(['position'])->orderBy(['position' => 'DESC'])->first()?->position ?? 0) + 1;
+                $itemsTable->patchEntity($entity, ['name' => trim((string)$this->request->getData('name')), 'description' => trim((string)$this->request->getData('description')) ?: null, 'unit_price_cents' => (int)round((float)$this->request->getData('price') * 100), 'active' => (bool)$this->request->getData('active'), 'price_cap_eligible' => (bool)$this->request->getData('price_cap_eligible'), 'position' => $position, 'created' => $id ? $entity->created : FrozenTime::now()]);
                 $itemsTable->save($entity);
             } elseif ($action === 'delete_rule') {
                 $rulesTable->delete($rulesTable->get((int)$this->request->getData('id')));

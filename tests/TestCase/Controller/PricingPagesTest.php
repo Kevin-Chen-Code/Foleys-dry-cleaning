@@ -78,6 +78,25 @@ final class PricingPagesTest extends TestCase
         $this->assertSame(1025, $rules->get($rule->id)->discount_value);
     }
 
+    public function testGarmentFormsOmitPositionAndSavingKeepsDisplayOrder(): void
+    {
+        $items = $this->locator->get('ServiceItems');
+        $item = $items->saveOrFail($items->newEntity(['name' => 'Blouse', 'unit_price_cents' => 950, 'active' => true, 'position' => 70, 'price_cap_eligible' => true]));
+        $this->session(['Foleys' => ['admin' => 'admin']]);
+        $this->get('/admin/manage-pricing');
+        $this->assertResponseOk();
+        $this->assertResponseNotContains('name="position"');
+        $this->assertResponseContains('for="item-eligible-' . $item->id . '"');
+        $this->enableCsrfToken();
+        $this->post('/admin/manage-pricing', ['action' => 'save_item', 'id' => $item->id, 'name' => 'Blouse', 'price' => '10.00', 'active' => '1', 'price_cap_eligible' => '1']);
+        $this->assertRedirect('/admin/manage-pricing');
+        $this->assertSame(70, $items->get($item->id)->position);
+        $this->assertSame(1000, $items->get($item->id)->unit_price_cents);
+        $this->post('/admin/manage-pricing', ['action' => 'save_item', 'name' => 'New garment', 'price' => '15.00', 'active' => '1', 'price_cap_eligible' => '1']);
+        $this->assertRedirect('/admin/manage-pricing');
+        $this->assertSame(71, $items->find()->where(['name' => 'New garment'])->firstOrFail()->position);
+    }
+
     public function testPriceCapCanBeCreatedAndInvalidAmountsCannotBeSaved(): void
     {
         $this->session(['Foleys' => ['admin' => 'admin']]);

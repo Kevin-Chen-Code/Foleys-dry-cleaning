@@ -31,12 +31,14 @@ $discountTypes = ['percentage' => 'Percentage', 'fixed' => 'Fixed dollar amount'
                         <?= $this->Form->control('name', ['value' => $item->name]) ?>
                         <?= $this->Form->control('price', ['type' => 'number', 'step' => '0.01', 'value' => $item->unit_price_cents / 100]) ?>
                         <?= $this->Form->control('description', ['value' => $item->description]) ?>
-                        <?= $this->Form->control('position', ['type' => 'number', 'value' => $item->position]) ?>
-                        <div class="active-field">
-                            <label for="item-active-<?= (int)$item->id ?>">Active</label>
+                        <div class="add-garment-active-field">
                             <?= $this->Form->checkbox('active', ['id' => 'item-active-' . (int)$item->id, 'checked' => $item->active]) ?>
+                            <label for="item-active-<?= (int)$item->id ?>">Active</label>
                         </div>
-                        <?= $this->Form->control('price_cap_eligible', ['type' => 'checkbox', 'label' => 'Eligible for price-cap deals', 'checked' => \App\Service\OrderPricingService::isPriceCapEligible($item->toArray()), 'disabled' => \App\Service\OrderPricingService::isExcludedGarment($item->name)]) ?>
+                        <div class="add-garment-active-field add-price-cap-eligibility-field">
+                            <?= $this->Form->checkbox('price_cap_eligible', ['id' => 'item-eligible-' . (int)$item->id, 'checked' => \App\Service\OrderPricingService::isPriceCapEligible($item->toArray()), 'disabled' => \App\Service\OrderPricingService::isExcludedGarment($item->name)]) ?>
+                            <label for="item-eligible-<?= (int)$item->id ?>">Eligible for price-cap deals</label>
+                        </div>
                         <div class="dialog-actions">
                             <?= $this->Form->button('Save changes', ['class' => 'button-primary']) ?>
                             <button type="button" class="cancel-add" onclick="this.closest('dialog').close()">Cancel</button>
@@ -67,8 +69,6 @@ $discountTypes = ['percentage' => 'Percentage', 'fixed' => 'Fixed dollar amount'
     <?= $this->Form->control('name') ?>
     <?= $this->Form->control('price', ['type' => 'number', 'step' => '0.01']) ?>
     <?= $this->Form->control('description') ?>
-    <?= $this->Form->control('position', ['type' => 'number', 'value' => 100]) ?>
-   
     <!-- UI: keeps the Add garment Active label and checkbox aligned like the edit popup. -->
     <div class="add-garment-active-field">
         <?= $this->Form->checkbox('active', ['id' => 'new-item-active', 'checked' => true]) ?>
@@ -78,7 +78,7 @@ $discountTypes = ['percentage' => 'Percentage', 'fixed' => 'Fixed dollar amount'
         <?= $this->Form->checkbox('price_cap_eligible', ['id' => 'new-item-eligible', 'checked' => true]) ?>
         <label for="new-item-eligible">Eligible for price-cap deals</label>
     </div>
-    <p class="form-note">Bar robes and jabots are always excluded from price-cap deals.</p>
+    <p class="form-note">Bar robes and Jabots are always excluded from price-cap deals.</p>
     <?= $this->Form->button('Save garment', ['class' => 'button-primary']) ?>
     <?= $this->Form->end() ?>
 </section>
