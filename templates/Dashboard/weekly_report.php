@@ -15,12 +15,13 @@ $total = array_sum(array_map(fn($order) => (int)$order->total_cents, $orders));
     </div>
     <table>
         <thead>
-            <tr><th>Barrister</th><th>Submitted</th><th>Item type</th><th>Quantity</th><th>Cost</th><th>Discounted cost</th></tr>
+            <tr><th>Barrister name</th><th>Email address</th><th>Submitted</th><th>Item type</th><th>Quantity</th><th>Cost</th><th>Discounted cost</th></tr>
         </thead>
         <tbody>
         <?php foreach ($orders as $order): ?>
             <?php foreach ($itemsByOrder[(int)$order->id] ?? [] as $index => $item): ?>
                 <tr>
+                    <td><?= $order->barrister_name ? h($order->barrister_name) : '&mdash;' ?></td>
                     <td><?= $order->email ? h($order->email) : '&mdash;' ?></td>
                     <td><?= h($order->submitted_at?->format('d M Y')) ?></td>
                     <td><?= h($item->item_name) ?></td>

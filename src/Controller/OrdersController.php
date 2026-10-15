@@ -36,6 +36,7 @@ final class OrdersController extends AppController
         $pricing = (new OrderPricingService())->calculate($submitted, $this->activeRules());
         $orders = $this->fetchTable('Orders');
         $order = $orders->patchEntity($orders->newEmptyEntity(), [
+            'barrister_name' => $this->request->getData('barrister_name'),
             'email' => $this->request->getData('email'),
             'notes' => trim((string)$this->request->getData('notes')) ?: null,
             'status' => 'submitted', 'subtotal_cents' => $pricing['subtotal'], 'discount_cents' => $pricing['discount'],

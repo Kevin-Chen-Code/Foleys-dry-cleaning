@@ -1,0 +1,1467 @@
+{
+  "source": "Mailing List (manually update) (1).xlsx",
+  "sheet": "Mailing List (as at Sept 2026)",
+  "columns": [
+    "First Name",
+    "Last Name",
+    "Email"
+  ],
+  "barristers": [
+    {
+      "name": "Luisa Alampi",
+      "email": "alampi@vicbar.com.au"
+    },
+    {
+      "name": "Zeina Alhalabi",
+      "email": "zeina@vicbar.com.au"
+    },
+    {
+      "name": "Heather Anderson",
+      "email": "heather.anderson@vicbar.com.au"
+    },
+    {
+      "name": "Louis Andrews",
+      "email": "louis.andrews@vicbar.com.au"
+    },
+    {
+      "name": "Jennika Anthony-Shaw",
+      "email": "J.Anthony-Shaw@vicbar.com.au"
+    },
+    {
+      "name": "Michael Arbogast",
+      "email": "michael.arbogast@vicbar.com.au"
+    },
+    {
+      "name": "Serena Armstrong",
+      "email": "serena.armstrong@vicbar.com.au"
+    },
+    {
+      "name": "Vanessa Bacchetti",
+      "email": "vbacchetti@vicbar.com.au"
+    },
+    {
+      "name": "Glenn Barr",
+      "email": "glenn.barr@vicbar.com.au"
+    },
+    {
+      "name": "Jonathan Barrington",
+      "email": "j.barrington@vicbar.com.au"
+    },
+    {
+      "name": "Robert Barry",
+      "email": "barry@deakinchambers.com.au"
+    },
+    {
+      "name": "Philip Barton",
+      "email": "pbarton@vicbar.com.au"
+    },
+    {
+      "name": "Jonathan Bayly",
+      "email": "jonathan.bayly@vicbar.com.au"
+    },
+    {
+      "name": "Michael Beaconsfield",
+      "email": "mbeaconsfield@vicbar.com.au"
+    },
+    {
+      "name": "Thomas Bell",
+      "email": "tbell@vicbar.com.au"
+    },
+    {
+      "name": "Carmella Ben-Simon",
+      "email": "cbs@vicbar.com.au"
+    },
+    {
+      "name": "Eliza Bergin",
+      "email": "embergin@vicbar.com.au"
+    },
+    {
+      "name": "Priscilla Blackadder",
+      "email": "p.blackadder@vicbar.com.au"
+    },
+    {
+      "name": "Phillip Bloemen",
+      "email": "phillipbloemen@vicbar.com.au"
+    },
+    {
+      "name": "Natalie Blok",
+      "email": "natalie.blok@vicbar.com.au"
+    },
+    {
+      "name": "David Blumenthal",
+      "email": "david.blumenthal@vicbar.com.au"
+    },
+    {
+      "name": "Gideon Boas",
+      "email": "gideon.boas@vicbar.com.au"
+    },
+    {
+      "name": "Darren Bracken",
+      "email": "bracken@vicbar.com.au"
+    },
+    {
+      "name": "Susan Brennan SC",
+      "email": "smbrennan@vicbar.com.au"
+    },
+    {
+      "name": "Steven Brnovic",
+      "email": "steven.brnovic@vicbar.com.au"
+    },
+    {
+      "name": "Michele Brooks",
+      "email": "michele.brooks@vicbar.com.au"
+    },
+    {
+      "name": "Travis Brown",
+      "email": "travisbrown@vicbar.com.au"
+    },
+    {
+      "name": "Daryl Brown",
+      "email": "brownda@vicbar.com.au"
+    },
+    {
+      "name": "David Brown KC",
+      "email": "dbrown@vicbar.com.au"
+    },
+    {
+      "name": "Martha Browning",
+      "email": "martha.browning@vicbar.com.au"
+    },
+    {
+      "name": "Darren Bruno",
+      "email": "dbruno@vicbar.com.au"
+    },
+    {
+      "name": "David Brustman KC",
+      "email": "brustman@vicbar.com.au"
+    },
+    {
+      "name": "Chiara Bryan",
+      "email": "cbryan@vicbar.com.au"
+    },
+    {
+      "name": "Alexis Buckley",
+      "email": "alexisbuckley@vicbar.com.au"
+    },
+    {
+      "name": "Stephen Bunce",
+      "email": "sbunce@vicbar.com.au"
+    },
+    {
+      "name": "Amanda Burnnard",
+      "email": "aburnnard@vicbar.com.au"
+    },
+    {
+      "name": "Samuel Burt",
+      "email": "samueloburt@vicbar.com.au"
+    },
+    {
+      "name": "Michelle Button",
+      "email": "michelle.button@vicbar.com.au"
+    },
+    {
+      "name": "Oliver Cain",
+      "email": "oliver.cain@vicbar.com.au"
+    },
+    {
+      "name": "Olivia Callahan",
+      "email": "olivia.callahan@vicbar.com.au"
+    },
+    {
+      "name": "Amanda Carruthers",
+      "email": "carruthers@vicbar.com.au"
+    },
+    {
+      "name": "Glenn Casement",
+      "email": "casement@vicbar.com.au"
+    },
+    {
+      "name": "Daniel Cash",
+      "email": "dcash@vicbar.com.au"
+    },
+    {
+      "name": "Peter Chadwick KC",
+      "email": "pchad@vicbar.com.au"
+    },
+    {
+      "name": "Ruth Champion",
+      "email": "ruthchampion@vicbar.com.au"
+    },
+    {
+      "name": "Kay Chan",
+      "email": "kay.chan@vicbar.com.au"
+    },
+    {
+      "name": "Donald Charrett",
+      "email": "d.charrett@me.com"
+    },
+    {
+      "name": "Adam Chernok",
+      "email": "chernok@vicbar.com.au"
+    },
+    {
+      "name": "Catherine Chiang",
+      "email": "chiang@vicbar.com.au"
+    },
+    {
+      "name": "Paul Chiappi SC",
+      "email": "chiappi@vicbar.com.au"
+    },
+    {
+      "name": "Marissa Chorn",
+      "email": "marissa.chorn@vicbar.com.au"
+    },
+    {
+      "name": "Chris Chosich",
+      "email": "chris.chosich@vicbar.com.au"
+    },
+    {
+      "name": "Ruben Clark",
+      "email": "ruben.clark@vicbar.com.au"
+    },
+    {
+      "name": "Marcus Clarke KC",
+      "email": "marcusclarke@vicbar.com.au"
+    },
+    {
+      "name": "Ian Coleman SC",
+      "email": "coleman@culwulla.com.au"
+    },
+    {
+      "name": "Laura Colla",
+      "email": "lauracolla@vicbar.com.au"
+    },
+    {
+      "name": "David Colman",
+      "email": "davidcolman@vicbar.com.au"
+    },
+    {
+      "name": "Andrew Combes",
+      "email": "a.combes@vicbar.com.au"
+    },
+    {
+      "name": "Julie Condon KC",
+      "email": "juliecondon@vicbar.com.au"
+    },
+    {
+      "name": "Matt Cookson",
+      "email": "mattcookson@vicbar.com.au"
+    },
+    {
+      "name": "Alice Cooney",
+      "email": "alice.cooney@vicbar.com.au"
+    },
+    {
+      "name": "David Cordy",
+      "email": "cordy@iinet.net.au"
+    },
+    {
+      "name": "Diana Costaras",
+      "email": "diana.costaras@vicbar.com.au"
+    },
+    {
+      "name": "Scott Cromb",
+      "email": "scott.cromb@vicbar.com.au"
+    },
+    {
+      "name": "Leigh Crosbie",
+      "email": "leigh.crosbie@vicbar.com.au"
+    },
+    {
+      "name": "Ella Crotty",
+      "email": "ellacrotty@vicbar.com.au"
+    },
+    {
+      "name": "Josh Cunningham",
+      "email": "josh.cunningham@vicbar.com.au"
+    },
+    {
+      "name": "Sarah Damon",
+      "email": "sdamon@vicbar.com.au"
+    },
+    {
+      "name": "Edwina Dane",
+      "email": "edwina.dane@vicbar.com.au"
+    },
+    {
+      "name": "Damien Dao",
+      "email": "damiendao@vicbar.com.au"
+    },
+    {
+      "name": "Paul D'Arcy",
+      "email": "padarcy@hotmail.com"
+    },
+    {
+      "name": "Hetty de Crespigny",
+      "email": "hetty.decrespigny@vicbar.com.au"
+    },
+    {
+      "name": "Zac de Kievit",
+      "email": "zac.dekievit@vicbar.com.au"
+    },
+    {
+      "name": "Raphael de Vietri",
+      "email": "rdev@vicbar.com.au"
+    },
+    {
+      "name": "Andrew de Wijn SC",
+      "email": "andrew.dewijn@vicbar.com.au"
+    },
+    {
+      "name": "David De Witt",
+      "email": "david.dewitt@vicbar.com.au"
+    },
+    {
+      "name": "Nadia Deltondo",
+      "email": "nadia.deltondo@vicbar.com.au"
+    },
+    {
+      "name": "Catherine Dermody",
+      "email": "cmdermody@vicbar.com.au"
+    },
+    {
+      "name": "Brenton Devanny",
+      "email": "bdevanny@vicbar.com.au"
+    },
+    {
+      "name": "Catherine Devine",
+      "email": "cdevine@vicbar.com.au"
+    },
+    {
+      "name": "Stephen Dewberry",
+      "email": "stephendewberry34@gmail.com"
+    },
+    {
+      "name": "Andrew Dickenson",
+      "email": "apdickenson@vicbar.com.au"
+    },
+    {
+      "name": "John Dickie",
+      "email": "johndickie@vicbar.com.au"
+    },
+    {
+      "name": "John Dickinson KC",
+      "email": "jpd@iinet.net.au"
+    },
+    {
+      "name": "Geoff Dickson KC",
+      "email": "gdickson@vicbar.com.au"
+    },
+    {
+      "name": "Fabian Dixon SC",
+      "email": "fabian.dixonsc@vicbar.com.au"
+    },
+    {
+      "name": "Erik Dober",
+      "email": "dober@vicbar.com.au"
+    },
+    {
+      "name": "Nicholas Dodds",
+      "email": "nicholas.dodds@vicbar.com.au"
+    },
+    {
+      "name": "Andrew Donald",
+      "email": "andrewdonald@vicbar.com.au"
+    },
+    {
+      "name": "Marcus Duckett",
+      "email": "mduckett@vicbar.com.au"
+    },
+    {
+      "name": "Charlotte Duckett",
+      "email": "charlotteduckett@vicbar.com.au"
+    },
+    {
+      "name": "Philip Dunn KC",
+      "email": "pdunn@vicbar.com.au"
+    },
+    {
+      "name": "Tessa Duthie",
+      "email": "tessa.duthie@vicbar.com.au"
+    },
+    {
+      "name": "Nic Edmondson",
+      "email": "nic.edmondson@tasbar.com.au"
+    },
+    {
+      "name": "Richard Edney",
+      "email": "redney17@yahoo.com"
+    },
+    {
+      "name": "Nick Ellis",
+      "email": "nick.ellis@vicbar.com.au"
+    },
+    {
+      "name": "Jenaya Ellis",
+      "email": "jenaya.ellis@vicbar.com.au"
+    },
+    {
+      "name": "Jonathan Evans KC",
+      "email": "jonathanevans@vicbar.com.au"
+    },
+    {
+      "name": "Jessica Fallar",
+      "email": "jessica.fallar@vicbar.com.au"
+    },
+    {
+      "name": "Tahlia Ferrari",
+      "email": "tahlia.ferrari@vicbar.com.au"
+    },
+    {
+      "name": "Jennifer Findlay",
+      "email": "jfindlay@vicbar.com.au"
+    },
+    {
+      "name": "Alex Finemore",
+      "email": "alex.finemore@vicbar.com.au"
+    },
+    {
+      "name": "Sarah Fisken SC",
+      "email": "sarah.fisken@vicbar.com.au"
+    },
+    {
+      "name": "Kaitlyn Foote",
+      "email": "kfoote@vicbar.com.au"
+    },
+    {
+      "name": "Robert Forrester",
+      "email": "forrester@vicbar.com.au"
+    },
+    {
+      "name": "Juliet Forsyth SC",
+      "email": "forsyth@vicbar.com.au"
+    },
+    {
+      "name": "James Francis",
+      "email": "james.francis@vicbar.com.au"
+    },
+    {
+      "name": "Estelle Frawley",
+      "email": "estelle.frawley@vicbar.com.au"
+    },
+    {
+      "name": "Ian Freckelton AO KC",
+      "email": "i.freckelton@vicbar.com.au"
+    },
+    {
+      "name": "Nicholas Frenkel",
+      "email": "nfrenkel@vicbar.com.au"
+    },
+    {
+      "name": "Laurence Fudim",
+      "email": "laurence.fudim@vicbar.com.au"
+    },
+    {
+      "name": "Margarita Fudim",
+      "email": "y.margarita@vicbar.com.au"
+    },
+    {
+      "name": "Simon Fuller",
+      "email": "fuller@vicbar.com.au"
+    },
+    {
+      "name": "Ben Game",
+      "email": "ben.game@vicbar.com.au"
+    },
+    {
+      "name": "Daye Gang",
+      "email": "daye@vicbar.com.au"
+    },
+    {
+      "name": "Simon Gannon",
+      "email": "simongannon@vicbar.com.au"
+    },
+    {
+      "name": "Nick Gardiner",
+      "email": "nickgardiner@vicbar.com.au"
+    },
+    {
+      "name": "Susan Gatford",
+      "email": "susangatford@vicbar.com.au"
+    },
+    {
+      "name": "Harriet Geddes",
+      "email": "harrietgeddes@vicbar.com.au"
+    },
+    {
+      "name": "Alex Gelber",
+      "email": "gelber@vicbar.com.au"
+    },
+    {
+      "name": "Sana Gelic",
+      "email": "sana.gelic@vicbar.com.au"
+    },
+    {
+      "name": "Simon Gillespie-Jones",
+      "email": "gillespie-jones@vicbar.com.au"
+    },
+    {
+      "name": "Bill Gillies",
+      "email": "bill.gillies@vicbar.com.au"
+    },
+    {
+      "name": "Mark Gioskos",
+      "email": "mark.gioskos@vicbar.com.au"
+    },
+    {
+      "name": "Katharine Gladman",
+      "email": "kgladman@vicbar.com.au"
+    },
+    {
+      "name": "Robert Glavas",
+      "email": "robert.glavas@vicbar.com.au"
+    },
+    {
+      "name": "Allana Goldsworthy",
+      "email": "agoldsworthy@vicbar.com.au"
+    },
+    {
+      "name": "Anna Goldthorp",
+      "email": "agoldthorp@vicbar.com.au"
+    },
+    {
+      "name": "Christina Gomez Vazquez",
+      "email": "cgv@vicbar.com.au"
+    },
+    {
+      "name": "Tim Grace",
+      "email": "tim.grace@vicbar.com.au"
+    },
+    {
+      "name": "Carlin Grant",
+      "email": "carlin.grant@vicbar.com.au"
+    },
+    {
+      "name": "Rishi Gulati",
+      "email": "rishi.gulati@vicbar.com.au"
+    },
+    {
+      "name": "Mark Gumbleton",
+      "email": "mgumbleton@vicbar.com.au"
+    },
+    {
+      "name": "Sverre Gunnersen",
+      "email": "sverre.gunnersen@vicbar.com.au"
+    },
+    {
+      "name": "John Gurr KC",
+      "email": "johngurr@vicbar.com.au"
+    },
+    {
+      "name": "Lauren Gurry",
+      "email": "lauren.gurry@vicbar.com.au"
+    },
+    {
+      "name": "Daniel Gurvich KC",
+      "email": "ddgurvich@vicbar.com.au"
+    },
+    {
+      "name": "Russell Hammill",
+      "email": "russhammill@outlook.com"
+    },
+    {
+      "name": "Yildana Hardjadibrata",
+      "email": "hardjy@vicbar.com.au"
+    },
+    {
+      "name": "Jason Harkess",
+      "email": "jharkess@vicbar.com.au"
+    },
+    {
+      "name": "Nicholas Harrington",
+      "email": "nickharrington@vicbar.com.au"
+    },
+    {
+      "name": "Josh Harris",
+      "email": "josh.harris@vicbar.com.au"
+    },
+    {
+      "name": "Tim Harvey",
+      "email": "tim.harvey@vicbar.com.au"
+    },
+    {
+      "name": "Nawaar Hassan",
+      "email": "nawaar@nhassan.com"
+    },
+    {
+      "name": "Philip Hayes",
+      "email": "philiphayes@vicbar.com.au"
+    },
+    {
+      "name": "Soren Heggie",
+      "email": "heggie@vicbar.com.au"
+    },
+    {
+      "name": "Louise Hicks",
+      "email": "louise.hicks@vicbar.com.au"
+    },
+    {
+      "name": "Garry Hindson",
+      "email": "hindson@vicbar.com.au"
+    },
+    {
+      "name": "Paul Holdenson KC",
+      "email": "ophqc@vicbar.com.au"
+    },
+    {
+      "name": "Tara Hooper",
+      "email": "tara.hooper@vicbar.com.au"
+    },
+    {
+      "name": "Rohan Hoult",
+      "email": "rhoult@vicbar.com.au"
+    },
+    {
+      "name": "Marcus Hoyne",
+      "email": "mhoyne@vicbar.com.au"
+    },
+    {
+      "name": "Ivan Hristovski",
+      "email": "ivanh@vicbar.com.au"
+    },
+    {
+      "name": "Rory Hudson",
+      "email": "roryhudson@vicbar.com.au"
+    },
+    {
+      "name": "Amara Hughes",
+      "email": "amara@vicbar.com.au"
+    },
+    {
+      "name": "Max Hume",
+      "email": "maxhume@vicbar.com.au"
+    },
+    {
+      "name": "Patrick Hurst",
+      "email": "patrick@vicbar.com.au"
+    },
+    {
+      "name": "Patrick Indovino",
+      "email": "patindo@vicbar.com.au"
+    },
+    {
+      "name": "Candice Jackson",
+      "email": "candice.jackson@vicbar.com.au"
+    },
+    {
+      "name": "Alison James",
+      "email": "alison.james@vicbar.com.au"
+    },
+    {
+      "name": "Shannon Jenkins",
+      "email": "shannon.jenkins@vicbar.com.au"
+    },
+    {
+      "name": "Tristan Joseph",
+      "email": "tristan.joseph@vicbar.com.au"
+    },
+    {
+      "name": "Agusia Kapitaniak",
+      "email": "a.kapitaniak@vicbar.com.au"
+    },
+    {
+      "name": "Jeremy Karitzis",
+      "email": "jkaritzis@vicbar.com.au"
+    },
+    {
+      "name": "Pat Karnis",
+      "email": "pkarnis@vicbar.com.au"
+    },
+    {
+      "name": "Olivia Kefford",
+      "email": "okefford@vicbar.com.au"
+    },
+    {
+      "name": "Bridie Kelly",
+      "email": "bridie.kelly@vicbar.com.au"
+    },
+    {
+      "name": "Anna Kelly",
+      "email": "anna.kelly@vicbar.com.au"
+    },
+    {
+      "name": "Eamonn Kelly",
+      "email": "eamonnkelly@vicbar.com.au"
+    },
+    {
+      "name": "Sunil Kemppi",
+      "email": "skemppi@vicbar.com.au"
+    },
+    {
+      "name": "Caroline Kenny KC",
+      "email": "ckenny@vicbar.com.au"
+    },
+    {
+      "name": "David Kim",
+      "email": "dkim@vicbar.com.au"
+    },
+    {
+      "name": "Dayne Kingsford",
+      "email": "kingsford@vicbar.com.au"
+    },
+    {
+      "name": "David Klempfner",
+      "email": "klempfner@vicbar.com.au"
+    },
+    {
+      "name": "Anthony Klotz",
+      "email": "aklotz@vicbar.com.au"
+    },
+    {
+      "name": "Fiona Knowles",
+      "email": "fiona.knowles@vicbar.com.au"
+    },
+    {
+      "name": "Joshua Kohn",
+      "email": "joshua.kohn@vicbar.com.au"
+    },
+    {
+      "name": "Ryan Kornhauser",
+      "email": "Ryan.kornhauser@vicbar.com.au"
+    },
+    {
+      "name": "Aphrodite Kouloubaritsis",
+      "email": "aphrodite.kouloubaritsis@vicbar.com.au"
+    },
+    {
+      "name": "Paul Kounnas",
+      "email": "paul.kounnas@vicbar.com.au"
+    },
+    {
+      "name": "Romesh Kumar SC",
+      "email": "romeshdk@vicbar.com.au"
+    },
+    {
+      "name": "Aaron Lane",
+      "email": "aaron.lane@vicbar.com.au"
+    },
+    {
+      "name": "Belle Lane",
+      "email": "bellelane@vicbar.com.au"
+    },
+    {
+      "name": "Naomi Lenga",
+      "email": "naomi.lenga@vicbar.com.au"
+    },
+    {
+      "name": "Shane Lethlean",
+      "email": "lethlean@vicbar.com.au"
+    },
+    {
+      "name": "Paris Lettau",
+      "email": "paris@vicbar.com.au"
+    },
+    {
+      "name": "Chris Lindsay",
+      "email": "chris.lindsay@vicbar.com.au"
+    },
+    {
+      "name": "Lucy Line",
+      "email": "lline@vicbar.com.au"
+    },
+    {
+      "name": "Ffyona Livingstone Clark",
+      "email": "ffyona@vicbar.com.au"
+    },
+    {
+      "name": "Katarina Ljubicic",
+      "email": "kl@vicbar.com.au"
+    },
+    {
+      "name": "Georgina Long",
+      "email": "long@vicbar.com.au"
+    },
+    {
+      "name": "Daniel Lorbeer",
+      "email": "dlorbeer@vicbar.com.au"
+    },
+    {
+      "name": "William Lye OAM KC",
+      "email": "wemlye@vicbar.com.au"
+    },
+    {
+      "name": "Kate Lyle",
+      "email": "kate.lyle@vicbar.com.au"
+    },
+    {
+      "name": "Madeleine Lynch",
+      "email": "madeleinelynch@vicbar.com.au"
+    },
+    {
+      "name": "Sandra MacDougall",
+      "email": "sandramac@vicbar.com.au"
+    },
+    {
+      "name": "Jessica Mackay",
+      "email": "jessica.mackay@vicbar.com.au"
+    },
+    {
+      "name": "Liam Magowan",
+      "email": "liam.magowan@vicbar.com.au"
+    },
+    {
+      "name": "Melissa Mahady",
+      "email": "melissa.mahady@vicbar.com.au"
+    },
+    {
+      "name": "Lachlan Mahon",
+      "email": "ljm@vicbar.com.au"
+    },
+    {
+      "name": "Liz Main",
+      "email": "liz.main@vicbar.com.au"
+    },
+    {
+      "name": "Sarah Mansfield",
+      "email": "smansfield@vicbar.com.au"
+    },
+    {
+      "name": "Kiran Marfatia",
+      "email": "kiran.marfatia@vicbar.com.au"
+    },
+    {
+      "name": "Tim Margetts KC",
+      "email": "tjm@vicbar.com.au"
+    },
+    {
+      "name": "Sophie Mariole",
+      "email": "smariole@vicbar.com.au"
+    },
+    {
+      "name": "Timothy Marsh",
+      "email": "tmarsh@vicbar.com.au"
+    },
+    {
+      "name": "Louise Martin",
+      "email": "louisejmartin@vicbar.com.au"
+    },
+    {
+      "name": "Danny Masel SC",
+      "email": "dmasel@vicbar.com.au"
+    },
+    {
+      "name": "Rachel Matulis",
+      "email": "rachel.matulis@vicbar.com.au"
+    },
+    {
+      "name": "Sean McArdle",
+      "email": "sean.mcardle@vicbar.com.au"
+    },
+    {
+      "name": "Adam McBeth",
+      "email": "adam.mcbeth@vicbar.com.au"
+    },
+    {
+      "name": "Lyndell McCreadie",
+      "email": "lyndellmccreadie@vicbar.com.au"
+    },
+    {
+      "name": "Tim McCulloch",
+      "email": "tim.mcculloch@vicbar.com.au"
+    },
+    {
+      "name": "Graeme McEwen",
+      "email": "gmcewen@vicbar.com.au"
+    },
+    {
+      "name": "Michael McGrath",
+      "email": "michaelmcgrath@vicbar.com.au"
+    },
+    {
+      "name": "Fiona McKenzie",
+      "email": "fionamckenzie@vicbar.com.au"
+    },
+    {
+      "name": "Mark McKillop",
+      "email": "mark.mckillop@vicbar.com.au"
+    },
+    {
+      "name": "Elizabeth McKinnon",
+      "email": "elizabethmckinnon@vicbar.com.au"
+    },
+    {
+      "name": "Trevor McLean",
+      "email": "trevor.mclean@vicbar.com.au"
+    },
+    {
+      "name": "Adam McLean",
+      "email": "amclean@vicbar.com.au"
+    },
+    {
+      "name": "Alex McLure",
+      "email": "alex.mclure@vicbar.com.au"
+    },
+    {
+      "name": "Mark McNamara",
+      "email": "markmcnamara@vicbar.com.au"
+    },
+    {
+      "name": "Andrew McNaught",
+      "email": "amcnaught@vicbar.com.au"
+    },
+    {
+      "name": "Emma Mealy",
+      "email": "emmamealy@vicbar.com.au"
+    },
+    {
+      "name": "Jim Mellas",
+      "email": "jimmellas@vicbar.com.au"
+    },
+    {
+      "name": "Nicole Menegas",
+      "email": "nicolemenegas@vicbar.com.au"
+    },
+    {
+      "name": "Justin Mereine",
+      "email": "justin.mereine@vicbar.com.au"
+    },
+    {
+      "name": "Alex Metherell",
+      "email": "metherell@vicbar.com.au"
+    },
+    {
+      "name": "Adam Meyer",
+      "email": "ameyer@vicbar.com.au"
+    },
+    {
+      "name": "Rohan Millar",
+      "email": "millar@vicbar.com.au"
+    },
+    {
+      "name": "Patrick Miller",
+      "email": "pmiller@vicbar.com.au"
+    },
+    {
+      "name": "Phil Misso",
+      "email": "pgmmediation@outlook.com"
+    },
+    {
+      "name": "Kate Mooney KC",
+      "email": "kate@mooneytas.com.au"
+    },
+    {
+      "name": "Stephen Moore",
+      "email": "stephen.moore@vicbar.com.au"
+    },
+    {
+      "name": "James Moore",
+      "email": "jamesmoore@vicbar.com.au"
+    },
+    {
+      "name": "James Moss",
+      "email": "jamesmoss@vicbar.com.au"
+    },
+    {
+      "name": "Alessandra Moussa",
+      "email": "amoussa@vicbar.com.au"
+    },
+    {
+      "name": "Ian Munt",
+      "email": "ian.munt@vicbar.com.au"
+    },
+    {
+      "name": "Ben Murphy",
+      "email": "ben.murphy@vicbar.com.au"
+    },
+    {
+      "name": "Julian Murphy",
+      "email": "julian.murphy@vicbar.com.au"
+    },
+    {
+      "name": "Keith Nicholson",
+      "email": "keithnicholson@vicbar.com.au"
+    },
+    {
+      "name": "Robert Niemann",
+      "email": "robertniemann@vicbar.com.au"
+    },
+    {
+      "name": "Tim North OAM KC",
+      "email": "tnorth@vicbar.com.au"
+    },
+    {
+      "name": "David O'Brien",
+      "email": "dob@walshchambers.com.au"
+    },
+    {
+      "name": "Stephen O'Bryan KC",
+      "email": "sgo@vicbar.com.au"
+    },
+    {
+      "name": "Jack O'Connor",
+      "email": "joconnor@vicbar.com.au"
+    },
+    {
+      "name": "Peter O'Farrell KC",
+      "email": "peterofarrell@vicbar.com.au"
+    },
+    {
+      "name": "Chris Oldham",
+      "email": "cjoldham@vicbar.com.au"
+    },
+    {
+      "name": "Frank O'Loughlin KC",
+      "email": "frank.oloughlin@vicbar.com.au"
+    },
+    {
+      "name": "Jamie O'Regan",
+      "email": "oregan@vicbar.com.au"
+    },
+    {
+      "name": "Iman Osman",
+      "email": "iman.osman@vicbar.com.au"
+    },
+    {
+      "name": "Eliza Panckridge",
+      "email": "elizapanckridge@vicbar.com.au"
+    },
+    {
+      "name": "Andrew Panna KC",
+      "email": "akpanna@vicbar.com.au"
+    },
+    {
+      "name": "Robert Paoletti",
+      "email": "rpaoletti@vicbar.com.au"
+    },
+    {
+      "name": "Lisa Papadinas",
+      "email": "lisa.papadinas@vicbar.com.au"
+    },
+    {
+      "name": "Suganya Pathan",
+      "email": "suganya.pathan@vicbar.com.au"
+    },
+    {
+      "name": "Adele Patterson",
+      "email": "harvard1@iinet.net.au"
+    },
+    {
+      "name": "Glen Pauline",
+      "email": "glen.pauline@vicbar.com.au"
+    },
+    {
+      "name": "Graeme Peake",
+      "email": "gpeake@vicbar.com.au"
+    },
+    {
+      "name": "Brad Penno",
+      "email": "bradpenno@vicbar.com.au"
+    },
+    {
+      "name": "Emma Peppler",
+      "email": "emmapeppler@vicbar.com.au"
+    },
+    {
+      "name": "Robert Peters",
+      "email": "rpeters@vicbar.com.au"
+    },
+    {
+      "name": "John Petras",
+      "email": "petras@vicbar.com.au"
+    },
+    {
+      "name": "William Phillips",
+      "email": "william.phillips@vicbar.com.au"
+    },
+    {
+      "name": "Shivani Pillai",
+      "email": "shivanipillai@vicbar.com.au"
+    },
+    {
+      "name": "Stewart Pinkstone",
+      "email": "spinkstone@vicbar.com.au"
+    },
+    {
+      "name": "Vanessa Plain",
+      "email": "vplain@vicbar.com.au"
+    },
+    {
+      "name": "Tim Purdey",
+      "email": "purdey@vicbar.com.au"
+    },
+    {
+      "name": "Sai Ranjit",
+      "email": "sai@vicbar.com.au"
+    },
+    {
+      "name": "Hayden Rattray",
+      "email": "rattray@vicbar.com.au"
+    },
+    {
+      "name": "Gareth Redenbach",
+      "email": "gareth.redenbach@vicbar.com.au"
+    },
+    {
+      "name": "Holly Renwick",
+      "email": "hrenwick@vicbar.com.au"
+    },
+    {
+      "name": "Cheryl Richardson",
+      "email": "cheryl.richardson@vicbar.com.au"
+    },
+    {
+      "name": "Mark Rinaldi",
+      "email": "mrinaldi@vicbar.com.au"
+    },
+    {
+      "name": "Alastair Ritchie",
+      "email": "aritchie@vicbar.com.au"
+    },
+    {
+      "name": "Evan Ritli",
+      "email": "evan.ritli@vicbar.com.au"
+    },
+    {
+      "name": "Carly Robertson",
+      "email": "carlyrobertson@vicbar.com.au"
+    },
+    {
+      "name": "Anthony Rodbard-Bean",
+      "email": "rodbard@vicbar.com.au"
+    },
+    {
+      "name": "Elizabeth Ruddle KC",
+      "email": "eruddle@vicbar.com.au"
+    },
+    {
+      "name": "Neville Rudston",
+      "email": "rudston@vicbar.com.au"
+    },
+    {
+      "name": "Joel Ruffles",
+      "email": "joel.ruffles@vicbar.com.au"
+    },
+    {
+      "name": "Daniel Ryan",
+      "email": "daniel.ryan@vicbar.com.au"
+    },
+    {
+      "name": "Kepler Ryan",
+      "email": "kryan@vicbar.com.au"
+    },
+    {
+      "name": "Con Salpigtidis",
+      "email": "csal@vicbar.com.au"
+    },
+    {
+      "name": "Madeleine Sargent",
+      "email": "msargent@vicbar.com.au"
+    },
+    {
+      "name": "Johannes Schmidt",
+      "email": "jschmidt@vicbar.com.au"
+    },
+    {
+      "name": "Jordan Schulz",
+      "email": "jordan.schulz@vicbar.com.au"
+    },
+    {
+      "name": "Nonni Sdraulig",
+      "email": "nsdraulig@vicbar.com.au"
+    },
+    {
+      "name": "John Searle",
+      "email": "jsearle@vicbar.com.au"
+    },
+    {
+      "name": "Michael Sharkey",
+      "email": "sharkey@vicbar.com.au"
+    },
+    {
+      "name": "Bruce Shaw",
+      "email": "bruceshaw@vicbar.com.au"
+    },
+    {
+      "name": "Kate Sheridan",
+      "email": "counsel@katesheridan.com.au"
+    },
+    {
+      "name": "Gavin Silbert KC",
+      "email": "gavinsilbert@vicbar.com.au"
+    },
+    {
+      "name": "Joel Silver",
+      "email": "jsilver@vicbar.com.au"
+    },
+    {
+      "name": "Natalie Simpson",
+      "email": "natalie.simpson@vicbar.com.au"
+    },
+    {
+      "name": "Jamie Singh",
+      "email": "jsingh@vicbar.com.au"
+    },
+    {
+      "name": "Andrea Skinner",
+      "email": "Andrea.Skinner@vicbar.com.au"
+    },
+    {
+      "name": "Tom Smedley",
+      "email": "tom.smedley@vicbar.com.au"
+    },
+    {
+      "name": "Kim Southey",
+      "email": "ksouthey@vicbar.com.au"
+    },
+    {
+      "name": "Andrew Spierings",
+      "email": "aspierings@vicbar.com.au"
+    },
+    {
+      "name": "Sharni Stacey",
+      "email": "sharni.stacey@vicbar.com.au"
+    },
+    {
+      "name": "Sam Stafford",
+      "email": "stafford@vicbar.com.au"
+    },
+    {
+      "name": "Meg Stevenson",
+      "email": "meg.stevenson@vicbar.com.au"
+    },
+    {
+      "name": "Jasmine Still",
+      "email": "jasmine.still@vicbar.com.au"
+    },
+    {
+      "name": "Toni Stokes",
+      "email": "toni.stokes@vicbar.com.au"
+    },
+    {
+      "name": "James Stoller",
+      "email": "james.stoller@vicbar.com.au"
+    },
+    {
+      "name": "Cait Storr",
+      "email": "cait.storr@vicbar.com.au"
+    },
+    {
+      "name": "Steven Strickland KC",
+      "email": "sstrickland@campbellchambers.com.au"
+    },
+    {
+      "name": "Megan Styles",
+      "email": "mstyles@vicbar.com.au"
+    },
+    {
+      "name": "Jeanette Swann",
+      "email": "jeanette.swann@vicbar.com.au"
+    },
+    {
+      "name": "Emma Swart",
+      "email": "eswart@vicbar.com.au"
+    },
+    {
+      "name": "Sam Tatarka OAM",
+      "email": "tatarka@vicbar.com.au"
+    },
+    {
+      "name": "Simone Tatas",
+      "email": "simonetatas@vicbar.com.au"
+    },
+    {
+      "name": "Gary Taylor",
+      "email": "gtaylor@walshchambers.com.au"
+    },
+    {
+      "name": "Rika Teicher",
+      "email": "rika@teicher.com.au"
+    },
+    {
+      "name": "Philip Teo",
+      "email": "philip.teo@vicbar.com.au"
+    },
+    {
+      "name": "Pierre Testart",
+      "email": "testart@vicbar.com.au"
+    },
+    {
+      "name": "Arjunan Thangarajah",
+      "email": "Arjunan.Thangarajah@vicbar.com.au"
+    },
+    {
+      "name": "Simon Thomas",
+      "email": "simon.thomas@vicbar.com.au"
+    },
+    {
+      "name": "Anthony Thomas",
+      "email": "tonythomas@vicbar.com.au"
+    },
+    {
+      "name": "Graeme Thompson",
+      "email": "gpthompson@vicbar.com.au"
+    },
+    {
+      "name": "Olivia Thompson",
+      "email": "olivia.thompson@vicbar.com.au"
+    },
+    {
+      "name": "Eliza Tiernan",
+      "email": "eliza.tiernan@vicbar.com.au"
+    },
+    {
+      "name": "Simon Tisher",
+      "email": "stisher@vicbar.com.au"
+    },
+    {
+      "name": "Joel Tito",
+      "email": "joel.tito@vicbar.com.au"
+    },
+    {
+      "name": "Jennifer Trewhella",
+      "email": "jennifer.trewhella@vicbar.com.au"
+    },
+    {
+      "name": "Tina Tripp",
+      "email": "tina.tripp@vicbar.com.au"
+    },
+    {
+      "name": "Tony Trood",
+      "email": "ttrood@vicbar.com.au"
+    },
+    {
+      "name": "Cam Truong KC",
+      "email": "camtruong@vicbar.com.au"
+    },
+    {
+      "name": "Bronia Tulloch",
+      "email": "broniatulloch@vicbar.com.au"
+    },
+    {
+      "name": "Nicole Tyson",
+      "email": "ntyson@vicbar.com.au"
+    },
+    {
+      "name": "Sarah Varney",
+      "email": "svarney@vicbar.com.au"
+    },
+    {
+      "name": "Matthew Verney KC",
+      "email": "matthew.verney@stelmochambers.com.au"
+    },
+    {
+      "name": "Vincent Vuu",
+      "email": "vincent.vuu@vicbar.com.au"
+    },
+    {
+      "name": "Priya Wakhlu",
+      "email": "priya.wakhlu@vicbar.com.au"
+    },
+    {
+      "name": "Janine Wald",
+      "email": "jwald@vicbar.com.au"
+    },
+    {
+      "name": "Trevor Wallwork",
+      "email": "twallwork@vicbar.com.au"
+    },
+    {
+      "name": "Bruce Walmsley KC",
+      "email": "walmsley@vicbar.com.au"
+    },
+    {
+      "name": "Richard Weil",
+      "email": "rgweil@vicbar.com.au"
+    },
+    {
+      "name": "Robyn Wheeler",
+      "email": "robynlee.wheeler@gmail.com"
+    },
+    {
+      "name": "Huw Whitwell",
+      "email": "hcwhitwell@vicbar.com.au"
+    },
+    {
+      "name": "Jessica Willard",
+      "email": "jessica.willard@vicbar.com.au"
+    },
+    {
+      "name": "Duncan Willis",
+      "email": "d.willis@vicbar.com.au"
+    },
+    {
+      "name": "Anna Wilson",
+      "email": "anna.wilson@vicbar.com.au"
+    },
+    {
+      "name": "Michael Wilson SC",
+      "email": "mdwilson@vicbar.com.au"
+    },
+    {
+      "name": "Lachlan Wraith",
+      "email": "lwraith@vicbar.com.au"
+    },
+    {
+      "name": "Michael Wyles KC",
+      "email": "michaeldwyles@mac.com"
+    },
+    {
+      "name": "Amy Yu",
+      "email": "amy.yu@vicbar.com.au"
+    },
+    {
+      "name": "Annie Yuan",
+      "email": "annie.yuan@vicbar.com.au"
+    },
+    {
+      "name": "Ran Zaydan",
+      "email": "ran.zaydan@vicbar.com.au"
+    },
+    {
+      "name": "Rose Cameron",
+      "email": "rose.cameron@vicbar.com.au"
+    },
+    {
+      "name": "Joseph Bowler",
+      "email": "clerk@josephbowlerchambers.com.au"
+    },
+    {
+      "name": "Ben Kerlin",
+      "email": "ben.kerlin@vicbar.com.au"
+    },
+    {
+      "name": "Lachlan Harrison-Smith",
+      "email": "lachlan.harrison-smith@vicbar.com.au"
+    },
+    {
+      "name": "Jake Morrison",
+      "email": "jake.morrison@vicbar.com.au"
+    },
+    {
+      "name": "Eliza Harrison",
+      "email": "eliza.harrison@vicbar.com.au"
+    },
+    {
+      "name": "Jordan Diamantopoulos",
+      "email": "jdiamantopoulos@vicbar.com.au"
+    },
+    {
+      "name": "Adam Murphy",
+      "email": "amurphy@vicbar.com.au"
+    },
+    {
+      "name": "Meagan du Jardin",
+      "email": "meagan.dujardin@vicbar.com.au"
+    },
+    {
+      "name": "James Dalrymple",
+      "email": "james.dalrymple@vicbar.com.au"
+    },
+    {
+      "name": "Veronica Snip",
+      "email": "veronica.snip@vicbar.com.au"
+    },
+    {
+      "name": "Yael Sasson",
+      "email": "sasson@vicbar.com.au"
+    },
+    {
+      "name": "Elaine Yuan",
+      "email": "elaine@vicbar.com.au"
+    },
+    {
+      "name": "Tim Puckey KC",
+      "email": "timpuckey@vicbar.com.au"
+    }
+  ]
+}

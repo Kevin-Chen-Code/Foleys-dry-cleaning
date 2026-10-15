@@ -110,12 +110,12 @@ final class FormSecurityTest extends TestCase
         // A private in-memory database makes this regression test independent
         // of the application's default (potentially production) connection.
         $connection = new Connection(['driver' => Sqlite::class, 'database' => ':memory:']);
-        $connection->execute('CREATE TABLE orders (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT, notes TEXT)');
+        $connection->execute('CREATE TABLE orders (id INTEGER PRIMARY KEY AUTOINCREMENT, barrister_name TEXT, email TEXT, notes TEXT)');
         $table = new OrdersTable(['table' => 'orders', 'connection' => $connection]);
 
         try {
             foreach (["o'connor@example.com", "'OR'1'='1@example.com"] as $email) {
-                $order = $table->newEntity(['email' => $email]);
+                $order = $table->newEntity(['barrister_name' => 'Casey O\'Connor', 'email' => $email]);
                 $this->assertSame([], $order->getErrors());
                 $this->assertNotFalse($table->save($order));
                 $matches = $table->find()->where(['email' => $email])->all()->toList();

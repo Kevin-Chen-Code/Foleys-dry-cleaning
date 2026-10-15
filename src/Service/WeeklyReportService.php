@@ -37,11 +37,19 @@ final class WeeklyReportService
     {
         ['orders' => $orders, 'itemsByOrder' => $itemsByOrder, 'discountedCostsByOrder' => $discountedCostsByOrder] = $this->data();
         $stream = fopen('php://temp', 'r+');
-        fputcsv($stream, ['Barrister', 'Submitted', 'Item type', 'Quantity', 'Cost', 'Discounted cost']);
+        fputcsv($stream, ['Barrister name', 'Email address', 'Submitted', 'Item type', 'Quantity', 'Cost', 'Discounted cost'], ',', '"', '');
         foreach ($orders as $order) {
             foreach ($itemsByOrder[(int)$order->id] ?? [] as $index => $item) {
                 $discountedCents = $discountedCostsByOrder[(int)$order->id][$index] ?? 0;
-                fputcsv($stream, [$order->email ?? '', $order->submitted_at?->format('Y-m-d'), $item->item_name, $item->quantity, number_format($item->line_total_cents / 100, 2, '.', ''), number_format($discountedCents / 100, 2, '.', '')]);
+                fputcsv($stream, [
+                    $this->csvText($order->barrister_name ?? ''),
+                    $this->csvText($order->email ?? ''),
+                    $order->submitted_at?->format('Y-m-d'),
+                    $this->csvText($item->item_name),
+                    $item->quantity,
+                    number_format($item->line_total_cents / 100, 2, '.', ''),
+                    number_format($discountedCents / 100, 2, '.', ''),
+                ], ',', '"', '');
             }
         }
         rewind($stream);
@@ -49,6 +57,12 @@ final class WeeklyReportService
         fclose($stream);
 
         return $csv ?: '';
+    }
+
+    /** Prevent spreadsheet applications from executing user-controlled text as a formula. */
+    private function csvText(string $value): string
+    {
+        return preg_match('/^[\s]*[=+\-@\t\r\n]/u', $value) === 1 ? "'" . $value : $value;
     }
 
     /**

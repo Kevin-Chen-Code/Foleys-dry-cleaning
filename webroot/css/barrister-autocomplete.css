@@ -1,0 +1,25 @@
+.barrister-name-picker { position: relative; margin-bottom: .6rem; }
+.barrister-name-picker .input, .barrister-name-picker input { margin-bottom: 0; }
+.barrister-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  list-style: none;
+  max-height: 28rem;
+  overflow-y: auto;
+  margin: .4rem 0 0;
+  padding: .4rem 0;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: .6rem;
+  box-shadow: 0 .6rem 1.8rem #152b4526;
+}
+.barrister-suggestions[hidden] { display: none; }
+.barrister-suggestions [role="option"] { margin: 0; padding: .8rem 1rem; cursor: pointer; overflow-wrap: anywhere; }
+.barrister-suggestions [role="option"]:hover,
+.barrister-suggestions [aria-selected="true"] { background: #eaf7ef; }
+.barrister-suggestions .suggestion-name { display: block; font-weight: 700; }
+.barrister-suggestions small { display: block; color: #58656d; }
+.barrister-name-help { color: #58656d; font-size: .9em; line-height: 1.4; margin: .6rem 0 1.5rem; }

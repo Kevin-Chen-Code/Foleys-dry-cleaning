@@ -58,6 +58,7 @@ return function (RouteBuilder $routes): void {
         $builder->connect('/', ['controller' => 'Pages', 'action' => 'home']);
         $builder->connect('/prices', ['controller' => 'Orders', 'action' => 'quote']);
         $builder->connect('/request', ['controller' => 'Orders', 'action' => 'add']);
+        $builder->connect('/barristers/suggestions', ['controller' => 'Barristers', 'action' => 'suggestions']);
         $builder->connect('/admin/login', ['controller' => 'AdminUsers', 'action' => 'login']);
         $builder->connect('/admin/logout', ['controller' => 'AdminUsers', 'action' => 'logout']);
         $builder->connect('/admin/analytics', ['controller' => 'Dashboard', 'action' => 'analytics']);

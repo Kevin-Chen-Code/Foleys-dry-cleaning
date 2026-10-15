@@ -128,3 +128,23 @@ values; templates use escaped HTML/FormHelper output. Passwords are compared
 exactly and are never altered by stripping HTML or SQL-looking punctuation.
 CSRF checks remain enabled. Regression tests cover injection payloads and safely
 stored addresses containing valid punctuation.
+
+## Barrister name suggestions
+
+The request model is `src/Model/Table/OrdersTable.php`. New requests save a
+required `barrister_name` alongside the required email address. Older requests
+with no saved name show a dash in the admin tables and a blank name in CSV.
+
+The name field in `templates/Orders/add.php` searches the supplied public
+directory after two characters. Selecting a suggestion fills in its matching
+email; users can also enter their details manually. Changing a selected name
+clears its auto-filled email unless the user has already edited that email.
+
+`resources/data/barristers.json` contains the 364 name/email pairs imported from
+columns A–C of `Mailing List (as at Sept 2026)` in the supplied workbook. Other
+columns and sheets are not included. The deployed app reads this JSON, so it
+does not need Excel installed or access to the original file in Downloads.
+To refresh the directory, replace its `barristers` entries with updated
+`{"name": "Full Name", "email": "address@example.com"}` records. Keep duplicate
+names with different addresses as separate records so users can choose the
+correct entry.

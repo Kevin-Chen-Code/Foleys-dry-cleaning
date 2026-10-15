@@ -29,7 +29,7 @@ final class OrdersTableTest extends TestCase
     {
         $table = new OrdersTable(['table' => 'orders']);
         $validator = $table->validationDefault(new Validator());
-        $data = new \ArrayObject(['email' => '  Kevin+collection@example.com  ']);
+        $data = new \ArrayObject(['barrister_name' => 'Casey O\'Connor', 'email' => '  Kevin+collection@example.com  ']);
         $table->beforeMarshal(new Event('Model.beforeMarshal', $table), $data, new \ArrayObject());
 
         $this->assertSame('Kevin+collection@example.com', $data['email']);
@@ -37,5 +37,19 @@ final class OrdersTableTest extends TestCase
         foreach ([['email' => ['someone@example.com']], ['email' => "someone@example.com\r\nBcc: other@example.com"], ['email' => '<script>alert(1)</script>'], ['email' => "\tsomeone@example.com"]] as $invalid) {
             $this->assertArrayHasKey('email', $validator->validate($invalid, true));
         }
+    }
+
+    public function testNameIsRequiredAndValidatedAsPlainText(): void
+    {
+        $table = new OrdersTable(['table' => 'orders']);
+        $validator = $table->validationDefault(new Validator());
+        $email = ['email' => 'casey@example.com'];
+        foreach (['', ['Casey'], '<script>alert(1)</script>', "Casey\r\nSmith", str_repeat('A', 151)] as $invalid) {
+            $this->assertArrayHasKey('barrister_name', $validator->validate($email + ['barrister_name' => $invalid], true));
+        }
+        $data = new \ArrayObject($email + ['barrister_name' => '  Casey   O\'Connor  ']);
+        $table->beforeMarshal(new Event('Model.beforeMarshal', $table), $data, new \ArrayObject());
+        $this->assertSame('Casey O\'Connor', $data['barrister_name']);
+        $this->assertSame([], $validator->validate($data->getArrayCopy(), true));
     }
 }
