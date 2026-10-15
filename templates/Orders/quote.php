@@ -16,3 +16,5 @@
     <?php endforeach; ?>
     </tbody>
 </table>
+
+<?= $this->Html->link('Back to home page', '/', ['class' => 'dialog-action']) ?>

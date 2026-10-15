@@ -7,7 +7,7 @@ $discountTypes = ['percentage' => 'Percentage', 'fixed' => 'Fixed dollar amount'
 
 <section class="page-heading">
     <h1>Manage pricing &amp; items</h1>
-    <p>Add, edit, or remove garments and discount rules.</p>
+    <p>Add, edit or remove garments and discount rules</p>
 </section>
 
 <section class="items-card">

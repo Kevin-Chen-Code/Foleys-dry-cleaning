@@ -36,12 +36,11 @@ $isAdmin = (bool)$this->request->getSession()->read('Foleys.admin');
     <section class="hero">
         <div class="eyebrow">Chambers priority care</div>
         <h1>Crisp collars, pristine robes,<br>impeccable timing</h1>
-        <p>Introducing our dry cleaning dispatch service for members of Foley's List. Submit your pieces online, leave them with clerks, and retrieve them in absolute court-ready perfection.</p>
+        <p>Introducing our dry cleaning registration service for members of Foley's List. Use the buttons below to submit dry-cleaning requests or view our pricing.</p>
         <a class="button button-primary" href="/request">SUBMIT A REQUEST</a>
         <a class="button button-dark" href="/prices">VIEW PRICES</a>
     </section>
     <section class="how">
-        <div class="eyebrow" style="color:#218e8d">Chambers protocol</div>
         <h2>How the service operates</h2>
         <div class="steps">
             <article class="step">

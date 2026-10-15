@@ -1,7 +1,7 @@
 <?php $this->assign('title', 'Analytics'); ?>
 <section class="page-heading">
     <h1>BI analytics</h1>
-    <p> Current service performance.</p>
+    <p> Service performance overview</p>
 </section>
 
 <div class="steps">

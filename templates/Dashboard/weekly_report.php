@@ -5,7 +5,7 @@ $total = array_sum(array_map(fn($order) => (int)$order->total_cents, $orders));
 
 <section class="page-heading">
     <h1>Weekly report</h1>
-    <p> Downloadable in csv format.</p>
+    <p> Download dry cleaning requests in CSV format + email settings </p>
 </section>
 
 <section class="items-card">
@@ -42,7 +42,7 @@ $total = array_sum(array_map(fn($order) => (int)$order->total_cents, $orders));
         <p><strong>Email delivery needs attention:</strong></p>
         <ul><?php foreach ($emailDelivery['issues'] as $issue): ?><li><?= h($issue) ?></li><?php endforeach; ?></ul>
     <?php else: ?>
-        <p>The sender and API key are configured. Send a test to check delivery to your saved mailbox.</p>
+        <p>Last mailbox saved successfully</p>
     <?php endif; ?>
     <!-- UI: visibly confirms the values that were last saved to the database. -->
     <?php if ($settings->mailbox): ?>
