@@ -104,7 +104,8 @@ if ($resendApiKey !== '') {
     Configure::write('EmailTransport.default.url', null);
 }
 // CakePHP requires a separate address/name pair, while Resend accepts Name <address>.
-$emailFrom = env('EMAIL_FROM', Configure::read('Email.default.from', ''));
+$emailFrom = env('EMAIL_FROM', null)
+    ?? Configure::read('Email.default.from', '');
 if (is_string($emailFrom)) {
     $emailFrom = trim($emailFrom);
     if (preg_match('/^([^<>\r\n]+)\s*<([^<>\r\n]+)>$/', $emailFrom, $senderParts) === 1) {
