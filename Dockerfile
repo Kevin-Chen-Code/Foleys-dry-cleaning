@@ -1,8 +1,8 @@
 FROM php:8.4-apache
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libicu-dev libpq-dev unzip \
-    && docker-php-ext-install intl pdo_pgsql \
+    && apt-get install -y --no-install-recommends libicu-dev libpq-dev libzip-dev unzip \
+    && docker-php-ext-install intl pdo_pgsql zip \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 

@@ -1,7 +1,7 @@
 <?php $this->assign('title', 'Incoming requests'); ?>
 <section class="page-heading">
-    <h1>Incoming requests</h1>
-    <p> List of dry cleaning requests submitted by users </p>
+    <h1>All requests</h1>
+    <p> Full history of dry cleaning requests submitted by users </p>
 </section>
 
 <section class="items-card">

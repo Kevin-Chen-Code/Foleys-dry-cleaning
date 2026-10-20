@@ -4,15 +4,34 @@ declare(strict_types=1);
 namespace App\Service;
 
 use Cake\Datasource\FactoryLocator;
+use Cake\I18n\FrozenTime;
+use DateTimeImmutable;
+use DateTimeZone;
 
 final class WeeklyReportService
 {
+    public const TIMEZONE = 'Australia/Melbourne';
+    public const EXCEL_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+    public function __construct(private ?DateTimeImmutable $asOf = null)
+    {
+    }
+
     public function data(): array
     {
+        $asOf = ($this->asOf ?? DateTimeImmutable::createFromInterface(FrozenTime::now()))
+            ->setTimezone(new DateTimeZone(self::TIMEZONE));
+        // Calendar yesterday, not "24 hours ago": this also handles DST changes.
+        $cutoff = $asOf->modify('-1 day')->setTime(17, 0);
+        $utc = new DateTimeZone('UTC');
         $tables = FactoryLocator::get('Table');
         $orders = $tables->get('Orders')->find()
-            ->where(['status' => 'submitted'])
-            ->orderBy(['submitted_at' => 'DESC'])
+            ->where([
+                'status' => 'submitted',
+                'submitted_at >' => $cutoff->setTimezone($utc)->format('Y-m-d H:i:s'),
+                'submitted_at <=' => $asOf->setTimezone($utc)->format('Y-m-d H:i:s'),
+            ])
+            ->orderBy(['submitted_at' => 'DESC', 'id' => 'DESC'])
             ->all()->toList();
         $orderIds = array_map(fn(object $order): int => (int)$order->id, $orders);
         $items = $orderIds === [] ? [] : $tables->get('OrderItems')->find()
@@ -30,39 +49,12 @@ final class WeeklyReportService
             );
         }
 
-        return compact('orders', 'itemsByOrder', 'discountedCostsByOrder');
+        return compact('orders', 'itemsByOrder', 'discountedCostsByOrder', 'cutoff', 'asOf');
     }
 
-    public function csv(): string
+    public function xlsx(): string
     {
-        ['orders' => $orders, 'itemsByOrder' => $itemsByOrder, 'discountedCostsByOrder' => $discountedCostsByOrder] = $this->data();
-        $stream = fopen('php://temp', 'r+');
-        fputcsv($stream, ['Barrister name', 'Email address', 'Submitted', 'Item type', 'Quantity', 'Cost', 'Discounted cost'], ',', '"', '');
-        foreach ($orders as $order) {
-            foreach ($itemsByOrder[(int)$order->id] ?? [] as $index => $item) {
-                $discountedCents = $discountedCostsByOrder[(int)$order->id][$index] ?? 0;
-                fputcsv($stream, [
-                    $this->csvText($order->barrister_name ?? ''),
-                    $this->csvText($order->email ?? ''),
-                    $order->submitted_at?->format('Y-m-d'),
-                    $this->csvText($item->item_name),
-                    $item->quantity,
-                    number_format($item->line_total_cents / 100, 2, '.', ''),
-                    number_format($discountedCents / 100, 2, '.', ''),
-                ], ',', '"', '');
-            }
-        }
-        rewind($stream);
-        $csv = stream_get_contents($stream);
-        fclose($stream);
-
-        return $csv ?: '';
-    }
-
-    /** Prevent spreadsheet applications from executing user-controlled text as a formula. */
-    private function csvText(string $value): string
-    {
-        return preg_match('/^[\s]*[=+\-@\t\r\n]/u', $value) === 1 ? "'" . $value : $value;
+        return (new WeeklyReportWorkbook())->build($this->data());
     }
 
     /**

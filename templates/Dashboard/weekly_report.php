@@ -4,14 +4,15 @@ $total = array_sum(array_map(fn($order) => (int)$order->total_cents, $orders));
 ?>
 
 <section class="page-heading">
-    <h1>Weekly report</h1>
-    <p> Download dry cleaning requests in CSV format + email settings </p>
+    <h1>Daily report</h1>
+    <p> All daily requests submitted after <?= h($cutoff->format('d M Y, g:i a')) ?>,
+        through <?= h($asOf->format('d M Y, g:i a')) ?> (Melbourne time). Downloadable as Excel sheet</p>
 </section>
 
 <section class="items-card">
     <div class="report-summary">
         <strong>Total billed: $<?= number_format($total / 100, 2) ?></strong>
-        <?= $this->Html->link('Download CSV', '/admin/weekly-report.csv', ['class' => 'csv-download', 'role' => 'button']) ?>
+        <?= $this->Html->link('Download Excel', '/admin/weekly-report.xlsx', ['class' => 'csv-download', 'role' => 'button']) ?>
     </div>
     <table>
         <thead>
@@ -23,7 +24,7 @@ $total = array_sum(array_map(fn($order) => (int)$order->total_cents, $orders));
                 <tr>
                     <td><?= $order->barrister_name ? h($order->barrister_name) : '&mdash;' ?></td>
                     <td><?= $order->email ? h($order->email) : '&mdash;' ?></td>
-                    <td><?= h($order->submitted_at?->format('d M Y')) ?></td>
+                    <td><?= h($order->submitted_at?->setTimezone(new \DateTimeZone('Australia/Melbourne'))->format('d M Y, g:i a')) ?></td>
                     <td><?= h($item->item_name) ?></td>
                     <td><?= (int)$item->quantity ?></td>
                     <td>$<?= number_format($item->line_total_cents / 100, 2) ?></td>
@@ -32,13 +33,16 @@ $total = array_sum(array_map(fn($order) => (int)$order->total_cents, $orders));
                 </tr>
             <?php endforeach; ?>
         <?php endforeach; ?>
+        <?php if (!$orders): ?>
+            <tr><td colspan="7">No requests have been submitted in this reporting period.</td></tr>
+        <?php endif; ?>
         </tbody>
     </table>
 </section>
 
 <section class="items-card email-settings-card">
     <h2>Email settings</h2>
-    <p>New requests are emailed to this mailbox. The weekly CSV report is sent on the selected day when the scheduled report command runs.</p>
+    <p>New requests are emailed to this mailbox. The Excel report uses the same previous-day 5 pm cutoff and is sent on the selected day when the scheduled report command runs.</p>
     <?php if (!$emailDelivery['ready']): ?>
         <p><strong>Email delivery needs attention:</strong></p>
         <ul><?php foreach ($emailDelivery['issues'] as $issue): ?><li><?= h($issue) ?></li><?php endforeach; ?></ul>

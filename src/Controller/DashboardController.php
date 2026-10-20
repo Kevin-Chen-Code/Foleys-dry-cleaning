@@ -82,9 +82,9 @@ final class DashboardController extends AdminController
             }
             return $this->redirect(['action' => 'weeklyReport']);
         }
-        ['orders' => $orders, 'itemsByOrder' => $itemsByOrder, 'discountedCostsByOrder' => $discountedCostsByOrder] = (new WeeklyReportService())->data();
+        ['orders' => $orders, 'itemsByOrder' => $itemsByOrder, 'discountedCostsByOrder' => $discountedCostsByOrder, 'cutoff' => $cutoff, 'asOf' => $asOf] = (new WeeklyReportService())->data();
         $emailDelivery = (new NotificationService())->deliveryStatus();
-        $this->set(compact('orders', 'itemsByOrder', 'discountedCostsByOrder', 'settings', 'emailDelivery'));
+        $this->set(compact('orders', 'itemsByOrder', 'discountedCostsByOrder', 'cutoff', 'asOf', 'settings', 'emailDelivery'));
     }
 
     public function testEmail()
@@ -103,7 +103,14 @@ final class DashboardController extends AdminController
 
     public function weeklyReportCsv()
     {
-        $csv = (new WeeklyReportService())->csv();
-        return $this->response->withType('csv')->withDownload('foleys-weekly-report.csv')->withStringBody($csv);
+        // Keep old bookmarks working, but do not disguise Excel bytes as CSV.
+        return $this->redirect('/admin/weekly-report.xlsx');
+    }
+
+    public function weeklyReportExcel()
+    {
+        return $this->response->withHeader('Content-Type', WeeklyReportService::EXCEL_MIME)
+            ->withDownload('foleys-weekly-report.xlsx')
+            ->withStringBody((new WeeklyReportService())->xlsx());
     }
 }

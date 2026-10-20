@@ -25,7 +25,7 @@ Open `http://localhost:8765` in a browser. The public request form will show a c
 
 - Secure administrator sign-in and screens to manage catalogue items, prices, and discounts.
 - Email notification to the collection team.
-- Weekly reporting, CSV export, and scheduled report email.
+- Weekly reporting, Excel table export, and scheduled report email.
 - The confirmed brand design and deployment configuration.
 
 ![Build Status](https://github.com/cakephp/app/actions/workflows/ci.yml/badge.svg?branch=5.x)
@@ -118,7 +118,7 @@ are not suitable for this Render Free deployment.
 
 Each saved request attempts the team notification and barrister confirmation
 independently. Email failure leaves the request saved and shows a warning.
-Weekly report messages include the CSV attachment; scheduling still requires
+Weekly report messages include the Excel attachment; scheduling still requires
 running `bin/cake send_weekly_report` on the selected day.
 
 ## Form security
@@ -133,7 +133,26 @@ stored addresses containing valid punctuation.
 
 The request model is `src/Model/Table/OrdersTable.php`. New requests save a
 required `barrister_name` alongside the required email address. Older requests
-with no saved name show a dash in the admin tables and a blank name in CSV.
+with no saved name show a dash in the admin tables and a blank name in Excel.
+
+### Report window and Excel downloads
+
+The Weekly report page, Excel download, and scheduled report attachment include
+submitted requests strictly after **5:00 pm yesterday (Australia/Melbourne)**,
+up to the report generation time. Yesterday is a calendar day, including weekends
+and daylight-saving transitions. This filters reports only; older requests are
+not deleted and remain accessible under Incoming requests.
+
+Downloads are `.xlsx` workbooks with a native `BarristerRequests` Excel Table,
+filterable headers, frozen headings, numeric quantities/prices, and Melbourne
+date/time cells. The total billed sums the discounted item costs. User-provided
+names and emails are stored as literal text, never executable formulas.
+The old `.csv` download URL redirects to the Excel download.
+
+Excel generation requires PHP's `zip` and `dom` extensions. The Docker image
+installs `zip`; `dom` is included in its PHP base image. The styled template is
+`resources/reports/weekly-report-template.xlsx`, populated server-side by
+`src/Service/WeeklyReportWorkbook.php` without a Node runtime or an Excel licence.
 
 The name field in `templates/Orders/add.php` searches the supplied public
 directory after two characters. Selecting a suggestion fills in its matching

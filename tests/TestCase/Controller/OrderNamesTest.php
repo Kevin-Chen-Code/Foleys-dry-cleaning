@@ -122,5 +122,47 @@ final class OrderNamesTest extends TestCase
                 (string)$this->_response->getBody(),
             );
         }
+        $this->assertResponseContains('Download Excel');
+        $this->assertResponseContains('(Melbourne time)');
+        $this->get('/admin/weekly-report.xlsx');
+        $this->assertResponseOk();
+        $this->assertHeader('Content-Type', \App\Service\WeeklyReportService::EXCEL_MIME);
+        $this->assertHeader('Content-Disposition', 'attachment; filename="foleys-weekly-report.xlsx"');
+        $this->assertStringStartsWith('PK', (string)$this->_response->getBody());
+        $this->get('/admin/weekly-report.csv');
+        $this->assertRedirect('/admin/weekly-report.xlsx');
+    }
+
+    public function testExcelReportRequiresAdministratorSession(): void
+    {
+        $this->get('/admin/weekly-report.xlsx');
+        $this->assertRedirect('/admin/login');
+    }
+
+    public function testReportFiltersOldRequestsWithoutHidingThemFromIncomingRequests(): void
+    {
+        $cutoff = \Cake\I18n\FrozenTime::now('Australia/Melbourne')->modify('-1 day')->setTime(17, 0)
+            ->setTimezone(new \DateTimeZone('UTC'));
+        foreach ([-1 => 'old@example.com', 1 => 'recent@example.com'] as $seconds => $email) {
+            $id = $seconds === -1 ? 1 : 2;
+            $this->connection->insert('orders', [
+                'id' => $id, 'barrister_name' => 'Test Barrister', 'email' => $email,
+                'status' => 'submitted', 'total_cents' => 1000,
+                'submitted_at' => $cutoff->modify(sprintf('%+d seconds', $seconds))->format('Y-m-d H:i:s'),
+            ]);
+            $this->connection->insert('order_items', [
+                'order_id' => $id, 'item_name' => 'Shirt', 'quantity' => 1, 'line_total_cents' => 1000,
+            ]);
+        }
+        $this->session(['Foleys' => ['admin' => 'admin']]);
+        $this->get('/admin/weekly-report');
+        $this->assertResponseOk();
+        $this->assertResponseContains('recent@example.com');
+        $this->assertResponseNotContains('old@example.com');
+        $this->get('/admin/incoming-requests');
+        $this->assertResponseOk();
+        $this->assertResponseContains('recent@example.com');
+        $this->assertResponseContains('old@example.com');
+        $this->assertSame(2, $this->locator->get('Orders')->find()->count());
     }
 }

@@ -132,13 +132,13 @@ final class NotificationService
             return false;
         }
 
-        $csv = (new WeeklyReportService())->csv();
         try {
+            $xlsx = (new WeeklyReportService())->xlsx();
             $this->mailer()
                 ->setEmailFormat('text')
                 ->setTo($mailbox)
                 ->setSubject('Weekly barrister dry cleaning report')
-                ->setAttachments(['foleys-weekly-report.csv' => ['data' => $csv, 'mimetype' => 'text/csv']])
+                ->setAttachments(['foleys-weekly-report.xlsx' => ['data' => $xlsx, 'mimetype' => WeeklyReportService::EXCEL_MIME]])
                 ->deliver("Dear team,\n\nPlease see the attached weekly report for barrister dry cleaning requests.\n\nKind regards,\nDry cleaning system");
             return true;
         } catch (Throwable $exception) {
