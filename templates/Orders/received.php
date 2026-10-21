@@ -7,11 +7,6 @@ $request = $this->request->getSession()->consume('Foleys.lastOrder');
 <div class="success-overlay"><section class="success-dialog">
     <p class="eyebrow">Request received</p><h1>Thank you.</h1>
     <p>Your dry-cleaning collection request has been saved.</p>
-    <?php if (!empty($request['emailProblem'])): ?>
-        <p role="status"><?= h($request['emailProblem']) ?></p>
-    <?php else: ?>
-        <p>Confirmation emails have been submitted for delivery.</p>
-    <?php endif; ?>
     <?php if ($request): ?><p class="total-confirmation">Total: $<?= number_format($request['total'] / 100, 2) ?></p><?php endif; ?>
     <?= $this->Html->link('Back to home page', '/', ['class' => 'dialog-action']) ?>
 </section></div>

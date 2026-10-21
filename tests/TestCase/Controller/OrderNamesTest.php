@@ -39,7 +39,7 @@ final class OrderNamesTest extends TestCase
         $this->connection = new Connection(['driver' => Sqlite::class, 'database' => ':memory:']);
         $this->connection->execute('CREATE TABLE service_items (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description TEXT, unit_price_cents INTEGER, active BOOLEAN, position INTEGER, price_cap_eligible BOOLEAN, created DATETIME, updated DATETIME)');
         $this->connection->execute('CREATE TABLE discount_rules (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, qualifying_item_name TEXT, minimum_item_count INTEGER, discount_type TEXT, discount_value INTEGER, active BOOLEAN, created DATETIME, updated DATETIME)');
-        $this->connection->execute('CREATE TABLE orders (id INTEGER PRIMARY KEY AUTOINCREMENT, barrister_name TEXT, email TEXT, notes TEXT, status TEXT, subtotal_cents INTEGER, discount_cents INTEGER, total_cents INTEGER, submitted_at DATETIME, created DATETIME)');
+        $this->connection->execute('CREATE TABLE orders (id INTEGER PRIMARY KEY AUTOINCREMENT, barrister_name TEXT, email TEXT, notes TEXT, status TEXT, subtotal_cents INTEGER, discount_cents INTEGER, total_cents INTEGER, submitted_at DATETIME, created DATETIME, report_downloaded_at DATETIME)');
         $this->connection->execute('CREATE TABLE order_items (id INTEGER PRIMARY KEY AUTOINCREMENT, order_id INTEGER, service_item_id INTEGER, item_name TEXT, unit_price_cents INTEGER, quantity INTEGER, line_total_cents INTEGER, created DATETIME)');
         $this->connection->execute('CREATE TABLE email_settings (id INTEGER PRIMARY KEY AUTOINCREMENT, mailbox TEXT, reporting_day TEXT, created DATETIME, updated DATETIME)');
         $this->locator = new TableLocator();
@@ -123,20 +123,45 @@ final class OrderNamesTest extends TestCase
             );
         }
         $this->assertResponseContains('Download Excel');
-        $this->assertResponseContains('(Melbourne time)');
-        $this->get('/admin/weekly-report.xlsx');
+        // The page wording is editable; verify the protected download form instead.
+        $this->assertResponseContains('data-report-download');
+        $this->enableCsrfToken();
+        $this->post('/admin/weekly-report.xlsx');
         $this->assertResponseOk();
         $this->assertHeader('Content-Type', \App\Service\WeeklyReportService::EXCEL_MIME);
         $this->assertHeader('Content-Disposition', 'attachment; filename="foleys-weekly-report.xlsx"');
         $this->assertStringStartsWith('PK', (string)$this->_response->getBody());
+        $this->assertHeader('Cache-Control', 'no-store, private');
+        $this->get('/admin/weekly-report');
+        $this->assertResponseOk();
+        $this->assertResponseNotContains($email);
+        $this->assertResponseContains('No undownloaded requests');
+        $this->assertSame('submitted', $orders->get($order->id)->status);
+        $this->assertNotNull($orders->get($order->id)->report_downloaded_at);
+        $this->get('/admin/incoming-requests');
+        $this->assertResponseContains($email);
         $this->get('/admin/weekly-report.csv');
-        $this->assertRedirect('/admin/weekly-report.xlsx');
+        $this->assertRedirect('/admin/weekly-report');
     }
 
     public function testExcelReportRequiresAdministratorSession(): void
     {
         $this->get('/admin/weekly-report.xlsx');
         $this->assertRedirect('/admin/login');
+    }
+
+    public function testGetDoesNotAllowStateChangingDownloads(): void
+    {
+        $this->session(['Foleys' => ['admin' => 'admin']]);
+        $this->get('/admin/weekly-report.xlsx');
+        $this->assertResponseCode(405);
+    }
+
+    public function testDownloadRequiresCsrfToken(): void
+    {
+        $this->session(['Foleys' => ['admin' => 'admin']]);
+        $this->post('/admin/weekly-report.xlsx');
+        $this->assertResponseCode(403);
     }
 
     public function testReportFiltersOldRequestsWithoutHidingThemFromIncomingRequests(): void

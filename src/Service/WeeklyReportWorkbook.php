@@ -35,14 +35,17 @@ final class WeeklyReportWorkbook
             $xpath = new DOMXPath($sheet);
             $xpath->registerNamespace('s', self::NS);
             $data = $xpath->query('//s:sheetData')->item(0);
-            $prototype = $xpath->query('//s:row[@r="7"]')->item(0);
-            $data->removeChild($prototype);
-            $rowNumber = 7;
-            $totalCents = 0;
+            $prototype = $xpath->query('//s:row[@r="2"]')->item(0);
+            // Keep only the header. No template spacer rows or cells outside the table.
+            foreach (iterator_to_array($data->childNodes) as $node) {
+                if ($node instanceof DOMElement && $node->getAttribute('r') !== '1') {
+                    $data->removeChild($node);
+                }
+            }
+            $rowNumber = 2;
             foreach ($report['orders'] as $order) {
                 foreach ($report['itemsByOrder'][(int)$order->id] ?? [] as $index => $item) {
                     $discounted = $report['discountedCostsByOrder'][(int)$order->id][$index] ?? 0;
-                    $totalCents += $discounted;
                     $values = [
                         (string)($order->barrister_name ?? ''),
                         (string)($order->email ?? ''),
@@ -63,23 +66,16 @@ final class WeeklyReportWorkbook
                 }
             }
             // Excel Tables need a blank insertable row when the report is empty.
-            if ($rowNumber === 7) {
+            if ($rowNumber === 2) {
                 $data->appendChild($prototype);
             }
-            $lastRow = max(7, $rowNumber - 1);
-            $this->value($xpath->query('//s:c[@r="A3"]')->item(0), sprintf(
-                'Submitted after %s, through %s (Australia/Melbourne).',
-                $report['cutoff']->format('d M Y g:i a'),
-                $report['asOf']->format('d M Y g:i a'),
-            ));
-            $summary = $xpath->query('//s:c[@r="G4"]')->item(0);
-            $this->value($summary, $totalCents / 100);
-            // Structured reference follows the table if more rows are added in Excel.
-            $formula = $sheet->createElementNS(self::NS, 'x:f');
-            $formula->textContent = 'SUM(BarristerRequests[Discounted cost (AUD)])';
-            $summary->insertBefore($formula, $summary->firstChild);
+            $lastRow = max(2, $rowNumber - 1);
             $table = $this->xml($zip, 'xl/tables/table1.xml');
-            $range = 'A6:G' . $lastRow;
+            $range = 'A1:G' . $lastRow;
+            $dimension = $xpath->query('//s:dimension')->item(0);
+            if ($dimension instanceof DOMElement) {
+                $dimension->setAttribute('ref', $range);
+            }
             $table->documentElement->setAttribute('ref', $range);
             $table->getElementsByTagNameNS(self::NS, 'autoFilter')->item(0)->setAttribute('ref', $range);
             if (!$zip->addFromString('xl/worksheets/sheet1.xml', $sheet->saveXML())

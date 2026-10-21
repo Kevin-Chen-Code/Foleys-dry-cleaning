@@ -1,7 +1,7 @@
 <?php $this->assign('title', 'Submit a request'); $this->Html->script(['order-pricing', 'order-builder', 'barrister-autocomplete'], ['block' => true]); $this->Html->css(['item-dialog', 'barrister-autocomplete'], ['block' => true]); ?>
 <section class="page-heading">
     <h1>Submit your dry cleaning request here</h1>
-    <p>Register your chambers garments. Collection takes place daily at the schedule outlined <?= $this->Html->link('here', 'https://google.com', ['target' => '_blank', 'rel' => 'noopener noreferrer']) ?>.</p>
+    <p>Register your chambers garments. Collection takes place daily at the schedule outlined <?= $this->Html->link('here', 'https://foleys-assets.spicyweb.net.au/main/External-Documents/Dry-Cleaning-Rounds.pdf', ['target' => '_blank', 'rel' => 'noopener noreferrer']) ?>.</p>
 </section>
 <?= $this->Form->create($order ?? null, ['class' => 'builder-form', 'novalidate' => true]) ?>
 <section class="items-card">

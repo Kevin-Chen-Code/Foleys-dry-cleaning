@@ -103,14 +103,16 @@ final class DashboardController extends AdminController
 
     public function weeklyReportCsv()
     {
-        // Keep old bookmarks working, but do not disguise Excel bytes as CSV.
-        return $this->redirect('/admin/weekly-report.xlsx');
+        // Downloads now require an explicit CSRF-protected POST because they reset the report.
+        return $this->redirect('/admin/weekly-report');
     }
 
     public function weeklyReportExcel()
     {
+        $this->request->allowMethod(['post']);
         return $this->response->withHeader('Content-Type', WeeklyReportService::EXCEL_MIME)
+            ->withHeader('Cache-Control', 'no-store, private')
             ->withDownload('foleys-weekly-report.xlsx')
-            ->withStringBody((new WeeklyReportService())->xlsx());
+            ->withStringBody((new WeeklyReportService())->downloadAndReset());
     }
 }

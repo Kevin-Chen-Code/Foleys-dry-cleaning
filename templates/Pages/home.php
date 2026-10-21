@@ -24,7 +24,7 @@ $isAdmin = (bool)$this->request->getSession()->read('Foleys.admin');
             <div class="admin-links">
                 <a href="/admin/incoming-requests">All requests</a>
                 <a href="/admin/manage-pricing">Manage pricing</a>
-                <a href="/admin/weekly-report">Daily report</a>
+                <a href="/admin/weekly-report">Report download</a>
                 <a href="/admin/analytics">Analytics</a>
                 <a class="sign-in" href="/admin/logout">Sign out as administrator</a>
             </div>

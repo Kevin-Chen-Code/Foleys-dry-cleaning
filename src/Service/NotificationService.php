@@ -100,7 +100,7 @@ final class NotificationService
             }
         }
 
-        return $failed ? 'Your request was saved, but one or more confirmation emails could not be sent. The administrator can check Email settings and the delivery logs.' : null;
+        return null;
     }
 
     /** Sends only when the administrator explicitly presses the test button. */

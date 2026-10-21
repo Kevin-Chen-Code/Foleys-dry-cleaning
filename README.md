@@ -145,9 +145,23 @@ not deleted and remain accessible under Incoming requests.
 
 Downloads are `.xlsx` workbooks with a native `BarristerRequests` Excel Table,
 filterable headers, frozen headings, numeric quantities/prices, and Melbourne
-date/time cells. The total billed sums the discounted item costs. User-provided
+date/time cells. The sheet contains only the table starting at A1, without title,
+summary, footer or spacer rows. The page still displays the total billed, while
+the export retains each line's discounted cost. User-provided
 names and emails are stored as literal text, never executable formulas.
-The old `.csv` download URL redirects to the Excel download.
+Clicking Download Excel generates the file and then marks only its included
+requests as downloaded, clearing them from the report for all administrators.
+New requests arriving during generation remain pending. The previous-day 5 pm
+cutoff still applies. Requests and item records are never deleted, and remain
+visible in Incoming requests. Generation/reset is transactional: generation or
+database failures do not clear requests. The reset happens when the server
+generates the file, not when the browser confirms it was saved (browsers cannot
+provide that confirmation). Scheduled email generation does not reset the report.
+Downloads require a CSRF-protected POST. The old `.csv` URL redirects to the report page.
+
+Before using this change, run `bin/cake migrations migrate` against the intended
+database to add the nullable `orders.report_downloaded_at` column, then run
+`bin/cake schema_cache clear` to discard any cached pre-migration schema.
 
 Excel generation requires PHP's `zip` and `dom` extensions. The Docker image
 installs `zip`; `dom` is included in its PHP base image. The styled template is

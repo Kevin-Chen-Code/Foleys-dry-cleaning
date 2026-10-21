@@ -48,7 +48,7 @@ $isLoginPage = $this->request->getParam('controller') === 'AdminUsers' && $this-
             <?php if ($isAdmin): ?>
                 <?= $this->Html->link('All requests', '/admin/incoming-requests') ?>
                 <?= $this->Html->link('Manage pricing', '/admin/manage-pricing') ?>
-                <?= $this->Html->link('Daily report', '/admin/weekly-report') ?>
+                <?= $this->Html->link('Report download', '/admin/weekly-report') ?>
                 <?= $this->Html->link('Analytics', '/admin/analytics') ?>
                 <?= $this->Html->link('Sign out as administrator', ['controller' => 'AdminUsers', 'action' => 'logout'], ['class' => 'admin-sign-in']) ?>
             <?php elseif (!$isLoginPage): ?>
