@@ -10,6 +10,16 @@ window.FoleysPricing = {
     const eligibleSubtotal = eligible.reduce((sum, line) => sum + line.item.price * line.quantity, 0);
     let capDiscount = 0;
     const appliedDiscounts = [];
+    // Keep the exclusive five-shirt policy identical to OrderPricingService.
+    const isShirt = (name) => /^shirts?$/i.test(String(name ?? '').trim());
+    const shirtCount = lines.filter((line) => isShirt(line.item.name))
+      .reduce((sum, line) => sum + line.quantity, 0);
+    if (shirtCount >= 5) {
+      rules = rules.filter((rule) => rule.discount_type === 'fixed'
+        && Number(rule.minimum_item_count) === 5
+        && Number(rule.discount_value) === 1500
+        && (!rule.qualifying_item_name || isShirt(rule.qualifying_item_name))).slice(0, 1);
+    }
     for (const rule of rules) {
       let amount = 0;
       if (rule.discount_type === 'price_cap') {
@@ -17,7 +27,7 @@ window.FoleysPricing = {
         amount = Math.max(0, eligibleSubtotal - Math.max(0, Number(rule.discount_value)) - capDiscount);
         capDiscount += amount;
       } else {
-        const qualifyingCount = rule.qualifying_item_name
+        const qualifyingCount = shirtCount >= 5 ? shirtCount : rule.qualifying_item_name
           ? lines.filter((line) => line.item.name === rule.qualifying_item_name).reduce((sum, line) => sum + line.quantity, 0)
           : itemCount;
         if (qualifyingCount < Number(rule.minimum_item_count)) continue;

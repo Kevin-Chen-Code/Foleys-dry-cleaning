@@ -56,10 +56,10 @@
     ]
   },
   {
-    "name": "Six eligible items share one cap",
+    "name": "Six non-shirt eligible items share one cap",
     "items": [
       {
-        "item_name": "Shirt",
+        "item_name": "Blouse",
         "unit_price_cents": 1500,
         "quantity": 6
       }
@@ -257,6 +257,504 @@
     "names": [
       "$30 cap",
       "$20 cap"
+    ]
+  },
+  {
+    "name": "Four shirts retain regular stacking",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 900,
+        "quantity": 4
+      }
+    ],
+    "rules": [
+      {
+        "name": "3 item discount",
+        "minimum_item_count": 3,
+        "discount_type": "percentage",
+        "discount_value": 30
+      },
+      {
+        "name": "Three-item cap",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 item fixed dollar amount discount",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 1500
+      }
+    ],
+    "subtotal": 3600,
+    "total": 2120,
+    "names": [
+      "3 item discount",
+      "Three-item cap"
+    ]
+  },
+  {
+    "name": "Exactly five shirts receive only fifteen dollars off",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 900,
+        "quantity": 5
+      }
+    ],
+    "rules": [
+      {
+        "name": "3 item discount",
+        "minimum_item_count": 3,
+        "discount_type": "percentage",
+        "discount_value": 30
+      },
+      {
+        "name": "Three-item cap",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 item fixed dollar amount discount",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 1500
+      }
+    ],
+    "subtotal": 4500,
+    "total": 3000,
+    "names": [
+      "5 item fixed dollar amount discount"
+    ]
+  },
+  {
+    "name": "Six shirts receive only fifteen dollars off",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 900,
+        "quantity": 6
+      }
+    ],
+    "rules": [
+      {
+        "name": "3 item discount",
+        "minimum_item_count": 3,
+        "discount_type": "percentage",
+        "discount_value": 30
+      },
+      {
+        "name": "Three-item cap",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 item fixed dollar amount discount",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 1500
+      }
+    ],
+    "subtotal": 5400,
+    "total": 3900,
+    "names": [
+      "5 item fixed dollar amount discount"
+    ]
+  },
+  {
+    "name": "Screenshot mixed basket receives only fifteen dollars off",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 900,
+        "quantity": 5
+      },
+      {
+        "item_name": "Blouse",
+        "unit_price_cents": 950,
+        "quantity": 2
+      }
+    ],
+    "rules": [
+      {
+        "name": "3 item discount",
+        "minimum_item_count": 3,
+        "discount_type": "percentage",
+        "discount_value": 30
+      },
+      {
+        "name": "Three-item cap",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 item fixed dollar amount discount",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 1500
+      }
+    ],
+    "subtotal": 6400,
+    "total": 4900,
+    "names": [
+      "5 item fixed dollar amount discount"
+    ]
+  },
+  {
+    "name": "Split shirt lines combine for exclusive threshold",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 900,
+        "quantity": 2
+      },
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 900,
+        "quantity": 3
+      },
+      {
+        "item_name": "Blouse",
+        "unit_price_cents": 950,
+        "quantity": 2
+      }
+    ],
+    "rules": [
+      {
+        "name": "3 item discount",
+        "minimum_item_count": 3,
+        "discount_type": "percentage",
+        "discount_value": 30
+      },
+      {
+        "name": "Three-item cap",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 item fixed dollar amount discount",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 1500
+      }
+    ],
+    "subtotal": 6400,
+    "total": 4900,
+    "names": [
+      "5 item fixed dollar amount discount"
+    ]
+  },
+  {
+    "name": "Five garments but fewer than five shirts still stack",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 900,
+        "quantity": 2
+      },
+      {
+        "item_name": "Blouse",
+        "unit_price_cents": 950,
+        "quantity": 3
+      }
+    ],
+    "rules": [
+      {
+        "name": "3 item discount",
+        "minimum_item_count": 3,
+        "discount_type": "percentage",
+        "discount_value": 30
+      },
+      {
+        "name": "Three-item cap",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 item fixed dollar amount discount",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 1500
+      }
+    ],
+    "subtotal": 4650,
+    "total": 305,
+    "names": [
+      "3 item discount",
+      "Three-item cap",
+      "5 item fixed dollar amount discount"
+    ]
+  },
+  {
+    "name": "Five blouses are not five shirts",
+    "items": [
+      {
+        "item_name": "Blouse",
+        "unit_price_cents": 950,
+        "quantity": 5
+      }
+    ],
+    "rules": [
+      {
+        "name": "3 item discount",
+        "minimum_item_count": 3,
+        "discount_type": "percentage",
+        "discount_value": 30
+      },
+      {
+        "name": "Three-item cap",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 item fixed dollar amount discount",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 1500
+      }
+    ],
+    "subtotal": 4750,
+    "total": 275,
+    "names": [
+      "3 item discount",
+      "Three-item cap",
+      "5 item fixed dollar amount discount"
+    ]
+  },
+  {
+    "name": "Rule display name can change without losing exclusivity",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 900,
+        "quantity": 5
+      }
+    ],
+    "rules": [
+      {
+        "name": "3 item discount",
+        "minimum_item_count": 3,
+        "discount_type": "percentage",
+        "discount_value": 30
+      },
+      {
+        "name": "Three-item cap",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3200
+      },
+      {
+        "name": "Renamed offer",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 1500
+      }
+    ],
+    "subtotal": 4500,
+    "total": 3000,
+    "names": [
+      "Renamed offer"
+    ]
+  },
+  {
+    "name": "Shirt-specific rule counts normalised split names",
+    "items": [
+      {
+        "item_name": " shirt ",
+        "unit_price_cents": 900,
+        "quantity": 2
+      },
+      {
+        "item_name": "SHIRTS",
+        "unit_price_cents": 900,
+        "quantity": 3
+      }
+    ],
+    "rules": [
+      {
+        "name": "3 item discount",
+        "minimum_item_count": 3,
+        "discount_type": "percentage",
+        "discount_value": 30
+      },
+      {
+        "name": "Three-item cap",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 item fixed dollar amount discount",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 1500,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 4500,
+    "total": 3000,
+    "names": [
+      "5 item fixed dollar amount discount"
+    ]
+  },
+  {
+    "name": "No matching active offer never falls back to other discounts",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 900,
+        "quantity": 5
+      }
+    ],
+    "rules": [
+      {
+        "name": "3 item discount",
+        "minimum_item_count": 3,
+        "discount_type": "percentage",
+        "discount_value": 30
+      },
+      {
+        "name": "Three-item cap",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3200
+      }
+    ],
+    "subtotal": 4500,
+    "total": 4500,
+    "names": []
+  },
+  {
+    "name": "Duplicate fixed rules are never applied twice",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 900,
+        "quantity": 5
+      }
+    ],
+    "rules": [
+      {
+        "name": "3 item discount",
+        "minimum_item_count": 3,
+        "discount_type": "percentage",
+        "discount_value": 30
+      },
+      {
+        "name": "Three-item cap",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 item fixed dollar amount discount",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 1500
+      },
+      {
+        "name": "Duplicate",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 1500
+      }
+    ],
+    "subtotal": 4500,
+    "total": 3000,
+    "names": [
+      "5 item fixed dollar amount discount"
+    ]
+  },
+  {
+    "name": "Unrelated garment-specific fixed offer cannot substitute",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 900,
+        "quantity": 5
+      },
+      {
+        "item_name": "Blouse",
+        "unit_price_cents": 950,
+        "quantity": 5
+      }
+    ],
+    "rules": [
+      {
+        "name": "3 item discount",
+        "minimum_item_count": 3,
+        "discount_type": "percentage",
+        "discount_value": 30
+      },
+      {
+        "name": "Three-item cap",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 item fixed dollar amount discount",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 1500,
+        "qualifying_item_name": "Blouse"
+      }
+    ],
+    "subtotal": 9250,
+    "total": 9250,
+    "names": []
+  },
+  {
+    "name": "Price-cap excluded garments stay undiscounted in mixed five-shirt request",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 900,
+        "quantity": 5
+      },
+      {
+        "item_name": "Bar robe",
+        "unit_price_cents": 5000,
+        "quantity": 1
+      },
+      {
+        "item_name": "Jabot",
+        "unit_price_cents": 800,
+        "quantity": 1
+      }
+    ],
+    "rules": [
+      {
+        "name": "3 item discount",
+        "minimum_item_count": 3,
+        "discount_type": "percentage",
+        "discount_value": 30
+      },
+      {
+        "name": "Three-item cap",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 item fixed dollar amount discount",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 1500
+      }
+    ],
+    "subtotal": 10300,
+    "total": 8800,
+    "names": [
+      "5 item fixed dollar amount discount"
     ]
   }
 ]

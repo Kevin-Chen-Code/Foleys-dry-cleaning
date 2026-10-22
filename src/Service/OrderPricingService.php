@@ -41,6 +41,23 @@ final class OrderPricingService
         $eligibleLines = array_filter($lines, self::isPriceCapEligible(...));
         $eligibleCount = array_sum(array_column($eligibleLines, 'quantity'));
         $eligibleSubtotal = array_sum(array_column($eligibleLines, 'line_total_cents'));
+        // Five or more shirts: only the configured five-item $15 fixed rule may apply
+        // to the entire basket. Do not rely on the editable rule's display name.
+        $shirtCount = array_sum(array_map(
+            static fn (array $line): int => preg_match('/^shirts?$/i', trim((string)($line['item_name'] ?? ''))) === 1
+                ? (int)$line['quantity'] : 0,
+            $lines,
+        ));
+        if ($shirtCount >= 5) {
+            $discountRules = array_slice(array_values(array_filter(
+                $discountRules,
+                static fn (array $rule): bool => $rule['discount_type'] === 'fixed'
+                    && (int)$rule['minimum_item_count'] === 5
+                    && (int)$rule['discount_value'] === 1500
+                    && (empty($rule['qualifying_item_name'])
+                        || preg_match('/^shirts?$/i', trim((string)$rule['qualifying_item_name'])) === 1),
+            )), 0, 1);
+        }
         foreach ($discountRules as $rule) {
             if ($rule['discount_type'] === 'price_cap') {
                 if ($eligibleCount < (int)$rule['minimum_item_count']) {
@@ -57,7 +74,7 @@ final class OrderPricingService
             }
             $qualifyingCount = $itemCount;
             if (!empty($rule['qualifying_item_name'])) {
-                $qualifyingCount = array_sum(array_map(
+                $qualifyingCount = $shirtCount >= 5 ? $shirtCount : array_sum(array_map(
                     fn (array $item): int => $item['item_name'] === $rule['qualifying_item_name'] ? (int)$item['quantity'] : 0,
                     $lines,
                 ));

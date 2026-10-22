@@ -1,4 +1,8 @@
-FROM php:8.4-apache
+# Includes the fixes for CVE-2026-109618 and CVE-2026-109619.
+FROM php:8.4.27-apache
+
+# Record the runtime version in deployment logs and reject an unpatched build.
+RUN php -v && php -r 'exit(version_compare(PHP_VERSION, "8.4.27", ">=") ? 0 : 1);'
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends libicu-dev libpq-dev libzip-dev unzip \
