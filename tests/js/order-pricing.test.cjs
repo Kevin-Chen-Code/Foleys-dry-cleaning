@@ -12,10 +12,55 @@ for (const scenario of cases) {
       quantity: line.quantity,
       item: {name: line.item_name, price: line.unit_price_cents, price_cap_eligible: line.price_cap_eligible ?? true},
     }));
-    const result = context.window.FoleysPricing.calculate(selectedItems, scenario.rules);
+    const result = context.window.FoleysPricing.calculate(selectedItems, scenario.rules, true);
     assert.equal(result.subtotal, scenario.subtotal);
     assert.equal(result.total, scenario.total);
     assert.equal(result.discount, scenario.subtotal - scenario.total);
     assert.equal(JSON.stringify(result.appliedDiscounts.map((rule) => rule.name)), JSON.stringify(scenario.names));
   });
+
+  test(`Paused discounts: ${scenario.name}`, () => {
+    const selectedItems = scenario.items.map((line) => ({
+      quantity: line.quantity,
+      item: {name: line.item_name, price: line.unit_price_cents, price_cap_eligible: line.price_cap_eligible ?? true},
+    }));
+    const originalRules = JSON.stringify(scenario.rules);
+    const defaultResult = context.window.FoleysPricing.calculate(selectedItems, scenario.rules);
+    const disabledResult = context.window.FoleysPricing.calculate(selectedItems, scenario.rules, false);
+    for (const result of [defaultResult, disabledResult]) {
+      assert.equal(result.subtotal, scenario.subtotal);
+      assert.equal(result.total, scenario.subtotal);
+      assert.equal(result.discount, 0);
+      assert.equal(JSON.stringify(result.appliedDiscounts), '[]');
+      assert.equal(JSON.stringify(scenario.rules), originalRules);
+    }
+  });
 }
+
+test('Paused discounts handle an empty cart', () => {
+  const rules = [{name: 'Fixed discount', minimum_item_count: 1, discount_type: 'fixed', discount_value: 1500}];
+  for (const result of [
+    context.window.FoleysPricing.calculate([], rules),
+    context.window.FoleysPricing.calculate([], rules, false),
+  ]) {
+    assert.equal(result.subtotal, 0);
+    assert.equal(result.discount, 0);
+    assert.equal(result.total, 0);
+    assert.equal(JSON.stringify(result.appliedDiscounts), '[]');
+  }
+});
+
+test('Re-enabling discounts uses the preserved five-shirt rule', () => {
+  const selectedItems = [{quantity: 5, item: {name: 'Shirt', price: 900}}];
+  const rules = [
+    {name: 'Percentage', minimum_item_count: 3, discount_type: 'percentage', discount_value: 30},
+    {name: 'Five shirt fixed', minimum_item_count: 5, discount_type: 'fixed', discount_value: 1500},
+  ];
+  const originalRules = JSON.stringify(rules);
+  assert.equal(context.window.FoleysPricing.calculate(selectedItems, rules, false).total, 4500);
+  const enabled = context.window.FoleysPricing.calculate(selectedItems, rules, true);
+  assert.equal(enabled.total, 3000);
+  assert.equal(enabled.discount, 1500);
+  assert.equal(JSON.stringify(enabled.appliedDiscounts.map((rule) => rule.name)), '["Five shirt fixed"]');
+  assert.equal(JSON.stringify(rules), originalRules);
+});

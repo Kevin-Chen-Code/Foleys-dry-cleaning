@@ -5,6 +5,7 @@ namespace App\Controller;
 
 use App\Service\OrderPricingService;
 use App\Service\NotificationService;
+use Cake\Core\Configure;
 use Cake\I18n\FrozenTime;
 
 final class OrdersController extends AppController
@@ -13,7 +14,7 @@ final class OrdersController extends AppController
     {
         $items = $this->catalogueItems(); $pricing = null;
         if ($this->request->is('post')) {
-            $pricing = (new OrderPricingService())->calculate($this->submittedItems($items), $this->activeRules());
+            $pricing = (new OrderPricingService(Configure::read('Foleys.discountsEnabled', false) === true))->calculate($this->submittedItems($items), $this->activeRules());
             if ($pricing['lines'] === []) { $this->Flash->error('Add at least one item before viewing a quote.'); }
         }
         $this->set(compact('items', 'pricing'));
@@ -33,7 +34,7 @@ final class OrdersController extends AppController
     {
         $submitted = $this->submittedItems($items);
         if ($submitted === []) { $this->Flash->error('Add at least one item to your request.'); return; }
-        $pricing = (new OrderPricingService())->calculate($submitted, $this->activeRules());
+        $pricing = (new OrderPricingService(Configure::read('Foleys.discountsEnabled', false) === true))->calculate($submitted, $this->activeRules());
         $orders = $this->fetchTable('Orders');
         $order = $orders->patchEntity($orders->newEmptyEntity(), [
             'barrister_name' => $this->request->getData('barrister_name'),
@@ -58,8 +59,14 @@ final class OrdersController extends AppController
         $this->redirect(['action' => 'received']);
     }
 
-    private function catalogueItems(): array { return $this->fetchTable('ServiceItems')->find()->orderBy(['position' => 'ASC', 'id' => 'ASC'])->all()->toList(); }
-    private function activeRules(): array { return $this->fetchTable('DiscountRules')->find()->where(['active' => true])->orderBy(['minimum_item_count' => 'ASC'])->all()->map(fn ($rule) => $rule->toArray())->toList(); }
+    private function catalogueItems(): array { return $this->fetchTable('ServiceItems')->find('catalogue')->orderBy(['position' => 'ASC', 'id' => 'ASC'])->all()->toList(); }
+    private function activeRules(): array
+    {
+        if (Configure::read('Foleys.discountsEnabled', false) !== true) {
+            return [];
+        }
+        return $this->fetchTable('DiscountRules')->find()->where(['active' => true])->orderBy(['minimum_item_count' => 'ASC'])->all()->map(fn ($rule) => $rule->toArray())->toList();
+    }
     private function submittedItems(array $items): array
     {
         $catalogue = []; foreach ($items as $item) { $catalogue[(int)$item->id] = $item; }

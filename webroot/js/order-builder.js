@@ -18,7 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-      const {subtotal, total, appliedDiscounts} = window.FoleysPricing.calculate(selectedItems, discountRules);
+      const {subtotal, total, appliedDiscounts} = window.FoleysPricing.calculate(
+        selectedItems, discountRules, builder.dataset.discountsEnabled === 'true',
+      );
 
       document.querySelectorAll('[data-live-subtotal]').forEach((target) => target.textContent = money(subtotal));
       document.querySelectorAll('[data-live-total]').forEach((target) => target.textContent = money(total));

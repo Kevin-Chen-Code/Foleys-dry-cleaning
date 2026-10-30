@@ -181,3 +181,39 @@ To refresh the directory, replace its `barristers` entries with updated
 `{"name": "Full Name", "email": "address@example.com"}` records. Keep duplicate
 names with different addresses as separate records so users can choose the
 correct entry.
+
+## Temporary discount pause and safe garment removal (30 October 2026)
+
+`config/app.php` now sets `Foleys.discountsEnabled` to **false**. Both the live
+pricing preview and server-side request/quote calculations charge the full
+catalogue subtotal, with zero discount. All saved rules, including price caps
+and the five-shirt offer, remain editable in Manage pricing. Existing orders
+and reports keep their original saved amounts. To restore discounts later,
+change that setting to **true** and deploy; any `app_local.php` override must
+agree. Keep both updated JavaScript files when deploying. The previous
+five-shirt exception applies only when discounts have been re-enabled.
+
+Deleting a garment now archives it instead of deleting its database row. It
+disappears from Manage pricing, View prices and the request picker; old requests
+retain their garment references, names, quantities and prices. Ordinary inactive
+but unarchived garments remain listed, as before. A stale form cannot submit an
+archived garment as a new item.
+
+Apply `20261030000000_AddServiceItemArchive.php` to add the nullable
+`service_items.archived_at` field before using Delete, then clear the schema
+cache. This migration does not remove or archive any existing data. The shared
+database has **not** been migrated automatically. From the project directory:
+
+```sh
+/opt/homebrew/opt/php@8.4/bin/php bin/cake.php migrations status
+/opt/homebrew/opt/php@8.4/bin/php bin/cake.php migrations migrate
+/opt/homebrew/opt/php@8.4/bin/php bin/cake.php schema_cache clear
+```
+
+Check that the connection is the intended database before migrating; `migrate`
+also applies any older pending migrations shown by `status`. On Render, run the
+equivalent commands using `php` in the updated deployed code. For a shared Neon
+database, the migration only needs to run once, but each app instance with a
+cached schema needs its cache cleared (a fresh deployment also starts with a
+fresh container cache). Until the new column exists, pages remain usable and
+Delete shows a migration reminder instead of attempting an unsafe SQL DELETE.

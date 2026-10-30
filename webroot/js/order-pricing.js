@@ -1,8 +1,11 @@
 // Preview only: the server independently validates garments and calculates the saved price.
 window.FoleysPricing = {
-  calculate(selectedItems, rules) {
+  calculate(selectedItems, rules, discountsEnabled = false) {
     const lines = selectedItems.filter((line) => line.quantity > 0);
     const subtotal = lines.reduce((sum, line) => sum + line.item.price * line.quantity, 0);
+    if (discountsEnabled !== true) {
+      return {subtotal, discount: 0, total: subtotal, appliedDiscounts: []};
+    }
     const itemCount = lines.reduce((sum, line) => sum + line.quantity, 0);
     const eligible = lines.filter((line) => line.item.price_cap_eligible !== false
       && !/\b(?:bar[\s-]*robes?|jabots?)\b/i.test(line.item.name));

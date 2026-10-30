@@ -93,7 +93,8 @@ final class OrderNamesTest extends TestCase
         ]);
 
         $this->assertRedirect('/request/received');
-        $this->assertSession(1800, 'Foleys.lastOrder.total');
+        // Active rules remain stored, but the temporary pause must also affect saved requests.
+        $this->assertSession(2000, 'Foleys.lastOrder.total');
         $this->assertSession(null, 'Foleys.lastOrder.emailProblem');
         $orders = $this->locator->get('Orders');
         $this->assertSame(1, $orders->find()->count());
@@ -102,8 +103,8 @@ final class OrderNamesTest extends TestCase
         $this->assertSame($email, $order->email);
         $this->assertSame('submitted', $order->status);
         $this->assertSame(2000, $order->subtotal_cents);
-        $this->assertSame(200, $order->discount_cents);
-        $this->assertSame(1800, $order->total_cents);
+        $this->assertSame(0, $order->discount_cents);
+        $this->assertSame(2000, $order->total_cents);
         $line = $this->locator->get('OrderItems')->find()->firstOrFail();
         $this->assertSame($order->id, $line->order_id);
         $this->assertSame('Shirt', $line->item_name);

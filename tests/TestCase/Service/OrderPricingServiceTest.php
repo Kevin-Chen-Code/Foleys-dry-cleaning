@@ -12,7 +12,7 @@ final class OrderPricingServiceTest extends TestCase
     {
         $cases = json_decode(file_get_contents(ROOT . '/tests/fixtures/price-cap-cases.json'), true, 512, JSON_THROW_ON_ERROR);
         foreach ($cases as $case) {
-            $result = (new OrderPricingService())->calculate($case['items'], $case['rules']);
+            $result = (new OrderPricingService(true))->calculate($case['items'], $case['rules']);
             $this->assertSame($case['subtotal'], $result['subtotal'], $case['name']);
             $this->assertSame($case['total'], $result['total'], $case['name']);
             $this->assertSame($case['subtotal'] - $case['total'], $result['discount'], $case['name']);
@@ -22,7 +22,7 @@ final class OrderPricingServiceTest extends TestCase
 
     public function testCalculatesLinesAndPercentageDiscountAtThreshold(): void
     {
-        $result = (new OrderPricingService())->calculate([
+        $result = (new OrderPricingService(true))->calculate([
             ['service_item_id' => 1, 'unit_price_cents' => 500, 'quantity' => 3],
             ['service_item_id' => 2, 'unit_price_cents' => 1000, 'quantity' => 3],
         ], [[
@@ -38,7 +38,7 @@ final class OrderPricingServiceTest extends TestCase
 
     public function testDoesNotApplyRuleBelowThreshold(): void
     {
-        $result = (new OrderPricingService())->calculate([
+        $result = (new OrderPricingService(true))->calculate([
             ['service_item_id' => 1, 'unit_price_cents' => 500, 'quantity' => 5],
         ], [[
             'name' => 'Six item discount', 'minimum_item_count' => 6,
@@ -52,7 +52,7 @@ final class OrderPricingServiceTest extends TestCase
 
     public function testAppliesEveryEligibleRule(): void
     {
-        $result = (new OrderPricingService())->calculate([
+        $result = (new OrderPricingService(true))->calculate([
             ['service_item_id' => 1, 'unit_price_cents' => 1000, 'quantity' => 5],
         ], [
             ['name' => 'Five-item discount', 'minimum_item_count' => 5, 'discount_type' => 'percentage', 'discount_value' => 10],
@@ -66,7 +66,7 @@ final class OrderPricingServiceTest extends TestCase
 
     public function testItemSpecificRuleOnlyCountsThatGarment(): void
     {
-        $result = (new OrderPricingService())->calculate([
+        $result = (new OrderPricingService(true))->calculate([
             ['item_name' => 'Shirt', 'unit_price_cents' => 1000, 'quantity' => 2],
             ['item_name' => 'Coat', 'unit_price_cents' => 1000, 'quantity' => 3],
         ], [[
@@ -75,5 +75,53 @@ final class OrderPricingServiceTest extends TestCase
         ]]);
 
         $this->assertSame(0, $result['discount']);
+    }
+
+    public function testDiscountsArePausedByDefaultAndWhenExplicitlyDisabled(): void
+    {
+        $cases = json_decode(file_get_contents(ROOT . '/tests/fixtures/price-cap-cases.json'), true, 512, JSON_THROW_ON_ERROR);
+        foreach ($cases as $case) {
+            $originalRules = $case['rules'];
+            foreach ([new OrderPricingService(), new OrderPricingService(false)] as $pricing) {
+                $result = $pricing->calculate($case['items'], $case['rules']);
+                $this->assertSame($case['subtotal'], $result['subtotal'], $case['name']);
+                $this->assertSame($case['subtotal'], $result['total'], $case['name']);
+                $this->assertSame(0, $result['discount'], $case['name']);
+                $this->assertSame([], $result['appliedDiscounts'], $case['name']);
+                $this->assertSame(array_sum(array_column($case['items'], 'quantity')), $result['itemCount'], $case['name']);
+                $this->assertCount(count($case['items']), $result['lines'], $case['name']);
+                $this->assertSame($originalRules, $case['rules'], 'Pausing must not change the stored rules: ' . $case['name']);
+            }
+        }
+    }
+
+    public function testDiscountPauseHandlesEmptyRequest(): void
+    {
+        $rules = [['name' => 'Fixed discount', 'minimum_item_count' => 1, 'discount_type' => 'fixed', 'discount_value' => 1500]];
+        foreach ([new OrderPricingService(), new OrderPricingService(false)] as $pricing) {
+            $result = $pricing->calculate([], $rules);
+            $this->assertSame(0, $result['subtotal']);
+            $this->assertSame(0, $result['discount']);
+            $this->assertSame(0, $result['total']);
+            $this->assertSame(0, $result['itemCount']);
+            $this->assertSame([], $result['lines']);
+            $this->assertSame([], $result['appliedDiscounts']);
+        }
+    }
+
+    public function testEnablingDiscountsAgainUsesUnchangedRules(): void
+    {
+        $items = [['item_name' => 'Shirt', 'unit_price_cents' => 900, 'quantity' => 5]];
+        $rules = [
+            ['name' => 'Percentage', 'minimum_item_count' => 3, 'discount_type' => 'percentage', 'discount_value' => 30],
+            ['name' => 'Five shirt fixed', 'minimum_item_count' => 5, 'discount_type' => 'fixed', 'discount_value' => 1500],
+        ];
+        $originalRules = $rules;
+        $this->assertSame(4500, (new OrderPricingService(false))->calculate($items, $rules)['total']);
+        $result = (new OrderPricingService(true))->calculate($items, $rules);
+        $this->assertSame(3000, $result['total']);
+        $this->assertSame(1500, $result['discount']);
+        $this->assertSame(['Five shirt fixed'], array_column($result['appliedDiscounts'], 'name'));
+        $this->assertSame($originalRules, $rules);
     }
 }

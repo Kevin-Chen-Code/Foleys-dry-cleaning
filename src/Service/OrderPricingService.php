@@ -6,6 +6,10 @@ namespace App\Service;
 /** Calculates prices server-side so browser values can never be trusted. */
 final class OrderPricingService
 {
+    public function __construct(private bool $discountsEnabled = false)
+    {
+    }
+
     public static function isExcludedGarment(string $name): bool
     {
         return preg_match('/\b(?:bar[\s-]*robes?|jabots?)\b/i', $name) === 1;
@@ -35,19 +39,27 @@ final class OrderPricingService
             $itemCount += $quantity;
         }
 
+        // Fail closed while discounts are paused, even if a caller supplies active rules.
+        if (!$this->discountsEnabled) {
+            return compact('lines', 'subtotal', 'itemCount') + [
+                'discount' => 0, 'total' => $subtotal, 'appliedDiscounts' => [],
+            ];
+        }
+
         $discount = 0;
         $capDiscount = 0;
         $appliedDiscounts = [];
         $eligibleLines = array_filter($lines, self::isPriceCapEligible(...));
         $eligibleCount = array_sum(array_column($eligibleLines, 'quantity'));
         $eligibleSubtotal = array_sum(array_column($eligibleLines, 'line_total_cents'));
-        // Five or more shirts: only the configured five-item $15 fixed rule may apply
-        // to the entire basket. Do not rely on the editable rule's display name.
+
+        // Five or more shirts: only the configured five-item $15 fixed rule may apply to the entire basket. Do not rely on the editable rule's display name.
         $shirtCount = array_sum(array_map(
             static fn (array $line): int => preg_match('/^shirts?$/i', trim((string)($line['item_name'] ?? ''))) === 1
                 ? (int)$line['quantity'] : 0,
             $lines,
         ));
+
         if ($shirtCount >= 5) {
             $discountRules = array_slice(array_values(array_filter(
                 $discountRules,
@@ -58,6 +70,8 @@ final class OrderPricingService
                         || preg_match('/^shirts?$/i', trim((string)$rule['qualifying_item_name'])) === 1),
             )), 0, 1);
         }
+
+        // Deploy rules
         foreach ($discountRules as $rule) {
             if ($rule['discount_type'] === 'price_cap') {
                 if ($eligibleCount < (int)$rule['minimum_item_count']) {

@@ -31,10 +31,17 @@ final class DashboardController extends AdminController
             $action = (string)$this->request->getData('action');
             if ($action === 'delete_item') {
                 $entity = $itemsTable->get((int)$this->request->getData('id'));
-                $itemsTable->delete($entity);
+                if (!$itemsTable->archive($entity)) {
+                    $this->Flash->error($itemsTable->getSchema()->hasColumn('archived_at')
+                        ? 'The garment could not be removed. Please try again.'
+                        : 'Apply the catalogue archive migration and clear the schema cache before removing garments. Existing requests have not been changed.');
+                } else {
+                    $this->Flash->success('Garment removed from the catalogue. Existing requests have been kept.');
+                }
+                return $this->redirect(['action' => 'managePricing']);
             } elseif ($action === 'save_item') {
                 $id = (int)$this->request->getData('id');
-                $entity = $id ? $itemsTable->get($id) : $itemsTable->newEmptyEntity();
+                $entity = $id ? $itemsTable->find('catalogue')->where(['id' => $id])->firstOrFail() : $itemsTable->newEmptyEntity();
                 // Keep existing display order; append new garments automatically.
                 $position = $id ? (int)$entity->position : (int)($itemsTable->find()->select(['position'])->orderBy(['position' => 'DESC'])->first()?->position ?? 0) + 1;
                 $itemsTable->patchEntity($entity, ['name' => trim((string)$this->request->getData('name')), 'description' => trim((string)$this->request->getData('description')) ?: null, 'unit_price_cents' => (int)round((float)$this->request->getData('price') * 100), 'active' => (bool)$this->request->getData('active'), 'price_cap_eligible' => (bool)$this->request->getData('price_cap_eligible'), 'position' => $position, 'created' => $id ? $entity->created : FrozenTime::now()]);
@@ -59,7 +66,7 @@ final class DashboardController extends AdminController
             $this->Flash->success('Pricing configuration saved.');
             return $this->redirect($this->request->getRequestTarget());
         }
-        $items = $itemsTable->find()->orderBy(['position' => 'ASC'])->all()->toList();
+        $items = $itemsTable->find('catalogue')->orderBy(['position' => 'ASC'])->all()->toList();
         $rules = $rulesTable->find()->all()->toList();
         $this->set(compact('items', 'rules'));
     }
