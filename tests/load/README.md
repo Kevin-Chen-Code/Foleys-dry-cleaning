@@ -42,7 +42,10 @@ Every run builds the actual app schema with its migrations, replaces only that
 new database's catalogue/discount fixtures, and optionally seeds synthetic
 history. The fixed catalogue is Shirt, Suit jacket, Bar robe and Jabot. Three
 order profiles independently check price caps, exclusions, percentage and fixed
-discounts, with expected discounted totals $21.20, $34.20 and $42.40.
+discounts, with expected discounted totals $25.00, $34.20 and $104.00. The highest
+qualifying quantity tier replaces all lower tiers; offers at the same tier do
+not stack. The isolated server keeps the app's pricing feature flag while
+disabling administrator login and real email delivery.
 
 ## Safety boundaries
 

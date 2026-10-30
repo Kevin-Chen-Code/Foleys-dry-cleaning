@@ -19,7 +19,7 @@
     <p>Discounts are calculated securely when you submit.</p>
 
     <!-- UI: eligible rule names appear here as items are added to the request. -->
-    <!-- <ul class="applied-discounts" data-live-discounts hidden></ul> -->
+    <ul class="applied-discounts" data-live-discounts hidden></ul>
     <?= $this->Form->button('Submit request', ['class' => 'button-primary']) ?>
 </aside>
 <?= $this->Form->end() ?>

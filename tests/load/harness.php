@@ -13,9 +13,9 @@ final class FoleysLoadHarness
     {
         // Independent expected answers, not calculated by the pricing code under test.
         return [
-            ['items' => [[1, 2], [2, 1]], 'subtotal' => 3800, 'discount' => 1680, 'total' => 2120],
+            ['items' => [[1, 2], [2, 1]], 'subtotal' => 3800, 'discount' => 1300, 'total' => 2500],
             ['items' => [[3, 1], [4, 1]], 'subtotal' => 3800, 'discount' => 380, 'total' => 3420],
-            ['items' => [[1, 4], [2, 2], [3, 1]], 'subtotal' => 10600, 'discount' => 6360, 'total' => 4240],
+            ['items' => [[1, 4], [2, 2], [3, 1]], 'subtotal' => 10600, 'discount' => 200, 'total' => 10400],
         ];
     }
 

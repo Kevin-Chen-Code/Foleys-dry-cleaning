@@ -21,6 +21,12 @@ final class OrderPricingService
             && (bool)($item['price_cap_eligible'] ?? true);
     }
 
+    private static function garmentKey(string $name): string
+    {
+        $name = mb_strtolower(trim($name));
+        return $name === 'shirts' ? 'shirt' : $name;
+    }
+
     /** @param array<int, array<string, mixed>> $items @param array<int, array<string, mixed>> $discountRules */
     public function calculate(array $items, array $discountRules = []): array
     {
@@ -39,74 +45,66 @@ final class OrderPricingService
             $itemCount += $quantity;
         }
 
-        // Fail closed while discounts are paused, even if a caller supplies active rules.
+        // The application explicitly enables pricing; keep the pause override available.
         if (!$this->discountsEnabled) {
             return compact('lines', 'subtotal', 'itemCount') + [
                 'discount' => 0, 'total' => $subtotal, 'appliedDiscounts' => [],
             ];
         }
 
-        $discount = 0;
-        $capDiscount = 0;
-        $appliedDiscounts = [];
         $eligibleLines = array_filter($lines, self::isPriceCapEligible(...));
         $eligibleCount = array_sum(array_column($eligibleLines, 'quantity'));
         $eligibleSubtotal = array_sum(array_column($eligibleLines, 'line_total_cents'));
-
-        // Five or more shirts: only the configured five-item $15 fixed rule may apply to the entire basket. Do not rely on the editable rule's display name.
-        $shirtCount = array_sum(array_map(
-            static fn (array $line): int => preg_match('/^shirts?$/i', trim((string)($line['item_name'] ?? ''))) === 1
-                ? (int)$line['quantity'] : 0,
-            $lines,
-        ));
-
-        if ($shirtCount >= 5) {
-            $discountRules = array_slice(array_values(array_filter(
-                $discountRules,
-                static fn (array $rule): bool => $rule['discount_type'] === 'fixed'
-                    && (int)$rule['minimum_item_count'] === 5
-                    && (int)$rule['discount_value'] === 1500
-                    && (empty($rule['qualifying_item_name'])
-                        || preg_match('/^shirts?$/i', trim((string)$rule['qualifying_item_name'])) === 1),
-            )), 0, 1);
-        }
-
-        // Deploy rules
+        $highestTier = 0;
+        $discount = 0;
+        $winningRule = null;
         foreach ($discountRules as $rule) {
-            if ($rule['discount_type'] === 'price_cap') {
-                if ($eligibleCount < (int)$rule['minimum_item_count']) {
-                    continue;
-                }
-                // Multiple caps lower the same eligible subtotal, never discount it twice.
-                $amount = max(0, $eligibleSubtotal - max(0, (int)$rule['discount_value']) - $capDiscount);
-                if ($amount > 0) {
-                    $capDiscount += $amount;
-                    $discount += $amount;
-                    $appliedDiscounts[] = ['name' => (string)$rule['name'], 'amount_cents' => $amount];
-                }
+            if (array_key_exists('active', $rule) && !$rule['active']) {
+                continue;
+            }
+            if (!in_array($rule['discount_type'], ['percentage', 'fixed', 'price_cap'], true)) {
                 continue;
             }
             $qualifyingCount = $itemCount;
-            if (!empty($rule['qualifying_item_name'])) {
-                $qualifyingCount = $shirtCount >= 5 ? $shirtCount : array_sum(array_map(
-                    fn (array $item): int => $item['item_name'] === $rule['qualifying_item_name'] ? (int)$item['quantity'] : 0,
+            if ($rule['discount_type'] === 'price_cap') {
+                $qualifyingCount = $eligibleCount;
+            } elseif (!empty($rule['qualifying_item_name'])) {
+                $garment = self::garmentKey((string)$rule['qualifying_item_name']);
+                $qualifyingCount = array_sum(array_map(
+                    static fn (array $item): int => self::garmentKey((string)($item['item_name'] ?? '')) === $garment
+                        ? (int)$item['quantity'] : 0,
                     $lines,
                 ));
             }
-            if ($qualifyingCount < (int)$rule['minimum_item_count']) {
+            $tier = (int)$rule['minimum_item_count'];
+            if ($qualifyingCount < $tier || $tier < $highestTier) {
                 continue;
+            }
+            // Qualification, not savings, decides the tier: five replaces three even
+            // when the five-item offer saves less. Removing items restores the lower tier.
+            if ($tier > $highestTier) {
+                $highestTier = $tier;
+                $discount = 0;
+                $winningRule = null;
             }
             $amount = match ($rule['discount_type']) {
                 'percentage' => (int)round($subtotal * ((int)$rule['discount_value'] / 100)),
                 'fixed' => (int)$rule['discount_value'],
+                'price_cap' => $eligibleSubtotal - max(0, (int)$rule['discount_value']),
                 default => 0,
             };
-            if ($amount > 0) {
-                $appliedDiscounts[] = ['name' => (string)$rule['name'], 'amount_cents' => $amount];
-                $discount += $amount;
+            $amount = min($subtotal, max(0, $amount));
+            // One best offer at this tier. Equal savings use the oldest ID, not query order.
+            $winsTie = $amount > 0 && $amount === $discount && isset($rule['id'], $winningRule['id'])
+                && (int)$rule['id'] < (int)$winningRule['id'];
+            if ($amount > $discount || $winsTie) {
+                $discount = $amount;
+                $winningRule = $rule;
             }
         }
-        $discount = min($subtotal, max(0, $discount));
+        $appliedDiscounts = $winningRule === null ? [] : [
+            ['name' => (string)$winningRule['name'], 'amount_cents' => $discount],
+        ];
 
         return compact('lines', 'subtotal', 'discount', 'itemCount', 'appliedDiscounts') + [
             'total' => $subtotal - $discount,

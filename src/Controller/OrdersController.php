@@ -65,7 +65,7 @@ final class OrdersController extends AppController
         if (Configure::read('Foleys.discountsEnabled', false) !== true) {
             return [];
         }
-        return $this->fetchTable('DiscountRules')->find()->where(['active' => true])->orderBy(['minimum_item_count' => 'ASC'])->all()->map(fn ($rule) => $rule->toArray())->toList();
+        return $this->fetchTable('DiscountRules')->find()->where(['active' => true])->orderBy(['minimum_item_count' => 'ASC', 'id' => 'ASC'])->all()->map(fn ($rule) => $rule->toArray())->toList();
     }
     private function submittedItems(array $items): array
     {

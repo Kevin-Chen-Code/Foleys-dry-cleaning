@@ -85,6 +85,7 @@ $discountTypes = ['percentage' => 'Percentage', 'fixed' => 'Fixed dollar amount'
 
 <section class="items-card">
     <h2>Discount rules</h2>
+    <p>Only the highest qualifying quantity tier applies. If several rules qualify at that tier, only the largest discount is used.</p>
     <table>
         <thead>
             <tr><th>Rule</th><th>Value</th><th>Actions</th></tr>
@@ -104,7 +105,7 @@ $discountTypes = ['percentage' => 'Percentage', 'fixed' => 'Fixed dollar amount'
                         <?= $this->Form->control('minimum_item_count', ['label' => 'Minimum item count', 'type' => 'number', 'min' => 1, 'step' => 1, 'required' => true, 'value' => $rule->minimum_item_count]) ?>
                         <?= $this->Form->control('discount_type', ['options' => $discountTypes, 'value' => $rule->discount_type]) ?>
                         <?= $this->Form->control('discount_value', ['label' => $rule->discount_type === 'percentage' ? 'Discount (%)' : ($rule->discount_type === 'price_cap' ? 'Maximum eligible total ($)' : 'Discount amount ($)'), 'type' => 'number', 'min' => 0, 'required' => true, 'step' => $rule->discount_type === 'percentage' ? '1' : '0.01', 'value' => $rule->discount_type === 'percentage' ? $rule->discount_value : number_format($rule->discount_value / 100, 2, '.', '')]) ?>
-                        <p data-price-cap-note<?= $rule->discount_type === 'price_cap' ? '' : ' hidden' ?>>Once the minimum eligible count is reached, all eligible garments together are capped at this amount. Bar robes and jabots are charged separately and do not count toward the threshold. Other eligible discounts also apply.</p>
+                        <p data-price-cap-note<?= $rule->discount_type === 'price_cap' ? '' : ' hidden' ?>>Once the minimum eligible count is reached, all eligible garments together are capped at this amount. Bar robes and jabots are charged separately and do not count toward the threshold. Only the highest qualifying quantity tier applies; at that tier, the largest discount wins without stacking.</p>
                         <div class="dialog-actions">
                             <?= $this->Form->button('Save changes', ['class' => 'button-primary']) ?>
                             <button type="button" class="cancel-add" onclick="this.closest('dialog').close()">Cancel</button>
@@ -136,7 +137,7 @@ $discountTypes = ['percentage' => 'Percentage', 'fixed' => 'Fixed dollar amount'
     <?= $this->Form->control('minimum_item_count', ['label' => 'Minimum item count', 'type' => 'number', 'min' => 1, 'step' => 1, 'required' => true]) ?>
     <?= $this->Form->control('discount_type', ['options' => $discountTypes]) ?>
     <?= $this->Form->control('discount_value', ['label' => 'Discount (%)', 'type' => 'number', 'min' => 0, 'step' => 1, 'required' => true]) ?>
-    <p data-price-cap-note hidden>Once the minimum eligible count is reached, all eligible garments together are capped at this amount. Bar robes and jabots are charged separately and do not count toward the threshold. Other eligible discounts also apply.</p>
+    <p data-price-cap-note hidden>Once the minimum eligible count is reached, all eligible garments together are capped at this amount. Bar robes and jabots are charged separately and do not count toward the threshold. Only the highest qualifying quantity tier applies; at that tier, the largest discount wins without stacking.</p>
     <?= $this->Form->button('Save discount rule', ['class' => 'button-primary']) ?>
     <?= $this->Form->end() ?>
 </section>

@@ -30,7 +30,9 @@ Configure::config('default', new PhpConfig(CONFIG));
 Configure::load('app', 'default', false);
 Configure::write('debug', false);
 Configure::write('App.fullBaseUrl', $m['baseUrl']);
-Configure::write('Foleys', ['adminUsername' => '', 'adminPassword' => '']);
+// Keep the real pricing feature flag, but never enable administrator login in this harness.
+Configure::write('Foleys.adminUsername', '');
+Configure::write('Foleys.adminPassword', '');
 
 $connection = [
     'className' => Connection::class, 'driver' => Sqlite::class, 'database' => $m['database'],

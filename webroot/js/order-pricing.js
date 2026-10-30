@@ -11,36 +11,41 @@ window.FoleysPricing = {
       && !/\b(?:bar[\s-]*robes?|jabots?)\b/i.test(line.item.name));
     const eligibleCount = eligible.reduce((sum, line) => sum + line.quantity, 0);
     const eligibleSubtotal = eligible.reduce((sum, line) => sum + line.item.price * line.quantity, 0);
-    let capDiscount = 0;
-    const appliedDiscounts = [];
-    // Keep the exclusive five-shirt policy identical to OrderPricingService.
-    const isShirt = (name) => /^shirts?$/i.test(String(name ?? '').trim());
-    const shirtCount = lines.filter((line) => isShirt(line.item.name))
-      .reduce((sum, line) => sum + line.quantity, 0);
-    if (shirtCount >= 5) {
-      rules = rules.filter((rule) => rule.discount_type === 'fixed'
-        && Number(rule.minimum_item_count) === 5
-        && Number(rule.discount_value) === 1500
-        && (!rule.qualifying_item_name || isShirt(rule.qualifying_item_name))).slice(0, 1);
-    }
+    const garmentKey = (name) => {
+      const key = String(name ?? '').trim().toLowerCase();
+      return key === 'shirts' ? 'shirt' : key;
+    };
+    let highestTier = 0;
+    let discount = 0;
+    let winningRule = null;
     for (const rule of rules) {
-      let amount = 0;
-      if (rule.discount_type === 'price_cap') {
-        if (eligibleCount < Number(rule.minimum_item_count)) continue;
-        amount = Math.max(0, eligibleSubtotal - Math.max(0, Number(rule.discount_value)) - capDiscount);
-        capDiscount += amount;
-      } else {
-        const qualifyingCount = shirtCount >= 5 ? shirtCount : rule.qualifying_item_name
-          ? lines.filter((line) => line.item.name === rule.qualifying_item_name).reduce((sum, line) => sum + line.quantity, 0)
-          : itemCount;
-        if (qualifyingCount < Number(rule.minimum_item_count)) continue;
-        amount = rule.discount_type === 'percentage'
-          ? Math.round(subtotal * (Number(rule.discount_value) / 100))
-          : rule.discount_type === 'fixed' ? Number(rule.discount_value) : 0;
+      if (Object.hasOwn(rule, 'active') && !rule.active) continue;
+      if (!['percentage', 'fixed', 'price_cap'].includes(rule.discount_type)) continue;
+      const qualifyingCount = rule.discount_type === 'price_cap' ? eligibleCount : rule.qualifying_item_name
+        ? lines.filter((line) => garmentKey(line.item.name) === garmentKey(rule.qualifying_item_name))
+          .reduce((sum, line) => sum + line.quantity, 0)
+        : itemCount;
+      const tier = Number(rule.minimum_item_count);
+      if (qualifyingCount < tier || tier < highestTier) continue;
+      // Mirror the server: highest qualifying tier first, then largest standalone saving.
+      if (tier > highestTier) {
+        highestTier = tier;
+        discount = 0;
+        winningRule = null;
       }
-      if (amount > 0) appliedDiscounts.push({name: rule.name, amount});
+      let amount = rule.discount_type === 'price_cap'
+        ? eligibleSubtotal - Math.max(0, Number(rule.discount_value))
+        : rule.discount_type === 'percentage'
+          ? Math.round(subtotal * (Number(rule.discount_value) / 100)) : Number(rule.discount_value);
+      amount = Math.min(subtotal, Math.max(0, amount));
+      const winsTie = amount > 0 && amount === discount && rule.id != null && winningRule?.id != null
+        && Number(rule.id) < Number(winningRule.id);
+      if (amount > discount || winsTie) {
+        discount = amount;
+        winningRule = rule;
+      }
     }
-    const discount = Math.min(subtotal, Math.max(0, appliedDiscounts.reduce((sum, rule) => sum + rule.amount, 0)));
+    const appliedDiscounts = winningRule === null ? [] : [{name: winningRule.name, amount: discount}];
     return {subtotal, discount, total: subtotal - discount, appliedDiscounts};
   },
 };

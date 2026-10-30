@@ -85,9 +85,9 @@ return [
     'Foleys' => [
         'adminUsername' => env('ADMIN_USERNAME', ''),
         'adminPassword' => env('ADMIN_PASSWORD', ''),
-        // Temporary pause: keep rules in Manage pricing, but charge full catalogue prices.
-        // Set to true to restore the existing discount policy in BOTH server and preview.
-        'discountsEnabled' => false,
+        // Highest qualifying quantity tier only; same-tier offers never stack.
+        // Set to false to pause discounts in BOTH server and preview.
+        'discountsEnabled' => true,
     ],
 
     /*

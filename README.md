@@ -182,16 +182,25 @@ To refresh the directory, replace its `barristers` entries with updated
 names with different addresses as separate records so users can choose the
 correct entry.
 
-## Temporary discount pause and safe garment removal (30 October 2026)
+## Non-stacking quantity tiers and safe garment removal (30 October 2026)
 
-`config/app.php` now sets `Foleys.discountsEnabled` to **false**. Both the live
-pricing preview and server-side request/quote calculations charge the full
-catalogue subtotal, with zero discount. All saved rules, including price caps
-and the five-shirt offer, remain editable in Manage pricing. Existing orders
-and reports keep their original saved amounts. To restore discounts later,
-change that setting to **true** and deploy; any `app_local.php` override must
-agree. Keep both updated JavaScript files when deploying. The previous
-five-shirt exception applies only when discounts have been re-enabled.
+`config/app.php` sets `Foleys.discountsEnabled` to **true**: the live preview and
+server-side request/quote calculations apply discounts again. Among qualifying
+rules, **only the highest minimum item-count tier applies**. A five-item offer
+replaces a three-item offer, even if the three-item offer would save more.
+If several offers qualify at that highest tier, apply only the largest standalone
+saving, never their sum. Equal savings use the lowest rule ID for a stable result.
+Qualification uses each rule's own count: matching garments for garment-specific
+rules, eligible garments for price caps, or all garments for unrestricted rules.
+Excluded bar robes/jabots still do not count toward price-cap thresholds.
+Dropping below a tier restores the next qualifying tier automatically; creation
+dates and the order in which users add garments do not affect the result.
+
+This generic policy replaces the previous hard-coded five-shirt/$15 exception.
+The five-item fixed-dollar rule remains available, but higher qualifying tiers
+can supersede it. All stored rules and historical order/report amounts are
+preserved. Set `Foleys.discountsEnabled` back to **false** to pause discounts;
+any `app_local.php` override must agree. Deploy the updated JavaScript too.
 
 Deleting a garment now archives it instead of deleting its database row. It
 disappears from Manage pricing, View prices and the request picker; old requests

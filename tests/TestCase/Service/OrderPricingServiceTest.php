@@ -8,15 +8,19 @@ use Cake\TestSuite\TestCase;
 
 final class OrderPricingServiceTest extends TestCase
 {
-    public function testPriceCapScenarios(): void
+    public function testQuantityTierAndPriceCapScenarios(): void
     {
         $cases = json_decode(file_get_contents(ROOT . '/tests/fixtures/price-cap-cases.json'), true, 512, JSON_THROW_ON_ERROR);
         foreach ($cases as $case) {
+            $originalRules = $case['rules'];
             $result = (new OrderPricingService(true))->calculate($case['items'], $case['rules']);
             $this->assertSame($case['subtotal'], $result['subtotal'], $case['name']);
             $this->assertSame($case['total'], $result['total'], $case['name']);
             $this->assertSame($case['subtotal'] - $case['total'], $result['discount'], $case['name']);
             $this->assertSame($case['names'], array_column($result['appliedDiscounts'], 'name'), $case['name']);
+            $this->assertLessThanOrEqual(1, count($result['appliedDiscounts']), $case['name']);
+            $this->assertSame($result['discount'], array_sum(array_column($result['appliedDiscounts'], 'amount_cents')), $case['name']);
+            $this->assertSame($originalRules, $case['rules'], 'Calculating must not change stored rules: ' . $case['name']);
         }
     }
 
@@ -50,7 +54,7 @@ final class OrderPricingServiceTest extends TestCase
         $this->assertSame(2500, $result['total']);
     }
 
-    public function testAppliesEveryEligibleRule(): void
+    public function testAppliesOnlyTheLargestDiscountAtTheHighestEligibleTier(): void
     {
         $result = (new OrderPricingService(true))->calculate([
             ['service_item_id' => 1, 'unit_price_cents' => 1000, 'quantity' => 5],
@@ -59,9 +63,10 @@ final class OrderPricingServiceTest extends TestCase
             ['name' => 'Collection discount', 'minimum_item_count' => 5, 'discount_type' => 'fixed', 'discount_value' => 200],
         ]);
 
-        $this->assertSame(700, $result['discount']);
-        $this->assertSame(4300, $result['total']);
-        $this->assertCount(2, $result['appliedDiscounts']);
+        $this->assertSame(500, $result['discount']);
+        $this->assertSame(4500, $result['total']);
+        $this->assertCount(1, $result['appliedDiscounts']);
+        $this->assertSame('Five-item discount', $result['appliedDiscounts'][0]['name']);
     }
 
     public function testItemSpecificRuleOnlyCountsThatGarment(): void
@@ -88,8 +93,9 @@ final class OrderPricingServiceTest extends TestCase
                 $this->assertSame($case['subtotal'], $result['total'], $case['name']);
                 $this->assertSame(0, $result['discount'], $case['name']);
                 $this->assertSame([], $result['appliedDiscounts'], $case['name']);
-                $this->assertSame(array_sum(array_column($case['items'], 'quantity')), $result['itemCount'], $case['name']);
-                $this->assertCount(count($case['items']), $result['lines'], $case['name']);
+                $positiveItems = array_filter($case['items'], static fn (array $item): bool => $item['quantity'] > 0);
+                $this->assertSame(array_sum(array_column($positiveItems, 'quantity')), $result['itemCount'], $case['name']);
+                $this->assertCount(count($positiveItems), $result['lines'], $case['name']);
                 $this->assertSame($originalRules, $case['rules'], 'Pausing must not change the stored rules: ' . $case['name']);
             }
         }
@@ -123,5 +129,22 @@ final class OrderPricingServiceTest extends TestCase
         $this->assertSame(1500, $result['discount']);
         $this->assertSame(['Five shirt fixed'], array_column($result['appliedDiscounts'], 'name'));
         $this->assertSame($originalRules, $rules);
+    }
+    public function testIncreasingAndDecreasingQuantityReplacesTheWinningTier(): void
+    {
+        $pricing = new OrderPricingService(true);
+        $rules = [
+            ['name' => 'Five-item offer', 'minimum_item_count' => 5, 'discount_type' => 'fixed', 'discount_value' => 1200],
+            ['name' => 'Three-item offer', 'minimum_item_count' => 3, 'discount_type' => 'fixed', 'discount_value' => 500],
+        ];
+        $originalRules = $rules;
+        foreach ([[3, 2500, 'Three-item offer'], [5, 3800, 'Five-item offer'], [4, 3500, 'Three-item offer']] as [$quantity, $total, $name]) {
+            $result = $pricing->calculate([
+                ['item_name' => 'Blouse', 'unit_price_cents' => 1000, 'quantity' => $quantity],
+            ], $rules);
+            $this->assertSame($total, $result['total']);
+            $this->assertSame([$name], array_column($result['appliedDiscounts'], 'name'));
+            $this->assertSame($originalRules, $rules);
+        }
     }
 }

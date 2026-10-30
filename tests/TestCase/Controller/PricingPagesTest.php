@@ -223,6 +223,35 @@ final class PricingPagesTest extends TestCase
         $this->assertSame([], $this->viewVariable('rules'));
     }
 
+    public function testEnabledDiscountsReplaceLowerTiersAndReturnWhenQuantityFalls(): void
+    {
+        $this->assertTrue(Configure::read('Foleys.discountsEnabled'));
+        $items = $this->locator->get('ServiceItems');
+        $item = $items->saveOrFail($items->newEntity(['name' => 'Blouse', 'unit_price_cents' => 1000, 'active' => true]));
+        $rules = $this->locator->get('DiscountRules');
+        foreach ([
+            ['name' => 'Three-item percentage', 'minimum_item_count' => 3, 'discount_type' => 'percentage', 'discount_value' => 20],
+            ['name' => 'Three-item cap', 'minimum_item_count' => 3, 'discount_type' => 'price_cap', 'discount_value' => 2000],
+            ['name' => 'Five-item fixed', 'minimum_item_count' => 5, 'discount_type' => 'fixed', 'discount_value' => 1000],
+        ] as $rule) {
+            $rules->saveOrFail($rules->newEntity($rule + ['active' => true]));
+        }
+        foreach ([[3, 2000, 'Three-item cap'], [5, 4000, 'Five-item fixed'], [4, 2000, 'Three-item cap'], [3, 2000, 'Three-item cap']] as [$quantity, $total, $name]) {
+            $this->enableCsrfToken();
+            $this->post('/prices', ['items' => [['service_item_id' => $item->id, 'quantity' => $quantity]]]);
+            $this->assertResponseOk();
+            $pricing = $this->viewVariable('pricing');
+            $this->assertSame($total, $pricing['total']);
+            $this->assertCount(1, $pricing['appliedDiscounts']);
+            $this->assertSame($name, $pricing['appliedDiscounts'][0]['name']);
+        }
+        $this->get('/request');
+        $this->assertResponseOk();
+        $this->assertResponseContains('data-discounts-enabled="true"');
+        $this->assertCount(3, $this->viewVariable('rules'));
+        $this->assertSame(3, $rules->find()->where(['active' => true])->count());
+    }
+
     public function testMissingArchiveMigrationLeavesPagesUsableAndDeletionFailsSafely(): void
     {
         $this->connection->execute('ALTER TABLE service_items DROP COLUMN archived_at');

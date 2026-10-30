@@ -188,7 +188,7 @@
     "names": []
   },
   {
-    "name": "All regular rules stack with cap",
+    "name": "Same-tier cap beats percentage and fixed offers",
     "items": [
       {
         "item_name": "Shirt",
@@ -217,15 +217,13 @@
       }
     ],
     "subtotal": 4500,
-    "total": 2350,
+    "total": 3000,
     "names": [
-      "Cap",
-      "10% off",
-      "$2 off"
+      "Cap"
     ]
   },
   {
-    "name": "Multiple caps cannot discount excluded items twice",
+    "name": "Only the strongest same-tier cap applies",
     "items": [
       {
         "item_name": "Shirt",
@@ -255,12 +253,11 @@
     "subtotal": 9500,
     "total": 7000,
     "names": [
-      "$30 cap",
       "$20 cap"
     ]
   },
   {
-    "name": "Four shirts retain regular stacking",
+    "name": "Four shirts use only the strongest three-item offer",
     "items": [
       {
         "item_name": "Shirt",
@@ -289,10 +286,9 @@
       }
     ],
     "subtotal": 3600,
-    "total": 2120,
+    "total": 2520,
     "names": [
-      "3 item discount",
-      "Three-item cap"
+      "3 item discount"
     ]
   },
   {
@@ -451,7 +447,7 @@
     ]
   },
   {
-    "name": "Five garments but fewer than five shirts still stack",
+    "name": "Five mixed garments use only the five-item tier",
     "items": [
       {
         "item_name": "Shirt",
@@ -485,15 +481,13 @@
       }
     ],
     "subtotal": 4650,
-    "total": 305,
+    "total": 3150,
     "names": [
-      "3 item discount",
-      "Three-item cap",
       "5 item fixed dollar amount discount"
     ]
   },
   {
-    "name": "Five blouses are not five shirts",
+    "name": "Five blouses use the unrestricted five-item tier",
     "items": [
       {
         "item_name": "Blouse",
@@ -522,10 +516,8 @@
       }
     ],
     "subtotal": 4750,
-    "total": 275,
+    "total": 3250,
     "names": [
-      "3 item discount",
-      "Three-item cap",
       "5 item fixed dollar amount discount"
     ]
   },
@@ -606,7 +598,7 @@
     ]
   },
   {
-    "name": "No matching active offer never falls back to other discounts",
+    "name": "Five shirts can use a lower tier when no five-item offer exists",
     "items": [
       {
         "item_name": "Shirt",
@@ -629,8 +621,10 @@
       }
     ],
     "subtotal": 4500,
-    "total": 4500,
-    "names": []
+    "total": 3150,
+    "names": [
+      "3 item discount"
+    ]
   },
   {
     "name": "Duplicate fixed rules are never applied twice",
@@ -674,7 +668,7 @@
     ]
   },
   {
-    "name": "Unrelated garment-specific fixed offer cannot substitute",
+    "name": "Qualifying blouse tier can apply in a mixed shirt request",
     "items": [
       {
         "item_name": "Shirt",
@@ -709,8 +703,10 @@
       }
     ],
     "subtotal": 9250,
-    "total": 9250,
-    "names": []
+    "total": 7750,
+    "names": [
+      "5 item fixed dollar amount discount"
+    ]
   },
   {
     "name": "Price-cap excluded garments stay undiscounted in mixed five-shirt request",
@@ -755,6 +751,685 @@
     "total": 8800,
     "names": [
       "5 item fixed dollar amount discount"
+    ]
+  },
+  {
+    "name": "Three items reach the lower tier",
+    "items": [
+      {
+        "item_name": "Blouse",
+        "unit_price_cents": 1000,
+        "quantity": 3,
+        "price_cap_eligible": true
+      }
+    ],
+    "rules": [
+      {
+        "name": "Five-item offer",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 1200
+      },
+      {
+        "name": "Three-item offer",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 500
+      }
+    ],
+    "subtotal": 3000,
+    "total": 2500,
+    "names": [
+      "Three-item offer"
+    ]
+  },
+  {
+    "name": "Four items retain the lower tier",
+    "items": [
+      {
+        "item_name": "Blouse",
+        "unit_price_cents": 1000,
+        "quantity": 4,
+        "price_cap_eligible": true
+      }
+    ],
+    "rules": [
+      {
+        "name": "Five-item offer",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 1200
+      },
+      {
+        "name": "Three-item offer",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 500
+      }
+    ],
+    "subtotal": 4000,
+    "total": 3500,
+    "names": [
+      "Three-item offer"
+    ]
+  },
+  {
+    "name": "Five items replace the lower tier",
+    "items": [
+      {
+        "item_name": "Blouse",
+        "unit_price_cents": 1000,
+        "quantity": 5,
+        "price_cap_eligible": true
+      }
+    ],
+    "rules": [
+      {
+        "name": "Five-item offer",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 1200
+      },
+      {
+        "name": "Three-item offer",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 500
+      }
+    ],
+    "subtotal": 5000,
+    "total": 3800,
+    "names": [
+      "Five-item offer"
+    ]
+  },
+  {
+    "name": "Higher quantity tier wins even when its saving is smaller",
+    "items": [
+      {
+        "item_name": "Blouse",
+        "unit_price_cents": 1000,
+        "quantity": 5,
+        "price_cap_eligible": true
+      }
+    ],
+    "rules": [
+      {
+        "name": "Lower generous offer",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 2000
+      },
+      {
+        "name": "Higher smaller offer",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 500
+      }
+    ],
+    "subtotal": 5000,
+    "total": 4500,
+    "names": [
+      "Higher smaller offer"
+    ]
+  },
+  {
+    "name": "Ten-shirt tier replaces the former hardcoded five-shirt offer",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 900,
+        "quantity": 10,
+        "price_cap_eligible": true
+      }
+    ],
+    "rules": [
+      {
+        "name": "Five shirt fixed",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 1500
+      },
+      {
+        "name": "Ten shirt percentage",
+        "minimum_item_count": 10,
+        "discount_type": "percentage",
+        "discount_value": 20,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 9000,
+    "total": 7200,
+    "names": [
+      "Ten shirt percentage"
+    ]
+  },
+  {
+    "name": "Unqualified garment-specific high tier cannot suppress a lower tier",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 1000,
+        "quantity": 2,
+        "price_cap_eligible": true
+      },
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 1000,
+        "quantity": 3,
+        "price_cap_eligible": true
+      }
+    ],
+    "rules": [
+      {
+        "name": "Five shirts only",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 1500,
+        "qualifying_item_name": "Shirt"
+      },
+      {
+        "name": "Three garments",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 500
+      }
+    ],
+    "subtotal": 5000,
+    "total": 4500,
+    "names": [
+      "Three garments"
+    ]
+  },
+  {
+    "name": "Excluded garments cannot reach a higher price-cap tier",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 1000,
+        "quantity": 3,
+        "price_cap_eligible": true
+      },
+      {
+        "item_name": "Bar Robe",
+        "unit_price_cents": 5000,
+        "quantity": 1,
+        "price_cap_eligible": true
+      },
+      {
+        "item_name": "Jabot",
+        "unit_price_cents": 800,
+        "quantity": 1,
+        "price_cap_eligible": true
+      }
+    ],
+    "rules": [
+      {
+        "name": "Three garments",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 500
+      },
+      {
+        "name": "Five eligible cap",
+        "minimum_item_count": 5,
+        "discount_type": "price_cap",
+        "discount_value": 2000
+      }
+    ],
+    "subtotal": 8800,
+    "total": 8300,
+    "names": [
+      "Three garments"
+    ]
+  },
+  {
+    "name": "Stored eligibility exclusion cannot qualify a higher price-cap tier",
+    "items": [
+      {
+        "item_name": "Blouse",
+        "unit_price_cents": 1000,
+        "quantity": 3,
+        "price_cap_eligible": true
+      },
+      {
+        "item_name": "Court garment",
+        "unit_price_cents": 5000,
+        "quantity": 2,
+        "price_cap_eligible": false
+      }
+    ],
+    "rules": [
+      {
+        "name": "Three garments",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 500
+      },
+      {
+        "name": "Five eligible cap",
+        "minimum_item_count": 5,
+        "discount_type": "price_cap",
+        "discount_value": 2000
+      }
+    ],
+    "subtotal": 13000,
+    "total": 12500,
+    "names": [
+      "Three garments"
+    ]
+  },
+  {
+    "name": "Higher cap with zero saving still replaces the lower tier",
+    "items": [
+      {
+        "item_name": "Tie",
+        "unit_price_cents": 500,
+        "quantity": 5,
+        "price_cap_eligible": true
+      }
+    ],
+    "rules": [
+      {
+        "name": "Three item saving",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 500
+      },
+      {
+        "name": "Five item expensive cap",
+        "minimum_item_count": 5,
+        "discount_type": "price_cap",
+        "discount_value": 3000
+      }
+    ],
+    "subtotal": 2500,
+    "total": 2500,
+    "names": []
+  },
+  {
+    "name": "Higher zero fixed offer still replaces the lower tier",
+    "items": [
+      {
+        "item_name": "Tie",
+        "unit_price_cents": 500,
+        "quantity": 5,
+        "price_cap_eligible": true
+      }
+    ],
+    "rules": [
+      {
+        "name": "Three item saving",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 500
+      },
+      {
+        "name": "Five item zero offer",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 0
+      }
+    ],
+    "subtotal": 2500,
+    "total": 2500,
+    "names": []
+  },
+  {
+    "name": "Same-tier fixed offer beats percentage and cap without stacking",
+    "items": [
+      {
+        "item_name": "Blouse",
+        "unit_price_cents": 1000,
+        "quantity": 3,
+        "price_cap_eligible": true
+      }
+    ],
+    "rules": [
+      {
+        "name": "Ten percent",
+        "minimum_item_count": 3,
+        "discount_type": "percentage",
+        "discount_value": 10
+      },
+      {
+        "name": "Twenty-six dollar cap",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 2600
+      },
+      {
+        "name": "Five dollars",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 500
+      }
+    ],
+    "subtotal": 3000,
+    "total": 2500,
+    "names": [
+      "Five dollars"
+    ]
+  },
+  {
+    "name": "Same-tier percentage offer beats fixed and cap without stacking",
+    "items": [
+      {
+        "item_name": "Blouse",
+        "unit_price_cents": 1000,
+        "quantity": 3,
+        "price_cap_eligible": true
+      }
+    ],
+    "rules": [
+      {
+        "name": "Five dollars",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 500
+      },
+      {
+        "name": "Twenty percent",
+        "minimum_item_count": 3,
+        "discount_type": "percentage",
+        "discount_value": 20
+      },
+      {
+        "name": "Twenty-six dollar cap",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 2600
+      }
+    ],
+    "subtotal": 3000,
+    "total": 2400,
+    "names": [
+      "Twenty percent"
+    ]
+  },
+  {
+    "name": "Clamped equal savings prefer the smaller numeric rule ID",
+    "items": [
+      {
+        "item_name": "Tie",
+        "unit_price_cents": 500,
+        "quantity": 3,
+        "price_cap_eligible": true
+      }
+    ],
+    "rules": [
+      {
+        "name": "ID ten larger nominal saving",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 3000,
+        "id": "10"
+      },
+      {
+        "name": "ID two smaller nominal saving",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 2000,
+        "id": "2"
+      }
+    ],
+    "subtotal": 1500,
+    "total": 0,
+    "names": [
+      "ID two smaller nominal saving"
+    ]
+  },
+  {
+    "name": "Equal savings without IDs preserve rule input order",
+    "items": [
+      {
+        "item_name": "Blouse",
+        "unit_price_cents": 1000,
+        "quantity": 3,
+        "price_cap_eligible": true
+      }
+    ],
+    "rules": [
+      {
+        "name": "First equal offer",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 500
+      },
+      {
+        "name": "Second equal offer",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 500
+      }
+    ],
+    "subtotal": 3000,
+    "total": 2500,
+    "names": [
+      "First equal offer"
+    ]
+  },
+  {
+    "name": "Higher numeric ID cannot win an equal saving tie",
+    "items": [
+      {
+        "item_name": "Blouse",
+        "unit_price_cents": 1000,
+        "quantity": 3,
+        "price_cap_eligible": true
+      }
+    ],
+    "rules": [
+      {
+        "name": "ID two first",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 500,
+        "id": 2
+      },
+      {
+        "name": "ID ten second",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 500,
+        "id": 10
+      }
+    ],
+    "subtotal": 3000,
+    "total": 2500,
+    "names": [
+      "ID two first"
+    ]
+  },
+  {
+    "name": "Inactive boolean and numeric rules do not suppress active lower tiers",
+    "items": [
+      {
+        "item_name": "Blouse",
+        "unit_price_cents": 1000,
+        "quantity": 6,
+        "price_cap_eligible": true
+      }
+    ],
+    "rules": [
+      {
+        "name": "Inactive six item offer",
+        "minimum_item_count": 6,
+        "discount_type": "fixed",
+        "discount_value": 2500,
+        "active": false
+      },
+      {
+        "name": "Inactive five item offer",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 2000,
+        "active": 0
+      },
+      {
+        "name": "Active three item offer",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 500,
+        "active": true
+      }
+    ],
+    "subtotal": 6000,
+    "total": 5500,
+    "names": [
+      "Active three item offer"
+    ]
+  },
+  {
+    "name": "Zero and negative item quantities do not reach higher tiers",
+    "items": [
+      {
+        "item_name": "Blouse",
+        "unit_price_cents": 1000,
+        "quantity": 3,
+        "price_cap_eligible": true
+      },
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 1000,
+        "quantity": 0,
+        "price_cap_eligible": true
+      },
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 1000,
+        "quantity": -2,
+        "price_cap_eligible": true
+      }
+    ],
+    "rules": [
+      {
+        "name": "Five-item offer",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 1200
+      },
+      {
+        "name": "Three-item offer",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 500
+      }
+    ],
+    "subtotal": 3000,
+    "total": 2500,
+    "names": [
+      "Three-item offer"
+    ]
+  },
+  {
+    "name": "Garment-specific names are trimmed and matched case-insensitively",
+    "items": [
+      {
+        "item_name": " COAT ",
+        "unit_price_cents": 1000,
+        "quantity": 3,
+        "price_cap_eligible": true
+      },
+      {
+        "item_name": "Blouse",
+        "unit_price_cents": 1000,
+        "quantity": 2,
+        "price_cap_eligible": true
+      }
+    ],
+    "rules": [
+      {
+        "name": "Three coats",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 900,
+        "qualifying_item_name": " coat "
+      },
+      {
+        "name": "Two garments",
+        "minimum_item_count": 2,
+        "discount_type": "fixed",
+        "discount_value": 300
+      }
+    ],
+    "subtotal": 5000,
+    "total": 4100,
+    "names": [
+      "Three coats"
+    ]
+  },
+  {
+    "name": "Normalized plural shirts combine across lines toward a higher tier",
+    "items": [
+      {
+        "item_name": " shirt ",
+        "unit_price_cents": 900,
+        "quantity": 2,
+        "price_cap_eligible": true
+      },
+      {
+        "item_name": "SHIRTS",
+        "unit_price_cents": 900,
+        "quantity": 3,
+        "price_cap_eligible": true
+      }
+    ],
+    "rules": [
+      {
+        "name": "Five normalized shirts",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 1250,
+        "qualifying_item_name": " SHIRTS "
+      },
+      {
+        "name": "Three garments",
+        "minimum_item_count": 3,
+        "discount_type": "percentage",
+        "discount_value": 30
+      }
+    ],
+    "subtotal": 4500,
+    "total": 3250,
+    "names": [
+      "Five normalized shirts"
+    ]
+  },
+  {
+    "name": "An unqualified ten-item tier does not displace the five-item tier",
+    "items": [
+      {
+        "item_name": "Blouse",
+        "unit_price_cents": 1000,
+        "quantity": 9,
+        "price_cap_eligible": true
+      }
+    ],
+    "rules": [
+      {
+        "name": "Ten item offer",
+        "minimum_item_count": 10,
+        "discount_type": "fixed",
+        "discount_value": 3000
+      },
+      {
+        "name": "Five item offer",
+        "minimum_item_count": 5,
+        "discount_type": "fixed",
+        "discount_value": 1200
+      },
+      {
+        "name": "Three item offer",
+        "minimum_item_count": 3,
+        "discount_type": "fixed",
+        "discount_value": 500
+      }
+    ],
+    "subtotal": 9000,
+    "total": 7800,
+    "names": [
+      "Five item offer"
     ]
   }
 ]

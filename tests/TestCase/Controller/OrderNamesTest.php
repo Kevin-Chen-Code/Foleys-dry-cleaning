@@ -93,8 +93,7 @@ final class OrderNamesTest extends TestCase
         ]);
 
         $this->assertRedirect('/request/received');
-        // Active rules remain stored, but the temporary pause must also affect saved requests.
-        $this->assertSession(2000, 'Foleys.lastOrder.total');
+        $this->assertSession(1800, 'Foleys.lastOrder.total');
         $this->assertSession(null, 'Foleys.lastOrder.emailProblem');
         $orders = $this->locator->get('Orders');
         $this->assertSame(1, $orders->find()->count());
@@ -103,8 +102,8 @@ final class OrderNamesTest extends TestCase
         $this->assertSame($email, $order->email);
         $this->assertSame('submitted', $order->status);
         $this->assertSame(2000, $order->subtotal_cents);
-        $this->assertSame(0, $order->discount_cents);
-        $this->assertSame(2000, $order->total_cents);
+        $this->assertSame(200, $order->discount_cents);
+        $this->assertSame(1800, $order->total_cents);
         $line = $this->locator->get('OrderItems')->find()->firstOrFail();
         $this->assertSame($order->id, $line->order_id);
         $this->assertSame('Shirt', $line->item_name);
@@ -143,6 +142,32 @@ final class OrderNamesTest extends TestCase
         $this->assertResponseContains($email);
         $this->get('/admin/weekly-report.csv');
         $this->assertRedirect('/admin/weekly-report');
+    }
+
+    public function testSubmittedRequestStoresOnlyTheHighestQualifyingTier(): void
+    {
+        $this->connection->insert('service_items', ['id' => 1, 'name' => 'Blouse', 'unit_price_cents' => 1000, 'active' => 1, 'position' => 1, 'price_cap_eligible' => 1]);
+        foreach ([
+            ['id' => 1, 'name' => 'Three-item percentage', 'minimum_item_count' => 3, 'discount_type' => 'percentage', 'discount_value' => 20],
+            ['id' => 2, 'name' => 'Three-item cap', 'minimum_item_count' => 3, 'discount_type' => 'price_cap', 'discount_value' => 2000],
+            ['id' => 3, 'name' => 'Five-item fixed', 'minimum_item_count' => 5, 'discount_type' => 'fixed', 'discount_value' => 1000],
+        ] as $rule) {
+            $this->connection->insert('discount_rules', $rule + ['active' => 1]);
+        }
+        $this->connection->insert('email_settings', ['mailbox' => 'team@example.com', 'reporting_day' => 'monday']);
+        $this->enableCsrfToken();
+        $this->post('/request', [
+            'barrister_name' => 'Test Barrister', 'email' => 'barrister@example.com',
+            'items' => [['service_item_id' => '1', 'quantity' => '5']],
+        ]);
+
+        $this->assertRedirect('/request/received');
+        $this->assertSession(4000, 'Foleys.lastOrder.total');
+        $order = $this->locator->get('Orders')->find()->firstOrFail();
+        $this->assertSame(5000, $order->subtotal_cents);
+        $this->assertSame(1000, $order->discount_cents);
+        $this->assertSame(4000, $order->total_cents);
+        $this->assertSame(3, $this->locator->get('DiscountRules')->find()->where(['active' => true])->count());
     }
 
     public function testExcelReportRequiresAdministratorSession(): void

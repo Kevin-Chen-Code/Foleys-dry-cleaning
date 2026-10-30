@@ -12,11 +12,15 @@ for (const scenario of cases) {
       quantity: line.quantity,
       item: {name: line.item_name, price: line.unit_price_cents, price_cap_eligible: line.price_cap_eligible ?? true},
     }));
+    const originalRules = JSON.stringify(scenario.rules);
     const result = context.window.FoleysPricing.calculate(selectedItems, scenario.rules, true);
     assert.equal(result.subtotal, scenario.subtotal);
     assert.equal(result.total, scenario.total);
     assert.equal(result.discount, scenario.subtotal - scenario.total);
     assert.equal(JSON.stringify(result.appliedDiscounts.map((rule) => rule.name)), JSON.stringify(scenario.names));
+    assert.ok(result.appliedDiscounts.length <= 1);
+    assert.equal(result.appliedDiscounts.reduce((sum, rule) => sum + rule.amount, 0), result.discount);
+    assert.equal(JSON.stringify(scenario.rules), originalRules);
   });
 
   test(`Paused discounts: ${scenario.name}`, () => {
@@ -63,4 +67,23 @@ test('Re-enabling discounts uses the preserved five-shirt rule', () => {
   assert.equal(enabled.discount, 1500);
   assert.equal(JSON.stringify(enabled.appliedDiscounts.map((rule) => rule.name)), '["Five shirt fixed"]');
   assert.equal(JSON.stringify(rules), originalRules);
+});
+
+test('Increasing and decreasing quantity replaces the winning tier', () => {
+  const rules = [
+    {name: 'Five-item offer', minimum_item_count: 5, discount_type: 'fixed', discount_value: 1200},
+    {name: 'Three-item offer', minimum_item_count: 3, discount_type: 'fixed', discount_value: 500},
+  ];
+  const originalRules = JSON.stringify(rules);
+  for (const [quantity, total, name] of [
+    [3, 2500, 'Three-item offer'],
+    [5, 3800, 'Five-item offer'],
+    [4, 3500, 'Three-item offer'],
+  ]) {
+    const selectedItems = [{quantity, item: {name: 'Blouse', price: 1000}}];
+    const result = context.window.FoleysPricing.calculate(selectedItems, rules, true);
+    assert.equal(result.total, total);
+    assert.equal(JSON.stringify(result.appliedDiscounts.map((rule) => rule.name)), JSON.stringify([name]));
+    assert.equal(JSON.stringify(rules), originalRules);
+  }
 });
