@@ -40,7 +40,7 @@ final class OrderNamesTest extends TestCase
         $this->connection->execute('CREATE TABLE service_items (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description TEXT, unit_price_cents INTEGER, active BOOLEAN, position INTEGER, price_cap_eligible BOOLEAN, created DATETIME, updated DATETIME)');
         $this->connection->execute('CREATE TABLE discount_rules (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, qualifying_item_name TEXT, minimum_item_count INTEGER, discount_type TEXT, discount_value INTEGER, active BOOLEAN, created DATETIME, updated DATETIME)');
         $this->connection->execute('CREATE TABLE orders (id INTEGER PRIMARY KEY AUTOINCREMENT, barrister_name TEXT, email TEXT, notes TEXT, status TEXT, subtotal_cents INTEGER, discount_cents INTEGER, total_cents INTEGER, submitted_at DATETIME, created DATETIME, report_downloaded_at DATETIME)');
-        $this->connection->execute('CREATE TABLE order_items (id INTEGER PRIMARY KEY AUTOINCREMENT, order_id INTEGER, service_item_id INTEGER, item_name TEXT, unit_price_cents INTEGER, quantity INTEGER, line_total_cents INTEGER, created DATETIME)');
+        $this->connection->execute('CREATE TABLE order_items (id INTEGER PRIMARY KEY AUTOINCREMENT, order_id INTEGER, service_item_id INTEGER, item_name TEXT, unit_price_cents INTEGER, quantity INTEGER, line_total_cents INTEGER, discounted_total_cents INTEGER, created DATETIME)');
         $this->connection->execute('CREATE TABLE email_settings (id INTEGER PRIMARY KEY AUTOINCREMENT, mailbox TEXT, reporting_day TEXT, created DATETIME, updated DATETIME)');
         $this->locator = new TableLocator();
         foreach ([
@@ -168,6 +168,35 @@ final class OrderNamesTest extends TestCase
         $this->assertSame(1000, $order->discount_cents);
         $this->assertSame(4000, $order->total_cents);
         $this->assertSame(3, $this->locator->get('DiscountRules')->find()->where(['active' => true])->count());
+    }
+
+    public function testNewSpecialsPersistExactPricesAndNeverDiscountBarRobes(): void
+    {
+        foreach ([[1, 'Shirt', 900, 1], [2, 'Coat', 4000, 1], [3, 'Bar robe', 5000, 0]] as [$id, $name, $price, $eligible]) {
+            $this->connection->insert('service_items', ['id' => $id, 'name' => $name, 'unit_price_cents' => $price, 'active' => 1, 'position' => $id, 'price_cap_eligible' => $eligible]);
+        }
+        foreach (\App\Command\ConfigureSpecialsCommand::definitions() as $rule) {
+            $this->connection->insert('discount_rules', $rule + ['active' => 1]);
+        }
+        $this->connection->insert('email_settings', ['mailbox' => 'team@example.com', 'reporting_day' => 'monday']);
+        $this->enableCsrfToken();
+        $this->post('/request', [
+            'barrister_name' => 'Test Barrister', 'email' => 'barrister@example.com',
+            'items' => [
+                ['service_item_id' => '1', 'quantity' => '5'],
+                ['service_item_id' => '2', 'quantity' => '1'],
+                ['service_item_id' => '3', 'quantity' => '1'],
+            ],
+        ]);
+        $this->assertRedirect('/request/received');
+        $this->assertSession(10000, 'Foleys.lastOrder.total');
+        $order = $this->locator->get('Orders')->find()->firstOrFail();
+        $this->assertSame(13500, $order->subtotal_cents);
+        $this->assertSame(3500, $order->discount_cents);
+        $lines = $this->locator->get('OrderItems')->find()->orderBy(['id' => 'ASC'])->all()->toList();
+        $this->assertSame([2539, 2461, 5000], array_map(static fn ($line) => $line->discounted_total_cents, $lines));
+        $report = (new \App\Service\WeeklyReportService())->data();
+        $this->assertSame([2539, 2461, 5000], $report['discountedCostsByOrder'][(int)$order->id]);
     }
 
     public function testExcelReportRequiresAdministratorSession(): void

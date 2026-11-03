@@ -85,7 +85,7 @@ return [
     'Foleys' => [
         'adminUsername' => env('ADMIN_USERNAME', ''),
         'adminPassword' => env('ADMIN_PASSWORD', ''),
-        // Highest qualifying quantity tier only; same-tier offers never stack.
+        // Optimise disjoint piece bundles and garment-specific unit-price offers.
         // Set to false to pause discounts in BOTH server and preview.
         'discountsEnabled' => true,
     ],

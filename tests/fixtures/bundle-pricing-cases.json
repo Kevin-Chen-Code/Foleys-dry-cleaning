@@ -1,0 +1,1087 @@
+[
+  {
+    "name": "Two expensive pieces cost thirty dollars",
+    "items": [
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 4000,
+        "quantity": 2
+      }
+    ],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 8000,
+    "total": 3000,
+    "names": [
+      "2 piece specials"
+    ],
+    "line_totals": [
+      3000
+    ]
+  },
+  {
+    "name": "Three expensive pieces cost thirty-two dollars",
+    "items": [
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 4000,
+        "quantity": 3
+      }
+    ],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 12000,
+    "total": 3200,
+    "names": [
+      "3 piece specials"
+    ],
+    "line_totals": [
+      3200
+    ]
+  },
+  {
+    "name": "Four expensive pieces use two pairs rather than triple plus single",
+    "items": [
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 4000,
+        "quantity": 4
+      }
+    ],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 16000,
+    "total": 6000,
+    "names": [
+      "2 piece specials"
+    ],
+    "applications": [
+      2
+    ]
+  },
+  {
+    "name": "Six expensive pieces use two triples",
+    "items": [
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 4000,
+        "quantity": 6
+      }
+    ],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 24000,
+    "total": 6400,
+    "names": [
+      "3 piece specials"
+    ],
+    "applications": [
+      2
+    ]
+  },
+  {
+    "name": "Eleven expensive pieces use three triples and one pair",
+    "items": [
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 4000,
+        "quantity": 11
+      }
+    ],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 44000,
+    "total": 12600,
+    "names": [
+      "2 piece specials",
+      "3 piece specials"
+    ],
+    "applications": [
+      1,
+      3
+    ]
+  },
+  {
+    "name": "Three jabots stay at twenty-four dollars",
+    "items": [
+      {
+        "item_name": "Jabot",
+        "unit_price_cents": 800,
+        "quantity": 3
+      }
+    ],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 2400,
+    "total": 2400,
+    "names": [],
+    "line_totals": [
+      2400
+    ]
+  },
+  {
+    "name": "Cheap eligible pieces never cost more",
+    "items": [
+      {
+        "item_name": "Blouse",
+        "unit_price_cents": 800,
+        "quantity": 3
+      }
+    ],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 2400,
+    "total": 2400,
+    "names": []
+  },
+  {
+    "name": "Five shirts activate six-dollar unit rate",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 900,
+        "quantity": 5
+      }
+    ],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 4500,
+    "total": 3000,
+    "names": [
+      "5 shirt discount"
+    ],
+    "line_totals": [
+      3000
+    ],
+    "applications": [
+      5
+    ],
+    "unit_prices": [
+      600
+    ]
+  },
+  {
+    "name": "Six shirts cost thirty-six dollars",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 900,
+        "quantity": 6
+      }
+    ],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 5400,
+    "total": 3600,
+    "names": [
+      "5 shirt discount"
+    ],
+    "applications": [
+      6
+    ]
+  },
+  {
+    "name": "Four shirts do not activate unit offer or dearer bundles",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 900,
+        "quantity": 4
+      }
+    ],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 3600,
+    "total": 3600,
+    "names": [],
+    "unit_prices": [
+      900
+    ]
+  },
+  {
+    "name": "Bar robe remains full price beside pair special",
+    "items": [
+      {
+        "item_name": "Bar robe",
+        "unit_price_cents": 5000,
+        "quantity": 1
+      },
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 4000,
+        "quantity": 2
+      }
+    ],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 13000,
+    "total": 8000,
+    "names": [
+      "2 piece specials"
+    ],
+    "line_totals": [
+      5000,
+      3000
+    ]
+  },
+  {
+    "name": "Shirt unit deal and mixed triple use disjoint pieces",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 900,
+        "quantity": 5
+      },
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 4000,
+        "quantity": 1
+      }
+    ],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 8500,
+    "total": 5000,
+    "names": [
+      "3 piece specials",
+      "5 shirt discount"
+    ],
+    "line_totals": [
+      2539,
+      2461
+    ],
+    "applications": [
+      1,
+      3
+    ]
+  },
+  {
+    "name": "Cheapest heterogeneous grouping leaves cheap singles",
+    "items": [
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 4000,
+        "quantity": 1
+      },
+      {
+        "item_name": "Blazer",
+        "unit_price_cents": 4000,
+        "quantity": 1
+      },
+      {
+        "item_name": "Tie",
+        "unit_price_cents": 100,
+        "quantity": 1
+      },
+      {
+        "item_name": "Skirt",
+        "unit_price_cents": 100,
+        "quantity": 1
+      }
+    ],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 8200,
+    "total": 3200,
+    "names": [
+      "2 piece specials"
+    ],
+    "line_totals": [
+      1500,
+      1500,
+      100,
+      100
+    ]
+  },
+  {
+    "name": "Ordinary inactive eligibility flag excludes piece bundles",
+    "items": [
+      {
+        "item_name": "Court garment",
+        "unit_price_cents": 4000,
+        "quantity": 3,
+        "price_cap_eligible": false
+      }
+    ],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 12000,
+    "total": 12000,
+    "names": []
+  },
+  {
+    "name": "Mixed case plural shirts combine across lines",
+    "items": [
+      {
+        "item_name": " shirt ",
+        "unit_price_cents": 900,
+        "quantity": 2
+      },
+      {
+        "item_name": "SHIRTS",
+        "unit_price_cents": 900,
+        "quantity": 3
+      }
+    ],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 4500,
+    "total": 3000,
+    "names": [
+      "5 shirt discount"
+    ],
+    "line_totals": [
+      1200,
+      1800
+    ],
+    "applications": [
+      5
+    ]
+  },
+  {
+    "name": "Bar robes receive no legacy discount",
+    "items": [
+      {
+        "item_name": "BAR-ROBES",
+        "unit_price_cents": 5000,
+        "quantity": 2
+      }
+    ],
+    "rules": [
+      {
+        "name": "Legacy percentage",
+        "minimum_item_count": 1,
+        "discount_type": "percentage",
+        "discount_value": 50
+      }
+    ],
+    "subtotal": 10000,
+    "total": 10000,
+    "names": []
+  },
+  {
+    "name": "Legacy percentage excludes robes from basis",
+    "items": [
+      {
+        "item_name": "Bar robe",
+        "unit_price_cents": 5000,
+        "quantity": 1
+      },
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 2000,
+        "quantity": 1
+      }
+    ],
+    "rules": [
+      {
+        "name": "Legacy percentage",
+        "minimum_item_count": 1,
+        "discount_type": "percentage",
+        "discount_value": 50
+      }
+    ],
+    "subtotal": 7000,
+    "total": 6000,
+    "names": [
+      "Legacy percentage"
+    ],
+    "line_totals": [
+      5000,
+      1000
+    ]
+  },
+  {
+    "name": "Higher zero-saving legacy cap does not block useful lower offer",
+    "items": [
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 2000,
+        "quantity": 3
+      }
+    ],
+    "rules": [
+      {
+        "name": "Lower offer",
+        "minimum_item_count": 2,
+        "discount_type": "percentage",
+        "discount_value": 10
+      },
+      {
+        "name": "Dearer cap",
+        "minimum_item_count": 3,
+        "discount_type": "price_cap",
+        "discount_value": 10000
+      }
+    ],
+    "subtotal": 6000,
+    "total": 5400,
+    "names": [
+      "Lower offer"
+    ]
+  },
+  {
+    "name": "Cheaper legacy alternative replaces whole shirt plan",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 900,
+        "quantity": 6
+      }
+    ],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt"
+      },
+      {
+        "name": "Legacy percentage",
+        "minimum_item_count": 6,
+        "discount_type": "percentage",
+        "discount_value": 50
+      }
+    ],
+    "subtotal": 5400,
+    "total": 2700,
+    "names": [
+      "Legacy percentage"
+    ],
+    "line_totals": [
+      2700
+    ],
+    "unit_prices": [
+      900
+    ]
+  },
+  {
+    "name": "Legacy cap cannot discount bar robes or jabots",
+    "items": [
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 2000,
+        "quantity": 2
+      },
+      {
+        "item_name": "Bar robe",
+        "unit_price_cents": 5000,
+        "quantity": 1
+      },
+      {
+        "item_name": "Jabot",
+        "unit_price_cents": 800,
+        "quantity": 1
+      }
+    ],
+    "rules": [
+      {
+        "name": "Legacy cap",
+        "minimum_item_count": 2,
+        "discount_type": "price_cap",
+        "discount_value": 3000
+      }
+    ],
+    "subtotal": 9800,
+    "total": 8800,
+    "names": [
+      "Legacy cap"
+    ],
+    "line_totals": [
+      3000,
+      5000,
+      800
+    ]
+  },
+  {
+    "name": "Disabled specials do not change prices",
+    "items": [
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 4000,
+        "quantity": 3
+      }
+    ],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000,
+        "active": false
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200,
+        "active": false
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt",
+        "active": false
+      }
+    ],
+    "subtotal": 12000,
+    "total": 12000,
+    "names": []
+  },
+  {
+    "name": "Ignored quantities preserve original array indexes",
+    "items": [
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 4000,
+        "quantity": 0
+      },
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 900,
+        "quantity": -1
+      },
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 4000,
+        "quantity": 2
+      }
+    ],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 8000,
+    "total": 3000,
+    "names": [
+      "2 piece specials"
+    ],
+    "line_totals": [
+      0,
+      0,
+      3000
+    ]
+  },
+  {
+    "name": "One piece has no piece discount",
+    "items": [
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 4000,
+        "quantity": 1
+      }
+    ],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 4000,
+    "total": 4000,
+    "names": []
+  },
+  {
+    "name": "Empty request has zero totals",
+    "items": [],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 0,
+    "total": 0,
+    "names": []
+  },
+  {
+    "name": "More expensive unit offer never raises shirt price",
+    "items": [
+      {
+        "item_name": "Shirt",
+        "unit_price_cents": 500,
+        "quantity": 5
+      }
+    ],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 2500,
+    "total": 2500,
+    "names": [],
+    "unit_prices": [
+      500
+    ]
+  },
+  {
+    "name": "Price cap legacy leaves full robe price and exact cents",
+    "items": [
+      {
+        "item_name": "Bar robe",
+        "unit_price_cents": 5000,
+        "quantity": 1
+      },
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 2500,
+        "quantity": 1
+      },
+      {
+        "item_name": "Blouse",
+        "unit_price_cents": 2000,
+        "quantity": 1
+      }
+    ],
+    "rules": [
+      {
+        "name": "Legacy cap",
+        "minimum_item_count": 2,
+        "discount_type": "price_cap",
+        "discount_value": 3000
+      }
+    ],
+    "subtotal": 9500,
+    "total": 8000,
+    "names": [
+      "Legacy cap"
+    ],
+    "line_totals": [
+      5000,
+      1666,
+      1334
+    ]
+  },
+  {
+    "name": "Heterogeneous multiple bundles have identical server and preview line charges",
+    "items": [
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 10000,
+        "quantity": 1
+      },
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 8000,
+        "quantity": 1
+      },
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 7000,
+        "quantity": 1
+      },
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 6000,
+        "quantity": 1
+      },
+      {
+        "item_name": "Coat",
+        "unit_price_cents": 5000,
+        "quantity": 1
+      }
+    ],
+    "rules": [
+      {
+        "name": "2 piece specials",
+        "minimum_item_count": 2,
+        "discount_type": "bundle",
+        "discount_value": 3000
+      },
+      {
+        "name": "3 piece specials",
+        "minimum_item_count": 3,
+        "discount_type": "bundle",
+        "discount_value": 3200
+      },
+      {
+        "name": "5 shirt discount",
+        "minimum_item_count": 5,
+        "discount_type": "unit_price",
+        "discount_value": 600,
+        "qualifying_item_name": "Shirt"
+      }
+    ],
+    "subtotal": 36000,
+    "total": 6200,
+    "names": [
+      "2 piece specials",
+      "3 piece specials"
+    ],
+    "applications": [
+      1,
+      1
+    ],
+    "line_totals": [
+      1280,
+      1024,
+      896,
+      1636,
+      1364
+    ]
+  }
+]

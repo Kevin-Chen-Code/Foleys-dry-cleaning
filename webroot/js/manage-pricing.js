@@ -7,7 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const update = () => {
       const percentage = type.value === 'percentage';
       const cap = type.value === 'price_cap';
-      label.textContent = percentage ? 'Discount (%)' : cap ? 'Maximum eligible total ($)' : 'Discount amount ($)';
+      const bundle = type.value === 'bundle';
+      const unit = type.value === 'unit_price';
+      label.textContent = percentage ? 'Discount (%)' : cap ? 'Maximum eligible total ($)' : bundle ? 'Price per bundle ($)' : unit ? 'Reduced unit price ($)' : 'Discount amount ($)';
+      const qualifier = form.querySelector('[name="qualifying_item_name"]');
+      if (qualifier) qualifier.required = unit;
       amount.step = percentage ? '1' : '0.01';
       if (percentage) amount.max = '100';
       else amount.removeAttribute('max');

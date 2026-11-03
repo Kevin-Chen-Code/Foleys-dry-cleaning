@@ -18,9 +18,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-      const {subtotal, total, appliedDiscounts} = window.FoleysPricing.calculate(
+      const {subtotal, total, appliedDiscounts, lineTotals, unitPrices} = window.FoleysPricing.calculate(
         selectedItems, discountRules, builder.dataset.discountsEnabled === 'true',
       );
+      builder.querySelectorAll('.builder-row').forEach((row, index) => {
+        if (lineTotals) row.querySelector('.row-price').textContent = money(lineTotals[index]);
+        if (unitPrices) row.querySelector('.row-quantity').textContent = `${row.dataset.quantity} × ${money(unitPrices[index])}`;
+      });
 
       document.querySelectorAll('[data-live-subtotal]').forEach((target) => target.textContent = money(subtotal));
       document.querySelectorAll('[data-live-total]').forEach((target) => target.textContent = money(total));
@@ -28,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         list.replaceChildren();
         appliedDiscounts.forEach((rule) => {
           const entry = document.createElement('li');
-          entry.textContent = `${rule.name} (-${money(rule.amount)})`;
+          entry.textContent = `${rule.name}${rule.applications > 1 ? ' × ' + rule.applications : ''} (-${money(rule.amount)})`;
           list.append(entry);
         });
         list.hidden = appliedDiscounts.length === 0;
@@ -56,7 +60,17 @@ document.addEventListener('DOMContentLoaded', () => {
     builder.querySelector('.add-row').addEventListener('click', () => { dialog.showModal(); });
     builder.querySelector('.cancel-add').addEventListener('click', () => { dialog.close(); });
     builder.querySelector('.confirm-add').addEventListener('click', (event) => {
-      event.preventDefault(); const item = items.find((entry) => entry.id === Number(itemSelect.value)); const quantity = Math.max(1, Number(builder.querySelector('.dialog-quantity').value || 1));
+      event.preventDefault(); const item = items.find((entry) => entry.id === Number(itemSelect.value));
+      const input = builder.querySelector('.dialog-quantity');
+      const quantity = Number(input.value);
+      const currentQuantity = Array.from(builder.querySelectorAll('.builder-row')).reduce((sum, row) => sum + Number(row.dataset.quantity), 0);
+      input.setCustomValidity('');
+      if (!Number.isSafeInteger(quantity) || quantity < 1 || currentQuantity + quantity > 10000) {
+        input.setCustomValidity('Enter a whole-number quantity. A request may contain at most 10,000 garments.');
+        input.reportValidity();
+        return;
+      }
+      if (!item) return;
       addRow(item, quantity); dialog.close();
     });
     refresh();

@@ -21,7 +21,7 @@ final class DiscountRulesTable extends Table
             }
             return (int)$value <= 100 ? (int)$value : null;
         }
-        if (!in_array($type, ['fixed', 'price_cap'], true) || !preg_match('/^(\d+)(?:\.(\d{1,2}))?$/D', $value, $matches)) {
+        if (!in_array($type, ['fixed', 'price_cap', 'bundle', 'unit_price'], true) || !preg_match('/^(\d+)(?:\.(\d{1,2}))?$/D', $value, $matches)) {
             return null;
         }
         $dollars = ltrim($matches[1], '0');
@@ -37,7 +37,18 @@ final class DiscountRulesTable extends Table
         return $validator
             ->requirePresence('name', 'create')->notEmptyString('name')->scalar('name')->maxLength('name', 120)
             ->requirePresence('minimum_item_count', 'create')->integer('minimum_item_count')->greaterThanOrEqual('minimum_item_count', 1)
-            ->requirePresence('discount_type', 'create')->inList('discount_type', ['percentage', 'fixed', 'price_cap'])
+            ->requirePresence('discount_type', 'create')->inList('discount_type', ['percentage', 'fixed', 'price_cap', 'bundle', 'unit_price'])
+            ->add('discount_type', 'unitPriceGarment', [
+                'rule' => static fn ($value, array $context): bool => $value !== 'unit_price'
+                    || (is_string($context['data']['qualifying_item_name'] ?? null) && trim($context['data']['qualifying_item_name']) !== ''),
+                'message' => 'Enter the garment name for a unit-price offer.',
+            ])
+            ->allowEmptyString('qualifying_item_name')->scalar('qualifying_item_name')->maxLength('qualifying_item_name', 120)
+            ->add('minimum_item_count', 'bundleSize', [
+                'rule' => static fn ($value, array $context): bool => ($context['data']['discount_type'] ?? '') !== 'bundle'
+                    || ((int)$value >= 2 && (int)$value <= 10000),
+                'message' => 'Bundle size must be between 2 and 10,000 pieces.',
+            ])
             ->requirePresence('discount_value', 'create')->notEmptyString('discount_value')
             ->nonNegativeInteger('discount_value')->lessThanOrEqual('discount_value', 2147483647)
             ->add('discount_value', 'percentageRange', [

@@ -2,7 +2,7 @@
 $this->assign('title', 'Manage pricing');
 $this->Html->css('item-dialog', ['block' => true]); // UI: styles the pricing edit popups.
 $this->Html->script('manage-pricing', ['block' => true]);
-$discountTypes = ['percentage' => 'Percentage', 'fixed' => 'Fixed dollar amount', 'price_cap' => 'Price cap (excluding bar robes and jabots)'];
+$discountTypes = ['bundle' => 'Piece bundle (repeatable)', 'unit_price' => 'Garment unit-price offer', 'percentage' => 'Percentage', 'fixed' => 'Fixed dollar amount', 'price_cap' => 'Legacy whole-order price cap'];
 ?>
 
 <section class="page-heading">
@@ -85,16 +85,17 @@ $discountTypes = ['percentage' => 'Percentage', 'fixed' => 'Fixed dollar amount'
 
 <section class="items-card">
     <h2>Discount rules</h2>
-    <p>Only the highest qualifying quantity tier applies. If several rules qualify at that tier, only the largest discount is used.</p>
+    <p>Piece bundles are combined to give the lowest price without using an item twice. Bar robes never receive discounts; jabots are excluded from piece bundles. Specials never increase a price.</p>
     <table>
         <thead>
-            <tr><th>Rule</th><th>Value</th><th>Actions</th></tr>
+            <tr><th>Rule</th><th>Value</th><th>Status</th><th>Actions</th></tr>
         </thead>
         <tbody>
         <?php foreach ($rules as $rule): ?>
             <tr>
                 <td><?= h($rule->name) ?></td>
-                <td><?= $rule->discount_type === 'percentage' ? (int)$rule->discount_value . '%' : '$' . number_format($rule->discount_value / 100, 2) ?><?= $rule->discount_type === 'price_cap' ? ' cap' : '' ?></td>
+                <td><?= $rule->discount_type === 'percentage' ? (int)$rule->discount_value . '%' : '$' . number_format($rule->discount_value / 100, 2) ?><?= $rule->discount_type === 'price_cap' ? ' cap' : ($rule->discount_type === 'bundle' ? ' per bundle' : ($rule->discount_type === 'unit_price' ? ' per item' : '')) ?></td>
+                <td><?= $rule->active ? 'Active' : 'Inactive / staged' ?></td>
                 <td>
                     <button type="button" class="action-button" onclick="this.nextElementSibling.showModal()">Edit</button>
                     <dialog class="item-dialog pricing-editor-dialog discount-editor-dialog">
@@ -104,8 +105,9 @@ $discountTypes = ['percentage' => 'Percentage', 'fixed' => 'Fixed dollar amount'
                         <?= $this->Form->control('name', ['value' => $rule->name]) ?>
                         <?= $this->Form->control('minimum_item_count', ['label' => 'Minimum item count', 'type' => 'number', 'min' => 1, 'step' => 1, 'required' => true, 'value' => $rule->minimum_item_count]) ?>
                         <?= $this->Form->control('discount_type', ['options' => $discountTypes, 'value' => $rule->discount_type]) ?>
+                        <?= $this->Form->control('qualifying_item_name', ['label' => 'Garment name (required for unit-price offers)', 'value' => $rule->qualifying_item_name]) ?>
                         <?= $this->Form->control('discount_value', ['label' => $rule->discount_type === 'percentage' ? 'Discount (%)' : ($rule->discount_type === 'price_cap' ? 'Maximum eligible total ($)' : 'Discount amount ($)'), 'type' => 'number', 'min' => 0, 'required' => true, 'step' => $rule->discount_type === 'percentage' ? '1' : '0.01', 'value' => $rule->discount_type === 'percentage' ? $rule->discount_value : number_format($rule->discount_value / 100, 2, '.', '')]) ?>
-                        <p data-price-cap-note<?= $rule->discount_type === 'price_cap' ? '' : ' hidden' ?>>Once the minimum eligible count is reached, all eligible garments together are capped at this amount. Bar robes and jabots are charged separately and do not count toward the threshold. Only the highest qualifying quantity tier applies; at that tier, the largest discount wins without stacking.</p>
+                        <p data-price-cap-note<?= $rule->discount_type === 'price_cap' ? '' : ' hidden' ?>>Legacy cap: applies once to eligible garments. Piece bundles repeat and are optimised instead. Bar robes and jabots do not qualify for caps or piece bundles.</p>
                         <div class="dialog-actions">
                             <?= $this->Form->button('Save changes', ['class' => 'button-primary']) ?>
                             <button type="button" class="cancel-add" onclick="this.closest('dialog').close()">Cancel</button>
@@ -136,8 +138,9 @@ $discountTypes = ['percentage' => 'Percentage', 'fixed' => 'Fixed dollar amount'
     <?= $this->Form->control('name') ?>
     <?= $this->Form->control('minimum_item_count', ['label' => 'Minimum item count', 'type' => 'number', 'min' => 1, 'step' => 1, 'required' => true]) ?>
     <?= $this->Form->control('discount_type', ['options' => $discountTypes]) ?>
+    <?= $this->Form->control('qualifying_item_name', ['label' => 'Garment name (required for unit-price offers)']) ?>
     <?= $this->Form->control('discount_value', ['label' => 'Discount (%)', 'type' => 'number', 'min' => 0, 'step' => 1, 'required' => true]) ?>
-    <p data-price-cap-note hidden>Once the minimum eligible count is reached, all eligible garments together are capped at this amount. Bar robes and jabots are charged separately and do not count toward the threshold. Only the highest qualifying quantity tier applies; at that tier, the largest discount wins without stacking.</p>
+    <p data-price-cap-note hidden>Legacy cap: applies once to eligible garments. Piece bundles repeat and are optimised instead. Bar robes and jabots do not qualify for caps or piece bundles.</p>
     <?= $this->Form->button('Save discount rule', ['class' => 'button-primary']) ?>
     <?= $this->Form->end() ?>
 </section>

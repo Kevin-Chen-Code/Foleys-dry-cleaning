@@ -5,13 +5,14 @@
 
 <table>
     <thead>
-        <tr><th>Item</th><th>Price</th></tr>
+        <tr><th>Item</th><th>Price</th><th>Description</th></tr>
     </thead>
     <tbody>
     <?php foreach ($items as $item): ?>
         <tr>
             <td><?= h($item->name) ?></td>
             <td>$<?= number_format($item->unit_price_cents / 100, 2) ?></td>
+            <td><?= h($item->description) ?></td>
         </tr>
     <?php endforeach; ?>
     </tbody>

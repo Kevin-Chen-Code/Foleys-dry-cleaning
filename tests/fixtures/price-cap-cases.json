@@ -1020,7 +1020,7 @@
     ]
   },
   {
-    "name": "Higher cap with zero saving still replaces the lower tier",
+    "name": "Higher cap with zero saving is ignored in favour of a saving",
     "items": [
       {
         "item_name": "Tie",
@@ -1044,11 +1044,13 @@
       }
     ],
     "subtotal": 2500,
-    "total": 2500,
-    "names": []
+    "total": 2000,
+    "names": [
+      "Three item saving"
+    ]
   },
   {
-    "name": "Higher zero fixed offer still replaces the lower tier",
+    "name": "Higher zero fixed offer is ignored in favour of a saving",
     "items": [
       {
         "item_name": "Tie",
@@ -1072,8 +1074,10 @@
       }
     ],
     "subtotal": 2500,
-    "total": 2500,
-    "names": []
+    "total": 2000,
+    "names": [
+      "Three item saving"
+    ]
   },
   {
     "name": "Same-tier fixed offer beats percentage and cap without stacking",

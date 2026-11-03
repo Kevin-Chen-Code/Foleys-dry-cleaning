@@ -10,7 +10,7 @@ final class DiscountRulesTableTest extends TestCase
 {
     public function testDollarEntryConvertsExactlyToStoredCents(): void
     {
-        foreach (['fixed', 'price_cap'] as $type) {
+        foreach (['fixed', 'price_cap', 'bundle', 'unit_price'] as $type) {
             foreach (['10' => 1000, '10.25' => 1025, '0.29' => 29, '30.00' => 3000, '0' => 0] as $amount => $expected) {
                 $this->assertSame($expected, DiscountRulesTable::formValueToStorage((string)$amount, $type));
             }

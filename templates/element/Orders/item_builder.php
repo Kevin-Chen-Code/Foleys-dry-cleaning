@@ -12,7 +12,7 @@
             <h2>Add an item</h2>
             <div class="dialog-fields">
                 <label>Garment <select class="dialog-item"></select></label>
-                <label>Quantity <input class="dialog-quantity" type="number" min="1" value="1"></label>
+                <label>Quantity <input class="dialog-quantity" type="number" min="1" max="10000" step="1" value="1"></label>
             </div>
             <div class="dialog-actions">
                 <button type="button" class="confirm-add">Add item</button>

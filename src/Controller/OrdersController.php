@@ -45,9 +45,11 @@ final class OrdersController extends AppController
         ]);
         if ($order->hasErrors()) { $this->set('order', $order); return; }
         $orderItems = $this->fetchTable('OrderItems');
-        $orders->getConnection()->transactional(function () use ($orders, $orderItems, $order, $pricing): void {
+        $hasLineCharges = $orderItems->getSchema()->hasColumn('discounted_total_cents');
+        $orders->getConnection()->transactional(function () use ($orders, $orderItems, $order, $pricing, $hasLineCharges): void {
             if (!$orders->save($order)) { throw new \RuntimeException('The collection request could not be saved.'); }
             foreach ($pricing['lines'] as $line) {
+                if (!$hasLineCharges) { unset($line['discounted_total_cents']); }
                 if (!$orderItems->save($orderItems->newEntity($line + ['order_id' => $order->id, 'created' => FrozenTime::now()]))) { throw new \RuntimeException('An item in the collection request could not be saved.'); }
             }
         });
@@ -71,8 +73,14 @@ final class OrdersController extends AppController
     {
         $catalogue = []; foreach ($items as $item) { $catalogue[(int)$item->id] = $item; }
         $submitted = [];
+        $totalQuantity = 0;
         foreach ((array)$this->request->getData('items') as $data) {
             $id = (int)($data['service_item_id'] ?? 0); $quantity = filter_var($data['quantity'] ?? 0, FILTER_VALIDATE_INT) ?: 0;
+            if ($quantity > OrderPricingService::MAX_ITEM_COUNT - $totalQuantity) {
+                $this->Flash->error('A request may contain at most 10,000 garments. Please split larger requests.');
+                return [];
+            }
+            if ($quantity > 0) { $totalQuantity += $quantity; }
             if ($quantity > 0 && isset($catalogue[$id])) { $item = $catalogue[$id]; $submitted[] = ['service_item_id' => $id, 'item_name' => $item->name, 'unit_price_cents' => (int)$item->unit_price_cents, 'quantity' => $quantity, 'price_cap_eligible' => OrderPricingService::isPriceCapEligible($item->toArray())]; }
         }
         return $submitted;

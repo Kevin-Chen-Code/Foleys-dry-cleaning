@@ -252,7 +252,7 @@ final class PricingPagesTest extends TestCase
         $this->assertSame(3, $rules->find()->where(['active' => true])->count());
     }
 
-    public function testMissingArchiveMigrationLeavesPagesUsableAndDeletionFailsSafely(): void
+    public function testMissingArchiveMigrationStillAllowsRemovalOfAnUnusedGarment(): void
     {
         $this->connection->execute('ALTER TABLE service_items DROP COLUMN archived_at');
         $items = $this->locator->get('ServiceItems');
@@ -268,8 +268,76 @@ final class PricingPagesTest extends TestCase
         $this->enableCsrfToken();
         $this->post('/admin/manage-pricing', ['action' => 'delete_item', 'id' => $item->id]);
         $this->assertRedirect('/admin/manage-pricing');
-        $this->assertFlashMessageContains('Apply the catalogue archive migration');
+        $this->assertSame(0, $items->find()->count());
+        $this->assertSame([], $this->connection->execute('PRAGMA foreign_key_check')->fetchAll('assoc'));
+    }
+
+    public function testMissingArchiveMigrationDoesNotAllowDeletingHistoricalGarments(): void
+    {
+        $this->connection->execute('ALTER TABLE service_items DROP COLUMN archived_at');
+        $items = $this->locator->get('ServiceItems');
+        $item = $items->saveOrFail($items->newEntity(['name' => 'Referenced garment', 'unit_price_cents' => 900, 'active' => true]));
+        $this->connection->insert('order_items', [
+            'order_id' => 101, 'service_item_id' => $item->id, 'item_name' => 'Original name',
+            'unit_price_cents' => 900, 'quantity' => 2, 'line_total_cents' => 1800,
+        ]);
+        $before = $this->connection->execute('SELECT * FROM order_items')->fetch('assoc');
+
+        $this->assertFalse($items->removeFromCatalogue($item));
         $this->assertSame(1, $items->find()->count());
-        $this->assertTrue($items->get($item->id)->active);
+        $this->assertSame($before, $this->connection->execute('SELECT * FROM order_items')->fetch('assoc'));
+    }
+
+    public function testStaleNegativeArchiveSchemaIsRefreshedBeforeRemoval(): void
+    {
+        $items = $this->locator->get('ServiceItems');
+        $item = $items->saveOrFail($items->newEntity(['name' => 'Stale schema garment', 'unit_price_cents' => 900, 'active' => true]));
+        $stale = clone $items->getSchema();
+        $stale->removeColumn('archived_at');
+        $items->setSchema($stale);
+
+        $this->assertTrue($items->removeFromCatalogue($item));
+        $this->assertTrue($items->getSchema()->hasColumn('archived_at'));
+        $this->assertNotNull($items->get($item->id)->archived_at);
+        $this->assertSame(0, $items->find('catalogue')->count());
+    }
+
+    public function testStaleNegativeArchiveSchemaCannotExposeAnArchivedGarment(): void
+    {
+        $items = $this->locator->get('ServiceItems');
+        $item = $items->saveOrFail($items->newEntity(['name' => 'Archived in database', 'unit_price_cents' => 900, 'active' => false]));
+        $this->connection->execute('UPDATE service_items SET archived_at = ? WHERE id = ?', ['2026-11-02 00:00:00', $item->id]);
+        $stale = clone $items->getSchema();
+        $stale->removeColumn('archived_at');
+        $items->setSchema($stale);
+
+        $this->assertSame(0, $items->find('catalogue')->count());
+        $this->assertTrue($items->getSchema()->hasColumn('archived_at'));
+    }
+
+    public function testConcurrentReferenceKeepsTheGarmentAndDoesNotRaiseAForeignKeyError(): void
+    {
+        $this->connection->execute('ALTER TABLE service_items DROP COLUMN archived_at');
+        $items = $this->locator->get('ServiceItems');
+        $item = $items->saveOrFail($items->newEntity(['name' => 'Concurrent garment', 'unit_price_cents' => 900, 'active' => true]));
+        // Simulate a reference arriving after the preflight check, inside the atomic delete.
+        $this->connection->execute("CREATE TRIGGER add_reference_before_delete BEFORE DELETE ON service_items BEGIN INSERT INTO order_items (order_id, service_item_id, item_name, unit_price_cents, quantity, line_total_cents) VALUES (101, OLD.id, OLD.name, 900, 1, 900); END");
+
+        $this->assertFalse($items->removeFromCatalogue($item));
+        $this->assertSame(1, $items->find()->count());
+        $this->assertSame(0, $this->locator->get('OrderItems')->find()->count());
+        $this->assertSame([], $this->connection->execute('PRAGMA foreign_key_check')->fetchAll('assoc'));
+    }
+
+    public function testUnexpectedDatabaseFailureIsNotMisreportedAsAHistoryReference(): void
+    {
+        $this->connection->execute('ALTER TABLE service_items DROP COLUMN archived_at');
+        $items = $this->locator->get('ServiceItems');
+        $item = $items->saveOrFail($items->newEntity(['name' => 'Unexpected failure garment', 'unit_price_cents' => 900, 'active' => true]));
+        $this->connection->execute("CREATE TRIGGER reject_unexpected_delete BEFORE DELETE ON service_items BEGIN SELECT RAISE(ABORT, 'Unexpected database failure'); END");
+
+        $this->expectException(\Cake\Database\Exception\QueryException::class);
+        $this->expectExceptionMessage('Unexpected database failure');
+        $items->removeFromCatalogue($item);
     }
 }

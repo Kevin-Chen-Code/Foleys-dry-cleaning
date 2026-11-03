@@ -13,9 +13,9 @@ final class FoleysLoadHarness
     {
         // Independent expected answers, not calculated by the pricing code under test.
         return [
-            ['items' => [[1, 2], [2, 1]], 'subtotal' => 3800, 'discount' => 1300, 'total' => 2500],
-            ['items' => [[3, 1], [4, 1]], 'subtotal' => 3800, 'discount' => 380, 'total' => 3420],
-            ['items' => [[1, 4], [2, 2], [3, 1]], 'subtotal' => 10600, 'discount' => 200, 'total' => 10400],
+            ['items' => [[1, 2], [2, 1]], 'subtotal' => 3800, 'discount' => 600, 'total' => 3200],
+            ['items' => [[3, 1], [4, 1]], 'subtotal' => 3800, 'discount' => 0, 'total' => 3800],
+            ['items' => [[1, 5], [2, 2], [3, 1]], 'subtotal' => 11600, 'discount' => 3000, 'total' => 8600],
         ];
     }
 
@@ -110,8 +110,8 @@ final class FoleysLoadHarness
         foreach ([[1, 'Shirt', 1000, 1], [2, 'Suit jacket', 1800, 1], [3, 'Bar robe', 3000, 0], [4, 'Jabot', 800, 0]] as [$id, $name, $price, $eligible]) {
             $item->execute([$id, $name, $price, $id, $eligible, gmdate('Y-m-d H:i:s')]);
         }
-        $rule = $db->prepare('INSERT INTO discount_rules (name, minimum_item_count, discount_type, discount_value, active, created) VALUES (?, ?, ?, ?, 1, ?)');
-        foreach ([['Test cap', 3, 'price_cap', 2500], ['Test percentage', 2, 'percentage', 10], ['Test fixed', 5, 'fixed', 200]] as $row) {
+        $rule = $db->prepare('INSERT INTO discount_rules (name, minimum_item_count, discount_type, discount_value, qualifying_item_name, active, created) VALUES (?, ?, ?, ?, ?, 1, ?)');
+        foreach ([['2 piece specials', 2, 'bundle', 3000, null], ['3 piece specials', 3, 'bundle', 3200, null], ['5 shirt discount', 5, 'unit_price', 600, 'Shirt']] as $row) {
             $rule->execute([...$row, gmdate('Y-m-d H:i:s')]);
         }
         $db->exec("UPDATE email_settings SET mailbox = 'loadtest-team@example.com'");

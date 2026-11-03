@@ -182,47 +182,25 @@ To refresh the directory, replace its `barristers` entries with updated
 names with different addresses as separate records so users can choose the
 correct entry.
 
-## Non-stacking quantity tiers and safe garment removal (30 October 2026)
+## Piece specials and safe garment removal (2 November 2026)
 
-`config/app.php` sets `Foleys.discountsEnabled` to **true**: the live preview and
-server-side request/quote calculations apply discounts again. Among qualifying
-rules, **only the highest minimum item-count tier applies**. A five-item offer
-replaces a three-item offer, even if the three-item offer would save more.
-If several offers qualify at that highest tier, apply only the largest standalone
-saving, never their sum. Equal savings use the lowest rule ID for a stable result.
-Qualification uses each rule's own count: matching garments for garment-specific
-rules, eligible garments for price caps, or all garments for unrestricted rules.
-Excluded bar robes/jabots still do not count toward price-cap thresholds.
-Dropping below a tier restores the next qualifying tier automatically; creation
-dates and the order in which users add garments do not affect the result.
+See [pricing-specials.md](docs/pricing-specials.md) for the current offers,
+the deletion repair, tests, and deployment/activation instructions.
 
-This generic policy replaces the previous hard-coded five-shirt/$15 exception.
-The five-item fixed-dollar rule remains available, but higher qualifying tiers
-can supersede it. All stored rules and historical order/report amounts are
-preserved. Set `Foleys.discountsEnabled` back to **false** to pause discounts;
-any `app_local.php` override must agree. Deploy the updated JavaScript too.
+The two-piece $30 and three-piece $32 specials repeat across disjoint groups.
+Pricing chooses the cheapest combination of bundles and individual prices,
+never increasing a price. Five or more Shirts receive a $6 single-piece rate.
+Bar robes are excluded from every discount; jabots remain excluded from piece
+bundles. Exact discounted line costs are persisted for reports and Excel.
 
-Deleting a garment now archives it instead of deleting its database row. It
-disappears from Manage pricing, View prices and the request picker; old requests
-retain their garment references, names, quantities and prices. Ordinary inactive
-but unarchived garments remain listed, as before. A stale form cannot submit an
-archived garment as a new item.
+The new offers are staged inactive until the updated application is deployed.
+After Render is Live, run the activation command documented above to replace
+the older discounts. The three older rules have now been deleted, so only the
+three requested offers remain. Discounts are therefore off until activation.
+No commit, push, deployment or activation was performed.
 
-Apply `20261030000000_AddServiceItemArchive.php` to add the nullable
-`service_items.archived_at` field before using Delete, then clear the schema
-cache. This migration does not remove or archive any existing data. The shared
-database has **not** been migrated automatically. From the project directory:
-
-```sh
-/opt/homebrew/opt/php@8.4/bin/php bin/cake.php migrations status
-/opt/homebrew/opt/php@8.4/bin/php bin/cake.php migrations migrate
-/opt/homebrew/opt/php@8.4/bin/php bin/cake.php schema_cache clear
-```
-
-Check that the connection is the intended database before migrating; `migrate`
-also applies any older pending migrations shown by `status`. On Render, run the
-equivalent commands using `php` in the updated deployed code. For a shared Neon
-database, the migration only needs to run once, but each app instance with a
-cached schema needs its cache cleared (a fresh deployment also starts with a
-fresh container cache). Until the new column exists, pages remain usable and
-Delete shows a migration reminder instead of attempting an unsafe SQL DELETE.
+Garment removal preserves referenced history by archiving. Stale schema
+metadata is refreshed automatically; an unused garment can also be deleted
+before the archive field exists. The shared archive and discounted-line fields
+have already been added without running unrelated migrations. Their migration
+files are idempotent for future deployments.

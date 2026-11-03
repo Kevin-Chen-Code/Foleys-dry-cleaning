@@ -91,7 +91,7 @@ final class WeeklyReportService
     }
 
     /**
-     * Shares an order-wide discount across its item rows without losing cents.
+     * Uses saved line charges where available; otherwise allocates discounts without touching bar robes.
      * The resulting line totals always add up to the final billed request total.
      *
      * @param array<int, object> $items
@@ -104,11 +104,42 @@ final class WeeklyReportService
             return array_fill(0, count($items), 0);
         }
 
+        $isBarRobe = static fn (object $item): bool => preg_match('/\bbar[\s-]*robes?\b/i', (string)($item->item_name ?? '')) === 1;
+        $storedCosts = [];
+        foreach ($items as $item) {
+            $stored = $item->discounted_total_cents ?? null;
+            if ((!is_int($stored) && !(is_string($stored) && ctype_digit($stored)))
+                || (int)$stored < 0 || (int)$stored > (int)$item->line_total_cents
+                || ($isBarRobe($item) && (int)$stored !== (int)$item->line_total_cents)) {
+                $storedCosts = [];
+                break;
+            }
+            $storedCosts[] = (int)$stored;
+        }
+        if (count($storedCosts) === count($items) && array_sum($storedCosts) === $totalCents) {
+            return $storedCosts;
+        }
+
+        $protectedSubtotal = array_sum(array_map(
+            static fn (object $item): int => $isBarRobe($item) ? (int)$item->line_total_cents : 0,
+            $items,
+        ));
+        $boundedTotal = max(0, min($totalCents, $subtotalCents));
+        // An old saved order may predate the exemption. Preserve its historical final total.
+        $protectRobes = $boundedTotal >= $protectedSubtotal;
         $remainingSubtotal = $subtotalCents;
-        $remainingTotal = max(0, min($totalCents, $subtotalCents));
+        $remainingTotal = $boundedTotal;
+        if ($protectRobes) {
+            $remainingSubtotal -= $protectedSubtotal;
+            $remainingTotal -= $protectedSubtotal;
+        }
         $discountedCosts = [];
         foreach ($items as $item) {
             $lineSubtotal = (int)$item->line_total_cents;
+            if ($protectRobes && $isBarRobe($item)) {
+                $discountedCosts[] = $lineSubtotal;
+                continue;
+            }
             $lineTotal = $remainingSubtotal === $lineSubtotal
                 ? $remainingTotal
                 : intdiv($lineSubtotal * $remainingTotal, $remainingSubtotal);

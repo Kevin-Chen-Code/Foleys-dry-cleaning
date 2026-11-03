@@ -31,10 +31,10 @@ final class DashboardController extends AdminController
             $action = (string)$this->request->getData('action');
             if ($action === 'delete_item') {
                 $entity = $itemsTable->get((int)$this->request->getData('id'));
-                if (!$itemsTable->archive($entity)) {
+                if (!$itemsTable->removeFromCatalogue($entity)) {
                     $this->Flash->error($itemsTable->getSchema()->hasColumn('archived_at')
                         ? 'The garment could not be removed. Please try again.'
-                        : 'Apply the catalogue archive migration and clear the schema cache before removing garments. Existing requests have not been changed.');
+                        : 'This garment is still used by existing requests. Apply the catalogue archive migration before removing it. Existing requests have not been changed.');
                 } else {
                     $this->Flash->success('Garment removed from the catalogue. Existing requests have been kept.');
                 }
@@ -57,7 +57,12 @@ final class DashboardController extends AdminController
                     $this->Flash->error('Enter a percentage from 0 to 100, or a dollar amount with at most two decimal places.');
                     return $this->redirect(['action' => 'managePricing']);
                 }
-                $rulesTable->patchEntity($entity, ['name' => trim((string)$this->request->getData('name')), 'minimum_item_count' => $this->request->getData('minimum_item_count'), 'discount_type' => $type, 'discount_value' => $value, 'active' => true, 'created' => $id ? $entity->created : FrozenTime::now()]);
+                $qualifier = trim((string)$this->request->getData('qualifying_item_name')) ?: null;
+                if ($type === 'unit_price' && $qualifier === null) {
+                    $this->Flash->error('Enter the garment name for a unit-price offer.');
+                    return $this->redirect(['action' => 'managePricing']);
+                }
+                $rulesTable->patchEntity($entity, ['name' => trim((string)$this->request->getData('name')), 'minimum_item_count' => $this->request->getData('minimum_item_count'), 'discount_type' => $type, 'discount_value' => $value, 'qualifying_item_name' => $qualifier, 'active' => true, 'created' => $id ? $entity->created : FrozenTime::now()]);
                 if (!$rulesTable->save($entity)) {
                     $this->Flash->error('Discount rule could not be saved. Enter a name and a minimum item count of at least 1.');
                     return $this->redirect(['action' => 'managePricing']);

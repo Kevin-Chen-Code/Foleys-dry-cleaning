@@ -234,6 +234,66 @@ final class WeeklyReportServiceTest extends TestCase
         $this->assertSame(900, array_sum($discountedCosts));
     }
 
+    public function testReportKeepsBarRobesAtFullPriceWhenAllocatingLegacyDiscounts(): void
+    {
+        $items = [
+            (object)['item_name' => 'Bar Robe', 'line_total_cents' => 5000],
+            (object)['item_name' => 'Shirt', 'line_total_cents' => 5400],
+            (object)['item_name' => 'Blouse', 'line_total_cents' => 1000],
+        ];
+        $costs = (new WeeklyReportService())->discountedLineCosts(9000, $items);
+        $this->assertSame([5000, 3375, 625], $costs);
+        $this->assertSame(9000, array_sum($costs));
+    }
+
+    public function testReportPrefersCompleteSavedLineChargesInsteadOfProrating(): void
+    {
+        $items = [
+            (object)['item_name' => 'Shirt', 'line_total_cents' => 5400, 'discounted_total_cents' => 3600],
+            (object)['item_name' => 'Blouse', 'line_total_cents' => 4000, 'discounted_total_cents' => 3000],
+            (object)['item_name' => 'Bar-Robes', 'line_total_cents' => 5000, 'discounted_total_cents' => 5000],
+        ];
+        $this->assertSame([3600, 3000, 5000], (new WeeklyReportService())->discountedLineCosts(11600, $items));
+    }
+
+    public function testIncompleteOrInvalidSavedChargesFallBackWithoutDiscountingRobes(): void
+    {
+        foreach ([
+            [null, null], [4900, 4100], [5000, 999], [5000, 9000],
+        ] as [$robeCost, $shirtCost]) {
+            $items = [
+                (object)['item_name' => 'BAR ROBE', 'line_total_cents' => 5000, 'discounted_total_cents' => $robeCost],
+                (object)['item_name' => 'Shirt', 'line_total_cents' => 6000, 'discounted_total_cents' => $shirtCost],
+            ];
+            $this->assertSame([5000, 4000], (new WeeklyReportService())->discountedLineCosts(9000, $items));
+        }
+    }
+
+    public function testProtectedRobesAndOtherLinesKeepRoundingCentsInTheFinalTotal(): void
+    {
+        $items = [
+            (object)['item_name' => 'Tie', 'line_total_cents' => 333],
+            (object)['item_name' => 'bar robe', 'line_total_cents' => 5000],
+            (object)['item_name' => 'Blouse', 'line_total_cents' => 333],
+            (object)['item_name' => 'Shirt', 'line_total_cents' => 334],
+        ];
+        $costs = (new WeeklyReportService())->discountedLineCosts(5900, $items);
+        $this->assertSame([299, 5000, 300, 301], $costs);
+        $this->assertSame(5900, array_sum($costs));
+        $this->assertSame([5000], (new WeeklyReportService())->discountedLineCosts(5000, [$items[1]]));
+    }
+
+    public function testLegacyTotalBelowBarRobePriceIsPreservedRatherThanRepriced(): void
+    {
+        $items = [
+            (object)['item_name' => 'Bar robe', 'line_total_cents' => 5000],
+            (object)['item_name' => 'Shirt', 'line_total_cents' => 1000],
+        ];
+        $costs = (new WeeklyReportService())->discountedLineCosts(3000, $items);
+        $this->assertSame([2500, 500], $costs);
+        $this->assertSame(3000, array_sum($costs));
+    }
+
     /** Private in-memory database. Never uses local or Neon request data. */
     private function withOrders(array $orders, callable $callback, string $now = '2026-10-16 12:00:00 UTC'): mixed
     {
