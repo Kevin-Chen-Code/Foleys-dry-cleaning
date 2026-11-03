@@ -226,3 +226,4 @@ final class ConfigureSpecialsCommandTest extends TestCase
         return (new ConfigureSpecialsCommand())->execute(new Arguments([], $options + ['stage' => false, 'apply' => false], []), $io);
     }
 }
+

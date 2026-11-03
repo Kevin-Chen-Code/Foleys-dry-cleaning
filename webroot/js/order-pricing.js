@@ -195,3 +195,4 @@ window.FoleysPricing = {
     return {subtotal, discount: subtotal - total, total, appliedDiscounts, lineTotals, unitPrices};
   },
 };
+

@@ -218,3 +218,4 @@ final class OrderPricingService
         $applied[$index]['applications'] += $count;
     }
 }
+

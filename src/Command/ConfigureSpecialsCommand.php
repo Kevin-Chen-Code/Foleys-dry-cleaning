@@ -75,3 +75,4 @@ final class ConfigureSpecialsCommand extends Command
         return static::CODE_SUCCESS;
     }
 }
+

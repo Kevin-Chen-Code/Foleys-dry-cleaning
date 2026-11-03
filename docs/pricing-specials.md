@@ -128,3 +128,4 @@ Files modified for this follow-up:
 - [ConfigureSpecialsCommandTest.php](/Users/kevinchen/Foleys-dry-cleaning/tests/TestCase/Command/ConfigureSpecialsCommandTest.php)
 - [README.md](/Users/kevinchen/Foleys-dry-cleaning/README.md)
 - [pricing-specials.md](/Users/kevinchen/Foleys-dry-cleaning/docs/pricing-specials.md)
+
