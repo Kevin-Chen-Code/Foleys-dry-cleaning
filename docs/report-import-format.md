@@ -54,11 +54,12 @@ calculator.
 The existing Office Script accepts both `Barrister` / `Barrister name` and
 `Date (DD/MM/YYYY)` / the former `Submitted` headers. It reads by header name,
 not column number, and keeps returning the same `{email, html}` message array.
-Email greetings and CC configuration remain intact. Email totals continue to
-use costs before tax. For the eleven-column report, the reader recovers the
-pre-tax cents from `Amount (Inc TAX)` and `TAX rate (%)`. For older reports,
-it still uses `Discounted cost (AUD)` when present. This keeps existing email
-prices stable while removing that column from new exports.
+Email greetings and CC configuration remain intact. The email column is
+labelled `Amount (Inc Tax)`. Each email line reads `Amount (Inc TAX)` directly
+from the workbook, and the email total adds those tax-inclusive line amounts.
+Tax is not added again or removed. An old discounted-cost column is ignored
+when present. Reports without `Amount (Inc TAX)` must be re-exported in the
+current format rather than guessing a tax-inclusive amount.
 
 The canonical script backup is `resources/automation/DailyLaundry.ts`. If the
 cloud script ever needs restoring, edit the existing **Daily Laundry - Report
@@ -135,8 +136,8 @@ Workspace reference copies also updated:
    export changed from `A1:L` to `A1:K`. This resizes both the native table and
    its filter when data is exported.
 4. Check [DailyLaundry.ts](/Users/kevinchen/Foleys-dry-cleaning/resources/automation/DailyLaundry.ts)
-   if the column is used by emails. This update adds a fallback using the
-   tax-inclusive amount and tax rate. Changes to this source backup must also
+   if the column is used by emails. The reader now uses the tax-inclusive
+   amount directly. Changes to this source backup must also
    be saved in the existing **Daily Laundry - Report Table** cloud Office Script;
    pushing the website alone does not update the cloud script.
 5. Run the report and reader checks before committing:
@@ -146,9 +147,9 @@ Workspace reference copies also updated:
    node --test tests/js/daily-laundry.test.cjs
    ```
 
-This removal passed 19 PHP report tests and 16 reader tests. A generated
-eleven-column workbook also passed through the reader with all four sample
-items and the same $52 pre-tax email total. No emails were sent.
+The export removal passed 19 PHP report tests. The email display was
+subsequently changed to tax-inclusive amounts, as documented below. No emails
+were sent during these checks.
 
 Files changed for this removal:
 
@@ -162,3 +163,29 @@ Files changed for this removal:
 
 The three workspace Power Automate reference files linked above were kept in
 sync. The existing cloud Office Script was updated and saved as well.
+
+## Tax-inclusive email amounts
+
+The email heading is `Amount (Inc Tax)`, and the amounts exactly follow the
+workbook's `Amount (Inc TAX)` column. For the pictured sample, the email shows
+$17.60 for Blazer/Bar Jacket, $22.00 for Bar Robe, $9.32 for Shirt and $8.28 for
+Jabot, giving a $57.20 total. No tax is added a second time.
+
+The cloud source is the existing **Daily Laundry - Report Table** Office Script.
+Its version-controlled backup is
+[DailyLaundry.ts](/Users/kevinchen/Foleys-dry-cleaning/resources/automation/DailyLaundry.ts).
+The `costColumn` lookup controls the workbook source column, the `<th>` row
+controls the visible email heading, and `group.totalCents` sums the line amounts.
+
+Files changed for this email update:
+
+- [DailyLaundry.ts](/Users/kevinchen/Foleys-dry-cleaning/resources/automation/DailyLaundry.ts)
+- [daily-laundry.test.cjs](/Users/kevinchen/Foleys-dry-cleaning/tests/js/daily-laundry.test.cjs)
+- [README.md](/Users/kevinchen/Foleys-dry-cleaning/README.md)
+- [report-import-format.md](/Users/kevinchen/Foleys-dry-cleaning/docs/report-import-format.md)
+
+The three workspace reference files listed above are kept in sync.
+
+Validation: 14 reader tests passed. A generated eleven-column export was also
+read successfully, with every email line matching its exported amount and the
+four sample items summing to $57.20 including tax. No emails were sent.

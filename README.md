@@ -215,7 +215,7 @@ calculates each tax-inclusive amount from the saved discounted line cost plus
 The export ends at column K (`Quantity`); it no longer includes a separate
 `Discounted cost (AUD)` column.
 The version-controlled Office Script is `resources/automation/DailyLaundry.ts`;
-it accepts both the new and previous report headers. Email totals continue to
-use discounted costs before tax, recovered from the tax-inclusive amount and
-tax rate when the old net-cost column is absent. The report download/reset
-rules are unchanged.
+it accepts both the new and previous name/date headers. Email rows and totals
+use `Amount (Inc TAX)` directly, with the heading `Amount (Inc Tax)`. Reports
+without that amount column must be re-exported in the current format. The
+report download/reset rules are unchanged.
