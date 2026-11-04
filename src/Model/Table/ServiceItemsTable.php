@@ -82,7 +82,7 @@ final class ServiceItemsTable extends Table
 
     public function beforeMarshal(EventInterface $event, \ArrayObject $data, \ArrayObject $options): void
     {
-        if (is_string($data['name'] ?? null) && OrderPricingService::isExcludedGarment($data['name'])) {
+        if (is_string($data['name'] ?? null) && OrderPricingService::isBarRobe($data['name'])) {
             $data['price_cap_eligible'] = false;
         }
     }

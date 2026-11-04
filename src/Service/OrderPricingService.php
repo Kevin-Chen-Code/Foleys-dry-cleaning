@@ -28,6 +28,13 @@ final class OrderPricingService
             && (bool)($item['price_cap_eligible'] ?? true);
     }
 
+    /** Every garment except a bar robe qualifies; legacy cap flags do not restrict piece specials. */
+    public static function isBundleEligible(array $item): bool
+    {
+        $name = (string)($item['item_name'] ?? $item['name'] ?? '');
+        return !self::isBarRobe($name);
+    }
+
     private static function garmentKey(string $name): string
     {
         $name = mb_strtolower(trim($name));
@@ -79,7 +86,7 @@ final class OrderPricingService
         $units = [];
         foreach ($lines as $i => $line) {
             $lineTotals[$i] = $unitPrices[$i] * (int)$line['quantity'];
-            if ($this->discountsEnabled && self::isPriceCapEligible($line)) {
+            if ($this->discountsEnabled && self::isBundleEligible($line)) {
                 for ($q = 0; $q < (int)$line['quantity']; $q++) {
                     $units[] = ['line' => $i, 'price' => $unitPrices[$i]];
                 }

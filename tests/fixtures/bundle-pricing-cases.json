@@ -541,7 +541,7 @@
     ]
   },
   {
-    "name": "Ordinary inactive eligibility flag excludes piece bundles",
+    "name": "Legacy cap eligibility flag cannot exclude an ordinary garment from piece specials",
     "items": [
       {
         "item_name": "Court garment",
@@ -572,8 +572,10 @@
       }
     ],
     "subtotal": 12000,
-    "total": 12000,
-    "names": []
+    "total": 3200,
+    "names": ["3 piece specials"],
+    "applications": [1],
+    "line_totals": [3200]
   },
   {
     "name": "Mixed case plural shirts combine across lines",
@@ -1083,5 +1085,59 @@
       1636,
       1364
     ]
+  },
+  {
+    "name": "Jabot joins pictured three-piece special despite its old false flag while bar robe stays full price",
+    "items": [
+      {"item_name": "Blazer/Bar Jacket", "unit_price_cents": 1700, "quantity": 1},
+      {"item_name": "Bar Robe", "unit_price_cents": 2000, "quantity": 1, "price_cap_eligible": true},
+      {"item_name": "Shirt", "unit_price_cents": 900, "quantity": 1},
+      {"item_name": "Jabot", "unit_price_cents": 800, "quantity": 1, "price_cap_eligible": false}
+    ],
+    "rules": [
+      {"name": "2 piece specials", "minimum_item_count": 2, "discount_type": "bundle", "discount_value": 3000},
+      {"name": "3 piece specials", "minimum_item_count": 3, "discount_type": "bundle", "discount_value": 3200},
+      {"name": "5 shirt discount", "minimum_item_count": 5, "discount_type": "unit_price", "discount_value": 600, "qualifying_item_name": "Shirt"}
+    ],
+    "subtotal": 5400,
+    "total": 5200,
+    "names": ["3 piece specials"],
+    "applications": [1],
+    "line_totals": [1600, 2000, 847, 753]
+  },
+  {
+    "name": "Any three different non-robe garment types qualify despite false legacy flags while five robes stay full price",
+    "items": [
+      {"item_name": "Coat", "unit_price_cents": 2000, "quantity": 1, "price_cap_eligible": false},
+      {"item_name": "New garment type", "unit_price_cents": 1800, "quantity": 1, "price_cap_eligible": false},
+      {"item_name": "Vest", "unit_price_cents": 1500, "quantity": 1, "price_cap_eligible": false},
+      {"item_name": "Bar robe", "unit_price_cents": 10000, "quantity": 5, "price_cap_eligible": true}
+    ],
+    "rules": [
+      {"name": "2 piece specials", "minimum_item_count": 2, "discount_type": "bundle", "discount_value": 3000},
+      {"name": "3 piece specials", "minimum_item_count": 3, "discount_type": "bundle", "discount_value": 3200},
+      {"name": "5 shirt discount", "minimum_item_count": 5, "discount_type": "unit_price", "discount_value": 600, "qualifying_item_name": "Shirt"}
+    ],
+    "subtotal": 55300,
+    "total": 53200,
+    "names": ["3 piece specials"],
+    "applications": [1],
+    "line_totals": [1207, 1087, 906, 50000]
+  },
+  {
+    "name": "Bar robes never fill the third piece in a two-item collection",
+    "items": [
+      {"item_name": "Shirt", "unit_price_cents": 900, "quantity": 1, "price_cap_eligible": false},
+      {"item_name": "Jabot", "unit_price_cents": 800, "quantity": 1, "price_cap_eligible": false},
+      {"item_name": "Bar Robe", "unit_price_cents": 2000, "quantity": 5, "price_cap_eligible": true}
+    ],
+    "rules": [
+      {"name": "2 piece specials", "minimum_item_count": 2, "discount_type": "bundle", "discount_value": 3000},
+      {"name": "3 piece specials", "minimum_item_count": 3, "discount_type": "bundle", "discount_value": 3200}
+    ],
+    "subtotal": 11700,
+    "total": 11700,
+    "names": [],
+    "line_totals": [900, 800, 10000]
   }
 ]

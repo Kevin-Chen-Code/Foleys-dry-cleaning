@@ -7,8 +7,10 @@ window.FoleysPricing = {
       return key === 'shirts' ? 'shirt' : key;
     };
     const isBarRobe = (name) => /\bbar[\s-]*robes?\b/i.test(String(name ?? ''));
-    const isBundleEligible = (item) => item.price_cap_eligible !== false && item.price_cap_eligible !== 0
+    const isPriceCapEligible = (item) => item.price_cap_eligible !== false && item.price_cap_eligible !== 0
       && !/\b(?:bar[\s-]*robes?|jabots?)\b/i.test(String(item.name ?? ''));
+    // Piece specials include every garment except bar robes, regardless of legacy cap flags.
+    const isBundleEligible = (item) => !isBarRobe(item.name);
     const active = rules.map((rule, index) => ({...rule, index}))
       .filter((rule) => !Object.hasOwn(rule, 'active') || Boolean(rule.active));
     const lowerId = (candidate, current) => current !== null && candidate.id != null && current.id != null
@@ -143,7 +145,7 @@ window.FoleysPricing = {
     // Older percentage/fixed/cap offers remain alternatives, never another layer
     // on top of the new disjoint bundle/unit-price plan. Bar robes never qualify.
     const nonRobe = lines.filter((line) => !isBarRobe(line.item.name));
-    const capLines = nonRobe.filter((line) => isBundleEligible(line.item));
+    const capLines = nonRobe.filter((line) => isPriceCapEligible(line.item));
     const normalSubtotal = nonRobe.reduce((sum, line) => sum + line.price * line.quantity, 0);
     const capSubtotal = capLines.reduce((sum, line) => sum + line.price * line.quantity, 0);
     let highestTier = 0;

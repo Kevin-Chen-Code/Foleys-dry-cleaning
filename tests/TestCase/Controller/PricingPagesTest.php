@@ -69,6 +69,30 @@ final class PricingPagesTest extends TestCase
         $this->assertFalse($options[4]['price_cap_eligible']);
         $this->assertFalse($options[8]['price_cap_eligible']);
         $this->assertResponseContains('/js/order-pricing.js');
+        $this->assertMatchesRegularExpression('~src="/js/order-pricing\\.js\\?\\d+"~', $html);
+        $this->assertMatchesRegularExpression('~src="/js/order-builder\\.js\\?\\d+"~', $html);
+    }
+
+    public function testGarmentCheckboxOnlyControlsLegacyCapsAndNeverExcludesPieceSpecials(): void
+    {
+        // Existing Jabots can still have the false flag forced by the former policy.
+        foreach ([[1, 'Jabot', 0], [2, 'Bar Robe', 1], [3, 'Coat', 0]] as [$id, $name, $eligible]) {
+            $this->connection->insert('service_items', ['id' => $id, 'name' => $name, 'unit_price_cents' => 1000, 'active' => 1, 'position' => $id, 'price_cap_eligible' => $eligible]);
+        }
+        $this->session(['Foleys' => ['admin' => 'admin']]);
+        $this->get('/admin/manage-pricing');
+        $this->assertResponseOk();
+        $this->assertResponseContains('All garments except bar robes qualify for piece specials. The eligibility checkbox only controls legacy whole-order price caps.');
+        $this->assertResponseContains('Eligible for legacy price-cap deals');
+        $document = new \DOMDocument();
+        @$document->loadHTML((string)$this->_response->getBody());
+        $xpath = new \DOMXPath($document);
+        $this->assertSame(1.0, $xpath->evaluate('count(//input[@id="item-eligible-1"][not(@checked)][@disabled])'));
+        $this->assertSame(1.0, $xpath->evaluate('count(//input[@id="item-eligible-2"][not(@checked)][@disabled])'));
+        $this->assertSame(1.0, $xpath->evaluate('count(//input[@id="item-eligible-3"][not(@checked)][not(@disabled)])'));
+        $items = $this->locator->get('ServiceItems');
+        $this->assertTrue($items->newEntity(['name' => 'Jabot', 'price_cap_eligible' => true])->price_cap_eligible);
+        $this->assertFalse($items->newEntity(['name' => 'Bar Robe', 'price_cap_eligible' => true])->price_cap_eligible);
     }
 
     public function testFixedDiscountEditDisplaysDollarsAndSavesCents(): void

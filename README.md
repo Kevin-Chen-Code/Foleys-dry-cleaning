@@ -190,17 +190,32 @@ the deletion repair, tests, and deployment/activation instructions.
 The two-piece $30 and three-piece $32 specials repeat across disjoint groups.
 Pricing chooses the cheapest combination of bundles and individual prices,
 never increasing a price. Five or more Shirts receive a $6 single-piece rate.
-Bar robes are excluded from every discount; jabots remain excluded from piece
-bundles. Exact discounted line costs are persisted for reports and Excel.
+Bar robes are excluded from every discount. All other garments qualify for
+piece specials, including Jabots and catalogue records whose older eligibility
+flag was false. That flag only controls legacy whole-order caps, which still
+exclude jabots. Exact discounted line costs are persisted for reports and Excel.
 
-The new offers are staged inactive until the updated application is deployed.
-After Render is Live, run the activation command documented above to replace
-the older discounts. The three older rules have now been deleted, so only the
-three requested offers remain. Discounts are therefore off until activation.
-No commit, push, deployment or activation was performed.
+The three offers were activated by the user on 2 November 2026. The older rules
+have been deleted. This update changes the pricing code without modifying live
+database rules. No commit, push or deployment is performed automatically.
 
 Garment removal preserves referenced history by archiving. Stale schema
 metadata is refreshed automatically; an unused garment can also be deleted
 before the archive field exists. The shared archive and discounted-line fields
 have already been added without running unrelated migrations. Their migration
 files are idempotent for future deployments.
+
+## Disbursement import report (4 November 2026)
+
+See [report-import-format.md](docs/report-import-format.md) for the column map,
+fixed values, tax calculation, Power Automate compatibility and changed files.
+The report retains one `BarristerRequests` table, adds email in column C and
+calculates each tax-inclusive amount from the saved discounted line cost plus
+10%, rounded to cents. Item details at the end support the existing email flow.
+The export ends at column K (`Quantity`); it no longer includes a separate
+`Discounted cost (AUD)` column.
+The version-controlled Office Script is `resources/automation/DailyLaundry.ts`;
+it accepts both the new and previous report headers. Email totals continue to
+use discounted costs before tax, recovered from the tax-inclusive amount and
+tax rate when the old net-cost column is absent. The report download/reset
+rules are unchanged.

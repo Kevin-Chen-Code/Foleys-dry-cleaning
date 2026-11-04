@@ -67,7 +67,7 @@ test('Bundle optimiser matches an independent subset oracle on heterogeneous car
     let outside = 0;
     const eligible = [];
     input.forEach((line, index) => {
-      if (line.item.name === 'Bar robe' || line.item.name === 'Jabot' || line.item.price_cap_eligible === false) outside += costs[index];
+      if (line.item.name === 'Bar robe') outside += costs[index];
       else eligible.push(costs[index]);
     });
     const memo = new Map([[0, 0]]);

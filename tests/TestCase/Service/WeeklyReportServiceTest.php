@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Test\TestCase\Service;
 
 use App\Service\WeeklyReportService;
+use App\Service\WeeklyReportWorkbook;
 use App\Service\NotificationService;
 use Cake\Database\Connection;
 use Cake\Database\Driver\Sqlite;
@@ -28,10 +29,10 @@ final class WeeklyReportServiceTest extends TestCase
             $service->xlsx();
             $this->assertCount(1, $service->data()['orders']);
             $xml = $this->sheet($service->downloadAndReset());
-            $this->assertSame('first@example.com', $this->cell($xml, 'B2'));
+            $this->assertSame('first@example.com', $this->cell($xml, 'C2'));
             $fresh = new WeeklyReportService(new DateTimeImmutable('2026-10-16 12:00:00 UTC'));
             $this->assertSame([], $fresh->data()['orders']);
-            $this->assertTable($fresh->downloadAndReset(), 'A1:G2');
+            $this->assertTable($fresh->downloadAndReset(), 'A1:K2');
             $tables = FactoryLocator::get('Table');
             $order = $tables->get('Orders')->get(1);
             $this->assertSame('submitted', $order->status);
@@ -70,7 +71,7 @@ final class WeeklyReportServiceTest extends TestCase
                 return (new \App\Service\WeeklyReportWorkbook())->build($report);
             });
             $xml = $this->sheet($service->downloadAndReset());
-            $this->assertSame('first@example.com', $this->cell($xml, 'B2'));
+            $this->assertSame('first@example.com', $this->cell($xml, 'C2'));
             $pending = $service->data()['orders'];
             $this->assertCount(1, $pending);
             $this->assertSame('new@example.com', $pending[0]->email);
@@ -101,25 +102,44 @@ final class WeeklyReportServiceTest extends TestCase
             ['barrister_name' => null, 'email' => 'legacy@example.com'],
         ], fn ($service) => $service->xlsx());
         $xml = $this->sheet($xlsx);
-        $this->assertSame('Barrister name', $this->cell($xml, 'A1'));
-        $this->assertSame('Email address', $this->cell($xml, 'B1'));
-        $this->assertSame('', $this->cell($xml, 'A2'));
-        $this->assertSame('legacy@example.com', $this->cell($xml, 'B2'));
-        $this->assertSame("Alex O'Connor", $this->cell($xml, 'A3'));
-        $this->assertSame('alex@example.com', $this->cell($xml, 'B3'));
-        $this->assertSame('Shirt', $this->cell($xml, 'D3'));
-        $this->assertSame('2', $this->cell($xml, 'E3'));
-        $this->assertSame('20', $this->cell($xml, 'F3'));
-        $this->assertSame('18', $this->cell($xml, 'G3'));
-        $this->assertSame(36.0, $xml->evaluate('sum(//s:row[number(@r) > 1]/s:c[starts-with(@r,"G")]/s:v)'));
-        foreach (['C3', 'E3', 'F3', 'G3'] as $cell) {
+        foreach ([
+            'A1' => 'Description',
+            'B1' => 'Barrister',
+            'C1' => 'Email address',
+            'D1' => "Type ('Expense' or 'Capital')",
+            'E1' => 'Category',
+            'F1' => 'Merchant',
+            'G1' => 'Date (DD/MM/YYYY)',
+            'H1' => 'TAX rate (%)',
+            'I1' => 'Amount (Inc TAX)',
+            'J1' => 'Item type',
+            'K1' => 'Quantity',
+        ] as $cell => $label) {
+            $this->assertSame($label, $this->cell($xml, $cell));
+        }
+        $this->assertSame('', $this->cell($xml, 'B2'));
+        $this->assertSame('legacy@example.com', $this->cell($xml, 'C2'));
+        $this->assertSame("Alex O'Connor", $this->cell($xml, 'B3'));
+        $this->assertSame('alex@example.com', $this->cell($xml, 'C3'));
+        foreach ([2, 3] as $row) {
+            $this->assertSame('Clerk Disbursement', $this->cell($xml, 'A' . $row));
+            $this->assertSame('Expense', $this->cell($xml, 'D' . $row));
+            $this->assertSame('Dry Cleaning', $this->cell($xml, 'E' . $row));
+            $this->assertSame('', $this->cell($xml, 'F' . $row));
+            $this->assertSame('0.1', $this->cell($xml, 'H' . $row));
+            $this->assertSame('19.8', $this->cell($xml, 'I' . $row));
+        }
+        $this->assertSame('Shirt', $this->cell($xml, 'J3'));
+        $this->assertSame('2', $this->cell($xml, 'K3'));
+        $this->assertEqualsWithDelta(39.6, $xml->evaluate('sum(//s:row[number(@r) > 1]/s:c[starts-with(@r,"I")]/s:v)'), 0.0000001);
+        foreach (['G3', 'H3', 'I3', 'K3'] as $cell) {
             $this->assertSame('n', $xml->evaluate('string(//s:c[@r="' . $cell . '"]/@t)'));
         }
         $expectedDate = (new DateTimeImmutable('2026-10-16 21:00:00 UTC'))->getTimestamp() / 86400 + 25569;
-        $this->assertEqualsWithDelta($expectedDate, (float)$this->cell($xml, 'C3'), 0.0000001);
+        $this->assertEqualsWithDelta($expectedDate, (float)$this->cell($xml, 'G3'), 0.0000001);
         $this->assertSame(0.0, $xml->evaluate('count(//s:f)'));
         $this->assertSame('1', $xml->evaluate('string(//s:pane/@ySplit)'));
-        $this->assertTable($xlsx, 'A1:G3');
+        $this->assertTable($xlsx, 'A1:K3');
     }
 
     public function testExcelUserTextCannotExecuteFormulasOrBreakXml(): void
@@ -129,10 +149,10 @@ final class WeeklyReportServiceTest extends TestCase
             ['barrister_name' => "Renée <&> O'Connor\x01", 'email' => 'renee@example.com'],
         ], fn ($service) => $service->xlsx());
         $xml = $this->sheet($xlsx);
-        $this->assertSame('=1+1', $this->cell($xml, 'A3'));
-        $this->assertSame('inlineStr', $xml->evaluate('string(//s:c[@r="A3"]/@t)'));
-        $this->assertSame(0.0, $xml->evaluate('count(//s:c[@r="A3"]/s:f)'));
-        $this->assertSame("Renée <&> O'Connor", $this->cell($xml, 'A2'));
+        $this->assertSame('=1+1', $this->cell($xml, 'B3'));
+        $this->assertSame('inlineStr', $xml->evaluate('string(//s:c[@r="B3"]/@t)'));
+        $this->assertSame(0.0, $xml->evaluate('count(//s:c[@r="B3"]/s:f)'));
+        $this->assertSame("Renée <&> O'Connor", $this->cell($xml, 'B2'));
     }
 
     public function testEmptyExcelContainsOnlyTheInsertableFilterableTable(): void
@@ -141,7 +161,35 @@ final class WeeklyReportServiceTest extends TestCase
         $xml = $this->sheet($xlsx);
         $this->assertSame('', $this->cell($xml, 'A2'));
         $this->assertSame(0.0, $xml->evaluate('count(//s:c[s:v or s:is][ancestor::s:row/@r != "1"])'));
-        $this->assertTable($xlsx, 'A1:G2');
+        $this->assertTable($xlsx, 'A1:K2');
+    }
+
+    public function testTaxUsesDiscountedLineAmountsAndRoundsHalfCentsUp(): void
+    {
+        $discountedCents = [0, 1, 4, 5, 15, 999, 3200];
+        $expectedIncTaxCents = [0, 1, 4, 6, 17, 1099, 3520];
+        $items = array_map(static fn (int $cents): object => (object)[
+            'item_name' => 'Test garment',
+            'quantity' => 1,
+            'line_total_cents' => $cents + 10000,
+        ], $discountedCents);
+        $xlsx = (new WeeklyReportWorkbook())->build([
+            'orders' => [(object)[
+                'id' => 1,
+                'barrister_name' => 'Test Barrister',
+                'email' => 'test@example.com',
+                'submitted_at' => new DateTimeImmutable('2026-11-04 00:00:00 UTC'),
+            ]],
+            'itemsByOrder' => [1 => $items],
+            'discountedCostsByOrder' => [1 => $discountedCents],
+        ]);
+        $xml = $this->sheet($xlsx);
+        foreach ($discountedCents as $index => $cents) {
+            $row = $index + 2;
+            $this->assertEqualsWithDelta($expectedIncTaxCents[$index] / 100, (float)$this->cell($xml, 'I' . $row), 0.0000001);
+            $this->assertSame('n', $xml->evaluate('string(//s:c[@r="I' . $row . '"]/@t)'));
+        }
+        $this->assertTable($xlsx, 'A1:K8');
     }
 
     public function testTableExpandsForSixHundredRequests(): void
@@ -149,10 +197,10 @@ final class WeeklyReportServiceTest extends TestCase
         $orders = array_fill(0, 600, ['barrister_name' => 'Test Barrister', 'email' => 'test@example.com']);
         $xlsx = $this->withOrders($orders, fn ($service) => $service->xlsx());
         $xml = $this->sheet($xlsx);
-        $this->assertTable($xlsx, 'A1:G601');
+        $this->assertTable($xlsx, 'A1:K601');
         $this->assertSame(600.0, $xml->evaluate('count(//s:row[number(@r) >= 2])'));
-        $this->assertSame(10800.0, $xml->evaluate('sum(//s:row[number(@r) > 1]/s:c[starts-with(@r,"G")]/s:v)'));
-        $this->assertSame('18', $this->cell($xml, 'G601'));
+        $this->assertSame('19.8', $this->cell($xml, 'I601'));
+        $this->assertEqualsWithDelta(11880.0, $xml->evaluate('sum(//s:row[number(@r) > 1]/s:c[starts-with(@r,"I")]/s:v)'), 0.0000001);
     }
 
     public function testCutoffIsStrictAndFutureAndNonSubmittedRequestsAreExcluded(): void
@@ -201,7 +249,7 @@ final class WeeklyReportServiceTest extends TestCase
                 $bytes = base64_decode($attachment['data'], true);
                 $this->assertIsString($bytes);
                 $this->assertStringStartsWith('PK', $bytes);
-                $this->assertTable($bytes, 'A1:G2');
+                $this->assertTable($bytes, 'A1:K2');
                 return [];
             });
             $this->assertTrue((new NotificationService(static fn (): Mailer => $mailer))->sendWeeklyReport());
@@ -368,14 +416,16 @@ final class WeeklyReportServiceTest extends TestCase
         $this->assertSame('BarristerRequests', $xml->evaluate('string(/s:table/@name)'));
         $this->assertSame($range, $xml->evaluate('string(/s:table/@ref)'));
         $this->assertSame($range, $xml->evaluate('string(/s:table/s:autoFilter/@ref)'));
-        $this->assertSame(7.0, $xml->evaluate('count(/s:table/s:tableColumns/s:tableColumn)'));
+        $this->assertSame(11.0, $xml->evaluate('count(/s:table/s:tableColumns/s:tableColumn)'));
+        $this->assertSame(0.0, $xml->evaluate('count(/s:table/s:tableColumns/s:tableColumn[@name="Discounted cost (AUD)"])'));
         // Every worksheet cell must be inside the single table. No title/footer/spacer rows.
         $sheet = $this->sheet($xlsx);
-        $lastRow = (int)substr($range, strrpos($range, 'G') + 1);
+        $lastRow = (int)substr($range, strrpos($range, 'K') + 1);
         $this->assertSame((float)$lastRow, $sheet->evaluate('count(//s:sheetData/s:row)'));
         $this->assertSame('1', $sheet->evaluate('string(//s:sheetData/s:row[1]/@r)'));
         $this->assertSame((string)$lastRow, $sheet->evaluate('string(//s:sheetData/s:row[last()]/@r)'));
-        $this->assertSame((float)($lastRow * 7), $sheet->evaluate('count(//s:sheetData/s:row/s:c)'));
+        $this->assertSame((float)($lastRow * 11), $sheet->evaluate('count(//s:sheetData/s:row/s:c)'));
+        $this->assertSame(0.0, $sheet->evaluate('count(//s:c[starts-with(@r,"L")])'));
         $this->assertSame(1.0, $sheet->evaluate('count(//s:tableParts/s:tablePart)'));
         $workbook = $this->part($xlsx, 'xl/workbook.xml');
         $this->assertSame(1.0, $workbook->evaluate('count(//s:sheet)'));

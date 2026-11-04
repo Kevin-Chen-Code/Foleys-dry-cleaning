@@ -99,7 +99,8 @@ return [
      * enable timestamping regardless of debug value.
      */
     'Asset' => [
-        //'timestamp' => true,
+        // Keep browser pricing scripts in step with the deployed server calculation.
+        'timestamp' => 'force',
         // 'cacheTime' => '+1 year'
     ],
 

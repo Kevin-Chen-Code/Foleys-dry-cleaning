@@ -15,8 +15,12 @@ Five $9 shirts cost $30; six cost $36. Adding other garments never makes an
 otherwise ineligible four-shirt request receive the shirt offer.
 
 Bar robes are excluded from **every** discount, including older percentage/fixed
-offers. Jabots and garments marked ineligible for price-cap deals stay out of
-piece bundles and legacy price caps. A garment is not charged for two different
+offers. From 4 November, all other garments qualify for piece specials, including
+jabots and older catalogue rows with a false eligibility flag. That flag only
+controls legacy whole-order caps, which still exclude jabots.
+Blazer/Bar Jacket $17 + Shirt $9 + Jabot $8 qualify for a $32 triple, with a
+$20 Bar Robe charged separately: $52 in total before the export's 10% tax.
+A garment is not charged for two different
 bundles; shirt unit offers and bundles are compared without counting the same
 piece's saving twice. Exact final line charges are saved and used by the report
 and Excel export, so bar robes stay full price there too. Requests are limited
@@ -31,12 +35,12 @@ to 10,000 pieces to bound optimisation work.
   `order_items.discounted_total_cents`; did not run unrelated pending migrations.
 - Cleared the local schema cache. Both corresponding migrations are idempotent,
   so running migrations later will not add either column twice.
-- Kept exactly the three requested offers as inactive IDs **5, 6, 7**.
+- Initially staged exactly the three requested offers as inactive IDs **5, 6, 7**.
 - Deleted older discount-rule IDs **1, 3, 4**, including both active and legacy
   whole-order offers. No orders, garments or order prices were changed by this
   discount-rule cleanup. The saved snapshot can recover the deleted rules.
-- Because activation remains with the user, **there are no active discounts
-  until the three retained offers are activated after deployment**.
+- The user subsequently activated the three retained offers on 2 November.
+  All three were verified active on the public request page on 4 November.
 
 The new Delete action refreshes stale metadata. If archival is available it
 archives safely; before the field exists it can still delete an unreferenced

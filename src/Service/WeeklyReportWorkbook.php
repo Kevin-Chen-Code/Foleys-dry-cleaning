@@ -16,6 +16,7 @@ use ZipArchive;
 final class WeeklyReportWorkbook
 {
     private const NS = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
+    private const TAX_PERCENT = 10;
 
     public function build(array $report): string
     {
@@ -46,14 +47,19 @@ final class WeeklyReportWorkbook
             foreach ($report['orders'] as $order) {
                 foreach ($report['itemsByOrder'][(int)$order->id] ?? [] as $index => $item) {
                     $discounted = $report['discountedCostsByOrder'][(int)$order->id][$index] ?? 0;
+                    // Match the template's A–K columns in order; tax still uses the saved net charge.
                     $values = [
+                        'Clerk Disbursement',
                         (string)($order->barrister_name ?? ''),
                         (string)($order->email ?? ''),
+                        'Expense',
+                        'Dry Cleaning',
+                        '', // The supplied import format leaves Merchant blank.
                         $order->submitted_at ? $this->excelDate($order->submitted_at) : null,
+                        self::TAX_PERCENT / 100,
+                        $this->amountIncludingTax((int)$discounted) / 100,
                         (string)$item->item_name,
                         (int)$item->quantity,
-                        (int)$item->line_total_cents / 100,
-                        $discounted / 100,
                     ];
                     $row = $prototype->cloneNode(true);
                     $row->setAttribute('r', (string)$rowNumber);
@@ -71,7 +77,7 @@ final class WeeklyReportWorkbook
             }
             $lastRow = max(2, $rowNumber - 1);
             $table = $this->xml($zip, 'xl/tables/table1.xml');
-            $range = 'A1:G' . $lastRow;
+            $range = 'A1:K' . $lastRow;
             $dimension = $xpath->query('//s:dimension')->item(0);
             if ($dimension instanceof DOMElement) {
                 $dimension->setAttribute('ref', $range);
@@ -142,5 +148,13 @@ final class WeeklyReportWorkbook
         // Excel serial dates have no timezone. Store Melbourne wall-clock time.
         $wallClock = new DateTimeImmutable($local->format('Y-m-d H:i:s'), new DateTimeZone('UTC'));
         return $wallClock->getTimestamp() / 86400 + 25569;
+    }
+
+    /** Add 10% tax to the discounted line charge, rounding half-up to a cent. */
+    private function amountIncludingTax(int $discountedCents): int
+    {
+        // Splitting quotient/remainder avoids floating-point rounding and multiplication overflow.
+        return $discountedCents + intdiv($discountedCents, 100) * self::TAX_PERCENT
+            + intdiv(($discountedCents % 100) * self::TAX_PERCENT + 50, 100);
     }
 }

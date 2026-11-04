@@ -37,7 +37,7 @@ $discountTypes = ['bundle' => 'Piece bundle (repeatable)', 'unit_price' => 'Garm
                         </div>
                         <div class="add-garment-active-field add-price-cap-eligibility-field">
                             <?= $this->Form->checkbox('price_cap_eligible', ['id' => 'item-eligible-' . (int)$item->id, 'checked' => \App\Service\OrderPricingService::isPriceCapEligible($item->toArray()), 'disabled' => \App\Service\OrderPricingService::isExcludedGarment($item->name)]) ?>
-                            <label for="item-eligible-<?= (int)$item->id ?>">Eligible for price-cap deals</label>
+                            <label for="item-eligible-<?= (int)$item->id ?>">Eligible for legacy price-cap deals</label>
                         </div>
                         <div class="dialog-actions">
                             <?= $this->Form->button('Save changes', ['class' => 'button-primary']) ?>
@@ -76,16 +76,16 @@ $discountTypes = ['bundle' => 'Piece bundle (repeatable)', 'unit_price' => 'Garm
     </div>
     <div class="add-garment-active-field add-price-cap-eligibility-field">
         <?= $this->Form->checkbox('price_cap_eligible', ['id' => 'new-item-eligible', 'checked' => true]) ?>
-        <label for="new-item-eligible">Eligible for price-cap deals</label>
+        <label for="new-item-eligible">Eligible for legacy price-cap deals</label>
     </div>
-    <p class="form-note">Bar robes and Jabots are always excluded from price-cap deals.</p>
+    <p class="form-note">All garments except bar robes qualify for piece specials. The eligibility checkbox only controls legacy whole-order price caps.</p>
     <?= $this->Form->button('Save garment', ['class' => 'button-primary']) ?>
     <?= $this->Form->end() ?>
 </section>
 
 <section class="items-card">
     <h2>Discount rules</h2>
-    <p>Piece bundles are combined to give the lowest price without using an item twice. Bar robes never receive discounts; jabots are excluded from piece bundles. Specials never increase a price.</p>
+    <p>Piece bundles are combined to give the lowest price without using an item twice. All garments except bar robes qualify for piece specials. Specials never increase a price.</p>
     <table>
         <thead>
             <tr><th>Rule</th><th>Value</th><th>Status</th><th>Actions</th></tr>
@@ -107,7 +107,7 @@ $discountTypes = ['bundle' => 'Piece bundle (repeatable)', 'unit_price' => 'Garm
                         <?= $this->Form->control('discount_type', ['options' => $discountTypes, 'value' => $rule->discount_type]) ?>
                         <?= $this->Form->control('qualifying_item_name', ['label' => 'Garment name (required for unit-price offers)', 'value' => $rule->qualifying_item_name]) ?>
                         <?= $this->Form->control('discount_value', ['label' => $rule->discount_type === 'percentage' ? 'Discount (%)' : ($rule->discount_type === 'price_cap' ? 'Maximum eligible total ($)' : 'Discount amount ($)'), 'type' => 'number', 'min' => 0, 'required' => true, 'step' => $rule->discount_type === 'percentage' ? '1' : '0.01', 'value' => $rule->discount_type === 'percentage' ? $rule->discount_value : number_format($rule->discount_value / 100, 2, '.', '')]) ?>
-                        <p data-price-cap-note<?= $rule->discount_type === 'price_cap' ? '' : ' hidden' ?>>Legacy cap: applies once to eligible garments. Piece bundles repeat and are optimised instead. Bar robes and jabots do not qualify for caps or piece bundles.</p>
+                        <p data-price-cap-note<?= $rule->discount_type === 'price_cap' ? '' : ' hidden' ?>>Legacy cap: applies once to eligible garments, excluding bar robes and jabots. Piece bundles repeat and include all garments except bar robes.</p>
                         <div class="dialog-actions">
                             <?= $this->Form->button('Save changes', ['class' => 'button-primary']) ?>
                             <button type="button" class="cancel-add" onclick="this.closest('dialog').close()">Cancel</button>
@@ -140,7 +140,7 @@ $discountTypes = ['bundle' => 'Piece bundle (repeatable)', 'unit_price' => 'Garm
     <?= $this->Form->control('discount_type', ['options' => $discountTypes]) ?>
     <?= $this->Form->control('qualifying_item_name', ['label' => 'Garment name (required for unit-price offers)']) ?>
     <?= $this->Form->control('discount_value', ['label' => 'Discount (%)', 'type' => 'number', 'min' => 0, 'step' => 1, 'required' => true]) ?>
-    <p data-price-cap-note hidden>Legacy cap: applies once to eligible garments. Piece bundles repeat and are optimised instead. Bar robes and jabots do not qualify for caps or piece bundles.</p>
+    <p data-price-cap-note hidden>Legacy cap: applies once to eligible garments, excluding bar robes and jabots. Piece bundles repeat and include all garments except bar robes.</p>
     <?= $this->Form->button('Save discount rule', ['class' => 'button-primary']) ?>
     <?= $this->Form->end() ?>
 </section>
