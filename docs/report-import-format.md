@@ -1,5 +1,21 @@
 # Disbursement report and Jabot piece specials — 4 November 2026
 
+## Latest correction: final discounted charge, no extra tax
+
+This correction supersedes the earlier tax-addition notes below. Report column
+I keeps the heading `Amount (Inc TAX)` but contains the exact saved discounted
+line charge. No 10% is appended. The fixed tax-rate field remains template
+metadata and does not change this amount. The barrister email's final heading
+is `Discounted cost`; its rows and total read the same final charges directly.
+For example, $32 remains $32, and the pictured four-item request totals $52
+in both the report and the email.
+
+Use a freshly generated export after deploying this correction. Already
+downloaded or uploaded workbooks retain their old values.
+
+Changed: `src/Service/WeeklyReportWorkbook.php`,
+`resources/automation/DailyLaundry.ts`, report/reader tests and documentation.
+
 The export remains a single worksheet containing the native Excel table
 `BarristerRequests`. It starts at A1 with no title, footer or spacer rows.
 Each row represents one submitted garment line. Downloading resets exactly

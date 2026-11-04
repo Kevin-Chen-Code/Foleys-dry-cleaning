@@ -24,7 +24,7 @@ const importRecord = {
 };
 const importRow = (labels = importHeaders, overrides = {}) => labels.map(label => ({...importRecord, ...overrides})[label]);
 
-test('Email heading, individual line amounts and total match the tax-inclusive workbook amounts', () => {
+test('Email heading, individual line amounts and total match the reported workbook amounts', () => {
   const result = run([
     importRow(),
     importRow(importHeaders, {'Item type': 'Bar Robe', Quantity: 1, 'Amount (Inc TAX)': 22}),
@@ -33,8 +33,8 @@ test('Email heading, individual line amounts and total match the tax-inclusive w
   assert.deepEqual(Object.keys(result[0]), ['email', 'html']);
   assert.equal(result[0].email, 'alex@example.com');
   assert.match(result[0].html, /^<p>Dear Alex,/);
-  assert.match(result[0].html, /<th>Amount \(Inc Tax\)<\/th>/);
-  assert.doesNotMatch(result[0].html, /<th>Discounted cost/);
+  assert.match(result[0].html, /<th>Discounted cost<\/th>/);
+  assert.doesNotMatch(result[0].html, /<th>Amount \(Inc Tax\)/);
   assert.match(result[0].html, /<td>Blazer\/Bar Jacket<\/td><td>3<\/td><td>\$35\.20<\/td>/);
   assert.match(result[0].html, /<td>Bar Robe<\/td><td>1<\/td><td>\$22\.00<\/td>/);
   assert.match(result[0].html, /Total: \$57\.20 AUD/);
@@ -97,7 +97,7 @@ test('Uses first word only and handles whitespace and single-word names', () => 
   }
 });
 
-test('Combines item rows per name and email and totals their tax-inclusive amounts', () => {
+test('Combines item rows per name and email and totals their reported amounts', () => {
   const result = run([row(), row('Alex Smith', 'alex@example.com', 'Suit jacket', 19.8), row('Jamie Doe', 'jamie@example.com')]);
   assert.equal(result.length, 2);
   assert.match(result[0].html, /Shirt/);
@@ -127,4 +127,11 @@ test('Invalid email or quantity prevents message generation', () => {
   for (const quantity of [0, -1, 1.5]) {
     assert.throws(() => run([importRow(importHeaders, {Quantity: quantity})], importHeaders), /Invalid/);
   }
+});
+
+test('Discounted charge remains unchanged in report-sourced email amounts', () => {
+  const html = run([importRow(importHeaders, {'Amount (Inc TAX)': 32}), importRow(importHeaders, {'Item type': 'Bar Robe', 'Amount (Inc TAX)': 20})], importHeaders)[0].html;
+  assert.match(html, /<th>Discounted cost<\/th>/);
+  assert.match(html, /Total: \$52\.00 AUD/);
+  assert.doesNotMatch(html, /\$57\.20/);
 });

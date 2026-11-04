@@ -47,7 +47,7 @@ final class WeeklyReportWorkbook
             foreach ($report['orders'] as $order) {
                 foreach ($report['itemsByOrder'][(int)$order->id] ?? [] as $index => $item) {
                     $discounted = $report['discountedCostsByOrder'][(int)$order->id][$index] ?? 0;
-                    // Match the template's A–K columns in order; tax still uses the saved net charge.
+                    // Match A–K in the template. Amount is the final discounted charge, with no tax added.
                     $values = [
                         'Clerk Disbursement',
                         (string)($order->barrister_name ?? ''),
@@ -57,7 +57,7 @@ final class WeeklyReportWorkbook
                         '', // The supplied import format leaves Merchant blank.
                         $order->submitted_at ? $this->excelDate($order->submitted_at) : null,
                         self::TAX_PERCENT / 100,
-                        $this->amountIncludingTax((int)$discounted) / 100,
+                        $discounted / 100,
                         (string)$item->item_name,
                         (int)$item->quantity,
                     ];
@@ -150,11 +150,4 @@ final class WeeklyReportWorkbook
         return $wallClock->getTimestamp() / 86400 + 25569;
     }
 
-    /** Add 10% tax to the discounted line charge, rounding half-up to a cent. */
-    private function amountIncludingTax(int $discountedCents): int
-    {
-        // Splitting quotient/remainder avoids floating-point rounding and multiplication overflow.
-        return $discountedCents + intdiv($discountedCents, 100) * self::TAX_PERCENT
-            + intdiv(($discountedCents % 100) * self::TAX_PERCENT + 50, 100);
-    }
 }

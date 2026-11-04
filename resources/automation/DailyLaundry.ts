@@ -27,7 +27,7 @@ function main(workbook: ExcelScript.Workbook): LaundryEmail[] {
   const submittedColumn = column(['Submitted (Melbourne)', 'Submitted', 'Date (DD/MM/YYYY)']);
   const itemColumn = column(['Item type']);
   const quantityColumn = column(['Quantity']);
-  // Use the exported tax-inclusive amount directly, without adding or removing tax.
+  // Amount contains the final discounted charge. Use it directly without adding or removing tax.
   const costColumn = column(['Amount (Inc TAX)']);
   if (table.getRowCount() === 0) return [];
   const body = table.getRangeBetweenHeaderAndTotal();
@@ -68,7 +68,7 @@ function main(workbook: ExcelScript.Workbook): LaundryEmail[] {
     const html = '<p>Dear ' + escapeHtml(firstName) + ',</p>'
       + '<p>Thank you for submitting your dry-cleaning request. Your submitted items are listed below.</p>'
       + '<table border="1" cellpadding="8" cellspacing="0" style="border-collapse:collapse">'
-      + '<thead><tr><th>Submitted (Melbourne)</th><th>Item type</th><th>Quantity</th><th>Amount (Inc Tax)</th></tr></thead>'
+      + '<thead><tr><th>Submitted (Melbourne)</th><th>Item type</th><th>Quantity</th><th>Discounted cost</th></tr></thead>'
       + '<tbody>' + group.rows.join('') + '</tbody></table>'
       + '<p><strong>Total: $' + (group.totalCents / 100).toFixed(2) + ' AUD</strong></p>'
       + '<p>Kind regards,<br>Foley&#39;s List</p>';

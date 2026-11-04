@@ -127,11 +127,11 @@ final class WeeklyReportServiceTest extends TestCase
             $this->assertSame('Dry Cleaning', $this->cell($xml, 'E' . $row));
             $this->assertSame('', $this->cell($xml, 'F' . $row));
             $this->assertSame('0.1', $this->cell($xml, 'H' . $row));
-            $this->assertSame('19.8', $this->cell($xml, 'I' . $row));
+            $this->assertSame('18', $this->cell($xml, 'I' . $row));
         }
         $this->assertSame('Shirt', $this->cell($xml, 'J3'));
         $this->assertSame('2', $this->cell($xml, 'K3'));
-        $this->assertEqualsWithDelta(39.6, $xml->evaluate('sum(//s:row[number(@r) > 1]/s:c[starts-with(@r,"I")]/s:v)'), 0.0000001);
+        $this->assertEqualsWithDelta(36.0, $xml->evaluate('sum(//s:row[number(@r) > 1]/s:c[starts-with(@r,"I")]/s:v)'), 0.0000001);
         foreach (['G3', 'H3', 'I3', 'K3'] as $cell) {
             $this->assertSame('n', $xml->evaluate('string(//s:c[@r="' . $cell . '"]/@t)'));
         }
@@ -164,10 +164,10 @@ final class WeeklyReportServiceTest extends TestCase
         $this->assertTable($xlsx, 'A1:K2');
     }
 
-    public function testTaxUsesDiscountedLineAmountsAndRoundsHalfCentsUp(): void
+    public function testAmountExactlyMatchesDiscountedLineChargesWithoutAddingTax(): void
     {
         $discountedCents = [0, 1, 4, 5, 15, 999, 3200];
-        $expectedIncTaxCents = [0, 1, 4, 6, 17, 1099, 3520];
+        $expectedIncTaxCents = $discountedCents;
         $items = array_map(static fn (int $cents): object => (object)[
             'item_name' => 'Test garment',
             'quantity' => 1,
@@ -199,8 +199,8 @@ final class WeeklyReportServiceTest extends TestCase
         $xml = $this->sheet($xlsx);
         $this->assertTable($xlsx, 'A1:K601');
         $this->assertSame(600.0, $xml->evaluate('count(//s:row[number(@r) >= 2])'));
-        $this->assertSame('19.8', $this->cell($xml, 'I601'));
-        $this->assertEqualsWithDelta(11880.0, $xml->evaluate('sum(//s:row[number(@r) > 1]/s:c[starts-with(@r,"I")]/s:v)'), 0.0000001);
+        $this->assertSame('18', $this->cell($xml, 'I601'));
+        $this->assertEqualsWithDelta(10800.0, $xml->evaluate('sum(//s:row[number(@r) > 1]/s:c[starts-with(@r,"I")]/s:v)'), 0.0000001);
     }
 
     public function testCutoffIsStrictAndFutureAndNonSubmittedRequestsAreExcluded(): void

@@ -207,6 +207,10 @@ files are idempotent for future deployments.
 
 ## Disbursement import report (4 November 2026)
 
+Latest correction: report `Amount (Inc TAX)` equals the saved discounted charge
+with no extra tax. The email final column is `Discounted cost` and reads that
+same amount. This supersedes the earlier tax-addition description below.
+
 See [report-import-format.md](docs/report-import-format.md) for the column map,
 fixed values, tax calculation, Power Automate compatibility and changed files.
 The report retains one `BarristerRequests` table, adds email in column C and
