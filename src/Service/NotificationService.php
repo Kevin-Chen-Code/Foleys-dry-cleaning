@@ -49,13 +49,9 @@ final class NotificationService
         return $this->mailerFactory !== null ? ($this->mailerFactory)() : new Mailer('default');
     }
 
-    /**
-     * Attempts each recipient independently; a saved request is never rolled back by email failure.
-     */
+    /** Sends one confirmation to the barrister, with the administrator copied. */
     public function sendRequestSubmitted(object $order, array $lines): ?string
     {
-        $settings = FactoryLocator::get('Table')->get('EmailSettings')->find()->first();
-        $mailbox = trim((string)($settings?->mailbox ?? ''));
         $barristerEmail = trim((string)($order->email ?? ''));
 
         $itemLines = array_map(
@@ -63,41 +59,22 @@ final class NotificationService
             $lines,
         );
         $items = implode("\n", $itemLines);
-        $teamBody = "Dear team,\n\n"
-            . sprintf("A barrister (%s) has submitted a request for dry cleaning:\n", $barristerEmail)
-            . $items
-            . sprintf("\n\nFinal price: $%0.2f\n\nKind regards,\nFoley's List dry cleaning portal", $order->total_cents / 100);
         $barristerBody = "Dear barrister,\n\n"
             . "Thank you for submitting your dry-cleaning request. We have received the following item(s):\n"
             . $items
             . sprintf("\n\nFinal price: $%0.2f\n\nKind regards,\nFoley's List dry cleaning portal", $order->total_cents / 100);
 
-        $failed = $mailbox === '';
-        if ($mailbox === '') {
-            Log::warning('Dry-cleaning team notification skipped: no mailbox is saved in Email settings.');
-        }
-        $messages = [];
-        if ($mailbox !== '') {
-            $messages[] = ['recipient' => $mailbox, 'subject' => 'New dry cleaning request', 'body' => $teamBody, 'label' => 'team'];
-        }
-        if ($barristerEmail !== '') {
-            // Deliver both distinct greetings even if the nominated mailbox matches the barrister.
-            $messages[] = ['recipient' => $barristerEmail, 'subject' => 'Your dry cleaning request', 'body' => $barristerBody, 'label' => 'barrister'];
-        } else {
-            $failed = true;
-        }
-        foreach ($messages as $message) {
-            try {
-                $result = $this->mailer()
-                    ->setEmailFormat('text')
-                    ->setTo($message['recipient'])
-                    ->setSubject($message['subject'])
-                    ->deliver($message['body']);
-                Log::info(sprintf('Dry-cleaning %s notification accepted for request %s; provider email ID: %s', $message['label'], $order->id ?? 'unknown', $result['id'] ?? 'unavailable'));
-            } catch (Throwable $exception) {
-                $failed = true;
-                Log::error(sprintf('Dry-cleaning %s notification failed for request %s: %s', $message['label'], $order->id ?? 'unknown', $exception->getMessage()));
-            }
+        try {
+            $result = $this->mailer()
+                ->setEmailFormat('text')
+                ->setTo($barristerEmail)
+                ->setCc('admin@foleys.com.au')
+                ->setSubject('Your dry cleaning request')
+                ->deliver($barristerBody);
+            Log::info(sprintf('Dry-cleaning confirmation accepted for request %s; provider email ID: %s', $order->id ?? 'unknown', $result['id'] ?? 'unavailable'));
+        } catch (Throwable $exception) {
+            // Email failure must not undo a successfully saved request.
+            Log::error(sprintf('Dry-cleaning confirmation failed for request %s: %s', $order->id ?? 'unknown', $exception->getMessage()));
         }
 
         return null;

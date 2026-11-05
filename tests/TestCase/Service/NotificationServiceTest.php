@@ -34,78 +34,35 @@ final class NotificationServiceTest extends TestCase
         parent::tearDown();
     }
 
-    public function testBarristerIsAttemptedWhenTeamDeliveryFails(): void
-    {
-        $this->saveMailbox('team@example.com');
-        $messages = [];
-        $mailer = $this->getMockBuilder(Mailer::class)->setConstructorArgs([[]])->onlyMethods(['deliver'])->getMock();
-        $mailer->expects($this->exactly(2))->method('deliver')->willReturnCallback(
-            function (string $body) use ($mailer, &$messages): array {
-                $messages[] = ['to' => array_keys($mailer->getTo()), 'subject' => $mailer->getSubject(), 'body' => $body];
-                if (count($messages) === 1) {
-                    throw new RuntimeException('Simulated team transport rejection');
-                }
-                return ['id' => 'test-barrister-email'];
-            },
-        );
-
-        $warning = (new NotificationService(static fn (): Mailer => $mailer))->sendRequestSubmitted($this->order(), $this->lines());
-
-        $this->assertNotNull($warning);
-        $this->assertSame(['team@example.com'], $messages[0]['to']);
-        $this->assertSame(['barrister@example.com'], $messages[1]['to']);
-        $this->assertSame('Your dry cleaning request', $messages[1]['subject']);
-    }
-
-    public function testBothMessagesHaveGreetingSubmittedItemsAndFinalTotal(): void
-    {
-        $this->saveMailbox('team@example.com');
-        $messages = [];
-        $mailer = $this->recordingMailer(2, $messages);
-
-        $warning = (new NotificationService(static fn (): Mailer => $mailer))->sendRequestSubmitted($this->order(), $this->lines());
-
-        $this->assertNull($warning);
-        $this->assertSame(['team@example.com'], $messages[0]['to']);
-        $this->assertSame('New dry cleaning request', $messages[0]['subject']);
-        $this->assertStringStartsWith("Dear team,\n\n", $messages[0]['body']);
-        $this->assertStringContainsString('barrister@example.com', $messages[0]['body']);
-        $this->assertSame(['barrister@example.com'], $messages[1]['to']);
-        $this->assertSame('Your dry cleaning request', $messages[1]['subject']);
-        $this->assertStringStartsWith("Dear barrister,\n\n", $messages[1]['body']);
-        foreach ($messages as $message) {
-            $this->assertStringContainsString('- Suit jacket: 2 x $18.00 = $36.00', $message['body']);
-            $this->assertStringContainsString('- Shirt: 1 x $6.00 = $6.00', $message['body']);
-            $this->assertStringContainsString('Final price: $37.80', $message['body']);
-            $this->assertSame('text', $message['format']);
-        }
-    }
-
-    public function testMissingNominatedMailboxStillSendsBarristerMessageAndReturnsWarning(): void
+    public function testConfirmationCopiesAdminWithoutNominatedMailbox(): void
     {
         $messages = [];
         $mailer = $this->recordingMailer(1, $messages);
-
         $warning = (new NotificationService(static fn (): Mailer => $mailer))->sendRequestSubmitted($this->order(), $this->lines());
-
-        $this->assertNotNull($warning);
-        $this->assertStringContainsString('Your request was saved', $warning);
-        $this->assertSame(['barrister@example.com'], $messages[0]['to']);
-        $this->assertSame('Your dry cleaning request', $messages[0]['subject']);
-    }
-
-    public function testSameMailboxReceivesBothDistinctMessages(): void
-    {
-        $this->saveMailbox('barrister@example.com');
-        $messages = [];
-        $mailer = $this->recordingMailer(2, $messages);
-
-        $warning = (new NotificationService(static fn (): Mailer => $mailer))->sendRequestSubmitted($this->order(), $this->lines());
-
         $this->assertNull($warning);
         $this->assertSame(['barrister@example.com'], $messages[0]['to']);
-        $this->assertSame(['barrister@example.com'], $messages[1]['to']);
-        $this->assertSame(['New dry cleaning request', 'Your dry cleaning request'], array_column($messages, 'subject'));
+        $this->assertSame(['admin@foleys.com.au'], $messages[0]['cc']);
+        $this->assertSame('Your dry cleaning request', $messages[0]['subject']);
+        $this->assertStringStartsWith("Dear barrister,\n\n", $messages[0]['body']);
+        $this->assertStringContainsString('- Suit jacket: 2 x $18.00 = $36.00', $messages[0]['body']);
+        $this->assertStringContainsString('Final price: $37.80', $messages[0]['body']);
+    }
+
+    public function testStoredMailboxDoesNotCauseDuplicateTeamMessage(): void
+    {
+        $this->saveMailbox('admin@foleys.com.au');
+        $messages = [];
+        $mailer = $this->recordingMailer(1, $messages);
+        (new NotificationService(static fn (): Mailer => $mailer))->sendRequestSubmitted($this->order(), $this->lines());
+        $this->assertCount(1, $messages);
+        $this->assertSame(['admin@foleys.com.au'], $messages[0]['cc']);
+    }
+
+    public function testDeliveryFailureDoesNotUndoSavedRequest(): void
+    {
+        $mailer = $this->getMockBuilder(Mailer::class)->setConstructorArgs([[]])->onlyMethods(['deliver'])->getMock();
+        $mailer->expects($this->once())->method('deliver')->willThrowException(new RuntimeException('Simulated rejection'));
+        $this->assertNull((new NotificationService(static fn (): Mailer => $mailer))->sendRequestSubmitted($this->order(), $this->lines()));
     }
 
     private function recordingMailer(int $expectedMessages, array &$messages): Mailer
@@ -115,6 +72,7 @@ final class NotificationServiceTest extends TestCase
             static function (string $body) use ($mailer, &$messages): array {
                 $messages[] = [
                     'to' => array_keys($mailer->getTo()),
+                    'cc' => array_keys($mailer->getCc()),
                     'subject' => $mailer->getSubject(),
                     'body' => $body,
                     'format' => $mailer->getEmailFormat(),
