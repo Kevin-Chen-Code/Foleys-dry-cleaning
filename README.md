@@ -144,11 +144,11 @@ and daylight-saving transitions. This filters reports only; older requests are
 not deleted and remain accessible under Incoming requests.
 
 Downloads are `.xlsx` workbooks with a native `BarristerRequests` Excel Table,
-filterable headers, frozen headings, numeric quantities/prices, and Melbourne
+filterable headers, frozen headings, numeric prices, and Melbourne
 date/time cells. The sheet contains only the table starting at A1, without title,
 summary, footer or spacer rows. The page still displays the total billed, while
 the export retains each line's discounted cost. User-provided
-names and emails are stored as literal text, never executable formulas.
+names are stored as literal text, never executable formulas.
 Clicking Download Excel generates the file and then marks only its included
 requests as downloaded, clearing them from the report for all administrators.
 New requests arriving during generation remain pending. The previous-day 5 pm
@@ -205,21 +205,22 @@ before the archive field exists. The shared archive and discounted-line fields
 have already been added without running unrelated migrations. Their migration
 files are idempotent for future deployments.
 
-## Disbursement import report (4 November 2026)
+## Report and automatic request confirmations
 
-Latest correction: report `Amount (Inc TAX)` equals the saved discounted charge
-with no extra tax. The email final column is `Discounted cost` and reads that
-same amount. This supersedes the earlier tax-addition description below.
+The downloadable report has eight columns, ending at H (`Amount (Inc TAX)`).
+Email address, Item type and Quantity are omitted. It retains one row per
+garment type and the native `BarristerRequests` table. Amount is the saved
+discounted line charge, without additional tax. Download/reset rules are unchanged.
 
-See [report-import-format.md](docs/report-import-format.md) for the column map,
-fixed values, tax calculation, Power Automate compatibility and changed files.
-The report retains one `BarristerRequests` table, adds email in column C and
-calculates each tax-inclusive amount from the saved discounted line cost plus
-10%, rounded to cents. Item details at the end support the existing email flow.
-The export ends at column K (`Quantity`); it no longer includes a separate
-`Discounted cost (AUD)` column.
-The version-controlled Office Script is `resources/automation/DailyLaundry.ts`;
-it accepts both the new and previous name/date headers. Email rows and totals
-use `Amount (Inc TAX)` directly, with the heading `Amount (Inc Tax)`. Reports
-without that amount column must be re-exported in the current format. The
-report download/reset rules are unchanged.
+Resend confirmations greet the barrister by their first name and include an HTML
+table of Melbourne submission date, garment, quantity and discounted cost.
+Admin is copied at `admin@foleys.com.au`; `EMAIL_FROM` still sets the sender.
+Edit the email in `templates/email/html/request_submitted.php`.
+
+`webroot/js/request-submit.js` disables the submit button and blocks repeat form
+submissions while the first request is pending. Invalid required fields stay
+editable, and browser-history restoration re-enables the button.
+
+The old Office Script in `resources/automation/DailyLaundry.ts` is retained only
+for older workbooks. New eight-column reports are not inputs to that flow.
+See [report-import-format.md](docs/report-import-format.md) for the current column map.

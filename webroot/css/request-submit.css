@@ -1,0 +1,7 @@
+[data-request-submit]:disabled {
+    background: #687787;
+    border-color: #687787;
+    color: #fff;
+    cursor: wait;
+    opacity: 1;
+}

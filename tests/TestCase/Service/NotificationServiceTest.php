@@ -43,9 +43,15 @@ final class NotificationServiceTest extends TestCase
         $this->assertSame(['barrister@example.com'], $messages[0]['to']);
         $this->assertSame(['admin@foleys.com.au'], $messages[0]['cc']);
         $this->assertSame('Your dry cleaning request', $messages[0]['subject']);
-        $this->assertStringStartsWith("Dear barrister,\n\n", $messages[0]['body']);
-        $this->assertStringContainsString('- Suit jacket: 2 x $18.00 = $36.00', $messages[0]['body']);
-        $this->assertStringContainsString('Final price: $37.80', $messages[0]['body']);
+        $this->assertStringContainsString('Dear Alex,', $messages[0]['body']);
+        $this->assertSame('html', $messages[0]['format']);
+        $this->assertStringContainsString('04/11/2026', $messages[0]['body']);
+        $this->assertStringContainsString('<th scope="col">Discounted cost</th>', $messages[0]['body']);
+        $this->assertStringContainsString('Suit jacket', $messages[0]['body']);
+        $this->assertStringContainsString('$32.40', $messages[0]['body']);
+        $this->assertStringContainsString('$5.40', $messages[0]['body']);
+        $this->assertStringNotContainsString('$36.00', $messages[0]['body']);
+        $this->assertStringContainsString('Total: $37.80 AUD', $messages[0]['body']);
     }
 
     public function testStoredMailboxDoesNotCauseDuplicateTeamMessage(): void
@@ -56,6 +62,27 @@ final class NotificationServiceTest extends TestCase
         (new NotificationService(static fn (): Mailer => $mailer))->sendRequestSubmitted($this->order(), $this->lines());
         $this->assertCount(1, $messages);
         $this->assertSame(['admin@foleys.com.au'], $messages[0]['cc']);
+    }
+
+    public function testFiveShirtsUseSavedDiscountedChargeAndEscapeUserText(): void
+    {
+        $messages = [];
+        $mailer = $this->recordingMailer(1, $messages);
+        $order = $this->order();
+        $order->barrister_name = '<Alex> Example';
+        $order->total_cents = 3000;
+        (new NotificationService(static fn (): Mailer => $mailer))->sendRequestSubmitted($order, [
+            ['item_name' => 'Shirt <script>alert(1)</script>', 'quantity' => 5,
+                'line_total_cents' => 4500, 'discounted_total_cents' => 3000],
+        ]);
+        $html = $messages[0]['body'];
+        $this->assertStringContainsString('Dear &lt;Alex&gt;,', $html);
+        $this->assertStringNotContainsString('<script>', $html);
+        $this->assertStringContainsString('&lt;script&gt;', $html);
+        $this->assertStringContainsString('>$30.00</td>', $html);
+        $this->assertStringContainsString('Total: $30.00 AUD', $html);
+        $this->assertStringNotContainsString('$45.00', $html);
+        $this->assertStringNotContainsString('$33.00', $html);
     }
 
     public function testDeliveryFailureDoesNotUndoSavedRequest(): void
@@ -90,7 +117,7 @@ final class NotificationServiceTest extends TestCase
 
     private function order(): object
     {
-        return (object)['id' => 17, 'email' => 'barrister@example.com', 'total_cents' => 3780];
+        return (object)['barrister_name' => 'Alex Example', 'submitted_at' => new \DateTimeImmutable('2026-11-03 14:30:00 UTC'), 'id' => 17, 'email' => 'barrister@example.com', 'total_cents' => 3780];
     }
 
     private function lines(): array

@@ -1,9 +1,9 @@
-<?php $this->assign('title', 'Submit a request'); $this->Html->script(['order-pricing', 'order-builder', 'barrister-autocomplete'], ['block' => true]); $this->Html->css(['item-dialog', 'barrister-autocomplete'], ['block' => true]); ?>
+<?php $this->assign('title', 'Submit a request'); $this->Html->script(['order-pricing', 'order-builder', 'barrister-autocomplete', 'request-submit'], ['block' => true]); $this->Html->css(['item-dialog', 'barrister-autocomplete', 'request-submit'], ['block' => true]); ?>
 <section class="page-heading">
     <h1>Submit your dry cleaning request here</h1>
     <p>Register your chambers garments. Collection takes place daily at the schedule outlined <?= $this->Html->link('here', 'https://foleys-assets.spicyweb.net.au/main/External-Documents/Dry-Cleaning-Rounds.pdf', ['target' => '_blank', 'rel' => 'noopener noreferrer']) ?>.</p>
 </section>
-<?= $this->Form->create($order ?? null, ['class' => 'builder-form', 'novalidate' => true]) ?>
+<?= $this->Form->create($order ?? null, ['class' => 'builder-form', 'novalidate' => true, 'data-request-form' => true]) ?>
 <section class="items-card">
     <div class="barrister-name-picker" data-barrister-picker data-suggestions-url="<?= h($this->Url->build('/barristers/suggestions')) ?>">
         <?= $this->Form->control('barrister_name', ['label' => 'Barrister name *', 'required' => true, 'maxlength' => 150, 'autocomplete' => 'off', 'role' => 'combobox', 'aria-autocomplete' => 'list', 'aria-expanded' => 'false', 'aria-controls' => 'barrister-name-suggestions', 'aria-describedby' => 'barrister-name-help', 'data-barrister-name' => true]) ?>
@@ -20,6 +20,6 @@
 
     <!-- UI: eligible rule names appear here as items are added to the request. -->
     <ul class="applied-discounts" data-live-discounts hidden></ul>
-    <?= $this->Form->button('Submit request', ['class' => 'button-primary']) ?>
+    <?= $this->Form->button('Submit request', ['class' => 'button-primary', 'data-request-submit' => true]) ?>
 </aside>
 <?= $this->Form->end() ?>

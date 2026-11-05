@@ -47,19 +47,16 @@ final class WeeklyReportWorkbook
             foreach ($report['orders'] as $order) {
                 foreach ($report['itemsByOrder'][(int)$order->id] ?? [] as $index => $item) {
                     $discounted = $report['discountedCostsByOrder'][(int)$order->id][$index] ?? 0;
-                    // Match A–K in the template. Amount is the final discounted charge, with no tax added.
+                    // Match A–H in the template. Amount is the final discounted charge, with no tax added.
                     $values = [
                         'Clerk Disbursement',
                         (string)($order->barrister_name ?? ''),
-                        (string)($order->email ?? ''),
                         'Expense',
                         'Dry Cleaning',
                         '', // The supplied import format leaves Merchant blank.
                         $order->submitted_at ? $this->excelDate($order->submitted_at) : null,
                         self::TAX_PERCENT / 100,
                         $discounted / 100,
-                        (string)$item->item_name,
-                        (int)$item->quantity,
                     ];
                     $row = $prototype->cloneNode(true);
                     $row->setAttribute('r', (string)$rowNumber);
@@ -77,7 +74,7 @@ final class WeeklyReportWorkbook
             }
             $lastRow = max(2, $rowNumber - 1);
             $table = $this->xml($zip, 'xl/tables/table1.xml');
-            $range = 'A1:K' . $lastRow;
+            $range = 'A1:H' . $lastRow;
             $dimension = $xpath->query('//s:dimension')->item(0);
             if ($dimension instanceof DOMElement) {
                 $dimension->setAttribute('ref', $range);
