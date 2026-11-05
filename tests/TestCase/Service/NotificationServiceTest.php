@@ -45,8 +45,8 @@ final class NotificationServiceTest extends TestCase
         $this->assertSame('Your dry cleaning request', $messages[0]['subject']);
         $this->assertStringContainsString('Dear Alex,', $messages[0]['body']);
         $this->assertSame('html', $messages[0]['format']);
-        $this->assertStringContainsString('04/11/2026', $messages[0]['body']);
-        $this->assertStringContainsString('<th scope="col">Discounted cost</th>', $messages[0]['body']);
+        $this->assertStringContainsString('04 Nov 2026 01:30', $messages[0]['body']);
+        $this->assertStringContainsString('>Discounted cost (AUD)</th>', $messages[0]['body']);
         $this->assertStringContainsString('Suit jacket', $messages[0]['body']);
         $this->assertStringContainsString('$32.40', $messages[0]['body']);
         $this->assertStringContainsString('$5.40', $messages[0]['body']);
@@ -90,6 +90,56 @@ final class NotificationServiceTest extends TestCase
         $mailer = $this->getMockBuilder(Mailer::class)->setConstructorArgs([[]])->onlyMethods(['deliver'])->getMock();
         $mailer->expects($this->once())->method('deliver')->willThrowException(new RuntimeException('Simulated rejection'));
         $this->assertNull((new NotificationService(static fn (): Mailer => $mailer))->sendRequestSubmitted($this->order(), $this->lines()));
+    }
+
+    public function testActualMailerSendsPersonalisedHtmlTableToResend(): void
+    {
+        // Exercise the real Mailer rendering and Resend payload, with HTTP mocked.
+        $payload = null;
+        $client = $this->createMock(\Cake\Http\Client::class);
+        $client->expects($this->once())->method('post')->with(
+            'https://api.resend.com/emails',
+            $this->callback(function (array $data) use (&$payload): bool {
+                $payload = $data;
+                return true;
+            }),
+            $this->anything(),
+        )->willReturn(new \Cake\Http\Client\Response(
+            ['HTTP/1.1 200 OK', 'Content-Type: application/json'], '{"id":"test-html-confirmation"}',
+        ));
+        $transport = new \App\Mailer\Transport\ResendTransport(['apiKey' => 'test-only-key'], $client);
+        $mailer = (new Mailer())->setFrom('notifications@example.com')->setTransport($transport);
+        $order = $this->order();
+        $order->barrister_name = 'Jessica Example';
+        $order->submitted_at = new \DateTimeImmutable('2026-10-26 22:45:00 UTC');
+        $order->total_cents = 1700;
+        (new NotificationService(static fn (): Mailer => $mailer))->sendRequestSubmitted($order, [
+            ['item_name' => 'Pencil Skirt', 'quantity' => 5, 'line_total_cents' => 7500, 'discounted_total_cents' => 1508],
+            ['item_name' => 'Blouse', 'quantity' => 1, 'line_total_cents' => 950, 'discounted_total_cents' => 192],
+        ]);
+        $this->assertIsArray($payload);
+        $this->assertSame(['barrister@example.com'], $payload['to']);
+        $this->assertSame(['admin@foleys.com.au'], $payload['cc']);
+        $this->assertArrayHasKey('html', $payload);
+        $html = $payload['html'];
+        $this->assertStringContainsString('Dear Jessica,', $html);
+        $this->assertStringNotContainsString('Dear barrister', $html);
+        $this->assertStringContainsString('<table border="1"', $html);
+        $document = new \DOMDocument();
+        @$document->loadHTML($html);
+        $xpath = new \DOMXPath($document);
+        $this->assertSame(1, $document->getElementsByTagName('table')->length);
+        $headers = array_map(static fn ($node) => $node->textContent, iterator_to_array($xpath->query('//table/thead/tr/th')));
+        $this->assertSame(['Submitted (Melbourne)', 'Item type', 'Quantity', 'Discounted cost (AUD)'], $headers);
+        $rows = [];
+        foreach ($xpath->query('//table/tbody/tr') as $row) {
+            $rows[] = array_map(static fn ($cell) => $cell->textContent, iterator_to_array($row->getElementsByTagName('td')));
+        }
+        $this->assertSame([
+            ['27 Oct 2026 09:45', 'Pencil Skirt', '5', '$15.08'],
+            ['27 Oct 2026 09:45', 'Blouse', '1', '$1.92'],
+        ], $rows);
+        $this->assertStringContainsString('Total: $17.00 AUD', $html);
     }
 
     private function recordingMailer(int $expectedMessages, array &$messages): Mailer

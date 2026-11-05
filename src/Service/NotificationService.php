@@ -8,7 +8,11 @@ use Cake\Datasource\FactoryLocator;
 use Cake\Log\Log;
 use Cake\Mailer\Mailer;
 use Cake\Mailer\TransportFactory;
+use Cake\View\View;
 use Closure;
+use DateTimeImmutable;
+use DateTimeInterface;
+use DateTimeZone;
 use Throwable;
 
 final class NotificationService
@@ -54,19 +58,21 @@ final class NotificationService
     {
         $barristerEmail = trim((string)($order->email ?? ''));
 
-        $itemLines = array_map(
-            fn(array $line): string => sprintf('- %s: %d x $%0.2f = $%0.2f', $line['item_name'], $line['quantity'], $line['unit_price_cents'] / 100, $line['line_total_cents'] / 100),
-            $lines,
-        );
-        $items = implode("\n", $itemLines);
-        $barristerBody = "Dear barrister,\n\n"
-            . "Thank you for submitting your dry-cleaning request. We have received the following item(s):\n"
-            . $items
-            . sprintf("\n\nFinal price: $%0.2f\n\nKind regards,\nFoley's List dry cleaning portal", $order->total_cents / 100);
-
         try {
+            $firstName = preg_split('/\s+/u', trim((string)($order->barrister_name ?? '')))[0] ?: 'barrister';
+            $submitted = $order->submitted_at ?? null;
+            $submittedDate = $submitted instanceof DateTimeInterface
+                ? DateTimeImmutable::createFromInterface($submitted)->setTimezone(new DateTimeZone('Australia/Melbourne'))->format('d M Y H:i')
+                : '';
+            $discountedCosts = (new WeeklyReportService())->discountedLineCosts(
+                (int)$order->total_cents,
+                array_map(static fn (array $line): object => (object)$line, $lines),
+            );
+            $view = new View();
+            $view->set(compact('firstName', 'submittedDate', 'lines', 'discountedCosts', 'order'));
+            $barristerBody = $view->render('email/html/request_submitted', false);
             $result = $this->mailer()
-                ->setEmailFormat('text')
+                ->setEmailFormat('html')
                 ->setTo($barristerEmail)
                 ->setCc('admin@foleys.com.au')
                 ->setSubject('Your dry cleaning request')
