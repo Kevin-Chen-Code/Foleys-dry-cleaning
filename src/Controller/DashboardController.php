@@ -6,6 +6,7 @@ namespace App\Controller;
 use App\Service\WeeklyReportService;
 use App\Service\NotificationService;
 use App\Model\Table\DiscountRulesTable;
+use Cake\Http\Exception\BadRequestException;
 use Cake\I18n\FrozenTime;
 
 final class DashboardController extends AdminController
@@ -19,8 +20,28 @@ final class DashboardController extends AdminController
 
     public function incomingRequests()
     {
+        $this->setResponse($this->response->withHeader('Cache-Control', 'no-store, private'));
         $orders = $this->fetchTable('Orders')->find()->orderBy(['submitted_at' => 'DESC'])->all()->toList();
         $this->set(compact('orders'));
+    }
+
+    public function deleteRequest()
+    {
+        $this->request->allowMethod(['post']);
+        $id = filter_var($this->request->getData('id'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if ($id === false) {
+            throw new BadRequestException('Invalid request ID.');
+        }
+
+        // The order_items foreign key cascades, so the database removes both in one operation.
+        $deleted = $this->fetchTable('Orders')->deleteAll(['id' => $id]);
+        if ($deleted === 0) {
+            $this->Flash->success('This request has already been removed.');
+        } else {
+            $this->Flash->success('Request deleted.');
+        }
+
+        return $this->redirect(['action' => 'incomingRequests'], 303);
     }
 
     public function managePricing()
@@ -95,6 +116,7 @@ final class DashboardController extends AdminController
             return $this->redirect(['action' => 'weeklyReport']);
         }
         ['orders' => $orders, 'itemsByOrder' => $itemsByOrder, 'discountedCostsByOrder' => $discountedCostsByOrder, 'cutoff' => $cutoff, 'asOf' => $asOf] = (new WeeklyReportService())->data();
+        $this->setResponse($this->response->withHeader('Cache-Control', 'no-store, private'));
         $emailDelivery = (new NotificationService())->deliveryStatus();
         $this->set(compact('orders', 'itemsByOrder', 'discountedCostsByOrder', 'cutoff', 'asOf', 'settings', 'emailDelivery'));
     }

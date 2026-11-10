@@ -37,10 +37,11 @@ final class OrderNamesTest extends TestCase
         parent::setUp();
         // All request, reporting and notification data stays in this private database.
         $this->connection = new Connection(['driver' => Sqlite::class, 'database' => ':memory:']);
+        $this->connection->execute('PRAGMA foreign_keys = ON');
         $this->connection->execute('CREATE TABLE service_items (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description TEXT, unit_price_cents INTEGER, active BOOLEAN, position INTEGER, price_cap_eligible BOOLEAN, created DATETIME, updated DATETIME)');
         $this->connection->execute('CREATE TABLE discount_rules (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, qualifying_item_name TEXT, minimum_item_count INTEGER, discount_type TEXT, discount_value INTEGER, active BOOLEAN, created DATETIME, updated DATETIME)');
         $this->connection->execute('CREATE TABLE orders (id INTEGER PRIMARY KEY AUTOINCREMENT, barrister_name TEXT, email TEXT, notes TEXT, status TEXT, subtotal_cents INTEGER, discount_cents INTEGER, total_cents INTEGER, submitted_at DATETIME, created DATETIME, report_downloaded_at DATETIME)');
-        $this->connection->execute('CREATE TABLE order_items (id INTEGER PRIMARY KEY AUTOINCREMENT, order_id INTEGER, service_item_id INTEGER, item_name TEXT, unit_price_cents INTEGER, quantity INTEGER, line_total_cents INTEGER, discounted_total_cents INTEGER, created DATETIME)');
+        $this->connection->execute('CREATE TABLE order_items (id INTEGER PRIMARY KEY AUTOINCREMENT, order_id INTEGER REFERENCES orders(id) ON DELETE CASCADE, service_item_id INTEGER, item_name TEXT, unit_price_cents INTEGER, quantity INTEGER, line_total_cents INTEGER, discounted_total_cents INTEGER, created DATETIME)');
         $this->connection->execute('CREATE TABLE email_settings (id INTEGER PRIMARY KEY AUTOINCREMENT, mailbox TEXT, reporting_day TEXT, created DATETIME, updated DATETIME)');
         $this->locator = new TableLocator();
         foreach ([
@@ -76,6 +77,47 @@ final class OrderNamesTest extends TestCase
         TransportFactory::drop('order-names-test');
         $this->connection->getDriver()->disconnect();
         parent::tearDown();
+    }
+
+    public function testRequestDeletionsAreReflectedInBothAdminPages(): void
+    {
+        $submitted = \Cake\I18n\FrozenTime::now()->setTimezone(new \DateTimeZone('UTC'))->format('Y-m-d H:i:s');
+        foreach ([1 => 'Deleted in Console', 2 => 'Deleted by Admin', 3 => 'Keep This Request'] as $id => $name) {
+            $this->connection->insert('orders', [
+                'id' => $id, 'barrister_name' => $name, 'status' => 'submitted',
+                'submitted_at' => $submitted, 'total_cents' => 1000,
+            ]);
+            $this->connection->insert('order_items', [
+                'order_id' => $id, 'item_name' => 'Shirt', 'quantity' => 1, 'line_total_cents' => 1000,
+            ]);
+        }
+        $this->session(['Foleys' => ['admin' => 'admin']]);
+        $this->get('/admin/weekly-report');
+        $this->assertResponseContains('Deleted in Console');
+        $this->assertResponseContains('Deleted by Admin');
+        $this->assertResponseContains('Total billed: $30.00');
+
+        // Simulate a change made outside the app, then delete through the admin form.
+        $this->connection->delete('orders', ['id' => 1]);
+        $this->get('/admin/incoming-requests');
+        $this->assertResponseContains('action="/admin/incoming-requests/delete"');
+        $this->assertResponseContains('Confirm delete');
+        $this->enableCsrfToken();
+        $this->post('/admin/incoming-requests/delete', ['id' => '2']);
+        $this->assertResponseCode(303);
+        $this->assertRedirect('/admin/incoming-requests');
+        $this->assertSame(1, $this->locator->get('OrderItems')->find()->count());
+        $this->assertSame(3, $this->locator->get('OrderItems')->find()->firstOrFail()->order_id);
+
+        foreach (['/admin/incoming-requests', '/admin/weekly-report'] as $url) {
+            $this->get($url);
+            $this->assertResponseOk();
+            $this->assertHeader('Cache-Control', 'no-store, private');
+            $this->assertResponseNotContains('Deleted in Console');
+            $this->assertResponseNotContains('Deleted by Admin');
+            $this->assertResponseContains('Keep This Request');
+        }
+        $this->assertResponseContains('Total billed: $10.00');
     }
 
     public function testSubmittedNameAndEmailAreStoredAndShownSeparatelyInReports(): void

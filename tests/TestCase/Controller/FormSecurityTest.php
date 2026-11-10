@@ -89,6 +89,22 @@ final class FormSecurityTest extends TestCase
         $this->assertResponseCode(403);
     }
 
+    public function testRequestDeletionRequiresAdminPostWithCsrfToken(): void
+    {
+        $url = '/admin/incoming-requests/delete';
+        $this->session(['Foleys' => ['admin' => 'admin']]);
+        $this->get($url);
+        $this->assertResponseCode(405);
+
+        $this->post($url, ['id' => '1']);
+        $this->assertResponseCode(403);
+
+        $this->session(['Foleys' => ['admin' => false]]);
+        $this->enableCsrfToken();
+        $this->post($url, ['id' => '1']);
+        $this->assertRedirect('/admin/login');
+    }
+
     public function testEmailRejectsMarkupAndMailHeaderInjection(): void
     {
         $table = new OrdersTable(['table' => 'orders']);

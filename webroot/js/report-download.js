@@ -6,9 +6,21 @@
     const status = document.querySelector('[data-report-download-status]');
     const button = form.querySelector('button');
     let downloading = false;
+    let refreshing = false;
+    const refresh = () => {
+        if (downloading || refreshing) return;
+        refreshing = true;
+        window.location.reload();
+    };
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') refresh();
+    });
+    window.addEventListener('pageshow', (event) => {
+        if (event.persisted) refresh();
+    });
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
-        if (downloading) return;
+        if (downloading || refreshing) return;
         downloading = true;
         button.disabled = true;
         status.hidden = false;

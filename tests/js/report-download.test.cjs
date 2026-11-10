@@ -13,18 +13,40 @@ function setup(fetch) {
     const form = {action: '/admin/weekly-report.xlsx', querySelector: () => button, addEventListener: (name, handler) => { events[name] = handler; }};
     const context = {
         document: {
+            addEventListener: (name, handler) => { events[name] = handler; },
             querySelector: (selector) => selector === '[data-report-download]' ? form : status,
             createElement: () => ({click: () => { calls.clicks++; }, remove() {}}),
             body: {appendChild() {}},
         },
-        window: {location: {reload: () => { calls.reloads++; }}},
+        window: {
+            location: {reload: () => { calls.reloads++; }},
+            addEventListener: (name, handler) => { events[name] = handler; },
+        },
         URL: {createObjectURL: () => 'blob:test', revokeObjectURL: () => { calls.revoked++; }},
         FormData: class {constructor(source) {this.source = source;}},
         fetch, setTimeout: (handler) => timers.push(handler),
     };
     vm.runInNewContext(fs.readFileSync(path.join(__dirname, '../../webroot/js/report-download.js'), 'utf8'), context);
-    return {status, button, calls, timers, form, submit: () => events.submit({preventDefault: () => { calls.prevented++; }})};
+    return {status, button, calls, timers, form, submit: () => events.submit({preventDefault: () => { calls.prevented++; }}),
+        setVisibility: (state) => { context.document.visibilityState = state; events.visibilitychange(); },
+        showPage: (persisted) => events.pageshow({persisted}),
+    };
 }
+
+test('Reloads the report when returning to the tab or restoring browser history', () => {
+    const tab = setup(() => assert.fail('Refresh should not download a report'));
+    tab.setVisibility('hidden');
+    tab.showPage(false);
+    assert.equal(tab.calls.reloads, 0);
+    tab.setVisibility('visible');
+    assert.equal(tab.calls.reloads, 1);
+    tab.showPage(true);
+    assert.equal(tab.calls.reloads, 1);
+
+    const history = setup(() => assert.fail('Refresh should not download a report'));
+    history.showPage(true);
+    assert.equal(history.calls.reloads, 1);
+});
 
 test('Downloads via POST with form token, then refreshes the report', async () => {
     let request;
@@ -51,7 +73,9 @@ test('Ignores repeat clicks while the first download is pending', async () => {
     const ui = setup(() => {requests++; return new Promise(resolve => {finish = resolve;});});
     const first = ui.submit();
     await ui.submit();
+    ui.setVisibility('visible');
     assert.equal(requests, 1);
+    assert.equal(ui.calls.reloads, 0);
     finish({ok: false});
     await first;
     assert.equal(ui.button.disabled, false);
