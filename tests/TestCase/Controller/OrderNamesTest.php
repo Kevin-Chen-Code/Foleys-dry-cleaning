@@ -106,8 +106,8 @@ final class OrderNamesTest extends TestCase
         $this->post('/admin/incoming-requests/delete', ['id' => '2']);
         $this->assertResponseCode(303);
         $this->assertRedirect('/admin/incoming-requests');
-        $this->assertSame(1, $this->locator->get('OrderItems')->find()->count());
-        $this->assertSame(3, $this->locator->get('OrderItems')->find()->firstOrFail()->order_id);
+        $this->assertSame(2, $this->locator->get('OrderItems')->find()->count());
+        $this->assertSame('deleted', $this->locator->get('Orders')->get(2)->status);
 
         foreach (['/admin/incoming-requests', '/admin/weekly-report'] as $url) {
             $this->get($url);
@@ -118,6 +118,15 @@ final class OrderNamesTest extends TestCase
             $this->assertResponseContains('Keep This Request');
         }
         $this->assertResponseContains('Total billed: $10.00');
+        $this->get('/admin/incoming-requests?deleted=1');
+        $this->assertResponseContains('Deleted by Admin');
+        $this->assertResponseContains('Restore request');
+        $this->post('/admin/incoming-requests/restore', ['id' => '2']);
+        $this->assertRedirect('/admin/incoming-requests');
+        $this->assertSame('submitted', $this->locator->get('Orders')->get(2)->status);
+        $this->get('/admin/weekly-report');
+        $this->assertResponseContains('Deleted by Admin');
+        $this->assertResponseContains('Total billed: $20.00');
     }
 
     public function testSubmittedNameAndEmailAreStoredAndShownSeparatelyInReports(): void
@@ -186,6 +195,55 @@ final class OrderNamesTest extends TestCase
         $this->assertRedirect('/admin/weekly-report');
     }
 
+    public function testThankYouPageRequiresASuccessfullySavedRequest(): void
+    {
+        $this->get('/request/received');
+        $this->assertRedirect('/request');
+    }
+
+    public function testSamExamplePersistsShirtOfferAndSeparatePieceSpecial(): void
+    {
+        foreach ([[1, 'Shirt', 900], [2, 'Blazer/Bar Jacket', 1700], [3, 'Pant', 1500]] as [$id, $name, $price]) {
+            $this->connection->insert('service_items', ['id' => $id, 'name' => $name, 'unit_price_cents' => $price, 'active' => 1, 'position' => $id]);
+        }
+        foreach (\App\Command\ConfigureSpecialsCommand::definitions() as $rule) {
+            $this->connection->insert('discount_rules', $rule + ['active' => 1]);
+        }
+        $this->enableCsrfToken();
+        $this->post('/request', [
+            'barrister_name' => 'Sam Test', 'email' => 'sam@example.com',
+            'items' => [
+                ['service_item_id' => '1', 'quantity' => '5'],
+                ['service_item_id' => '2', 'quantity' => '1'],
+                ['service_item_id' => '3', 'quantity' => '1'],
+            ],
+        ]);
+        $this->assertRedirect('/request/received');
+        $this->assertSession(6000, 'Foleys.lastOrder.total');
+        $order = $this->locator->get('Orders')->find()->firstOrFail();
+        $this->assertSession($order->id, 'Foleys.lastOrder.id');
+        $lines = $this->locator->get('OrderItems')->find()->orderBy(['id' => 'ASC'])->all()->toList();
+        $this->assertSame([3000, 1594, 1406], array_map(static fn ($line) => $line->discounted_total_cents, $lines));
+        $this->session(['Foleys' => ['lastOrder' => ['id' => $order->id, 'total' => 6000]]]);
+        $this->get('/request/received');
+        $this->assertResponseContains('Your request number is #' . $order->id);
+    }
+
+    public function testFailedItemSaveRollsBackTheWholeRequest(): void
+    {
+        $this->connection->insert('service_items', ['id' => 1, 'name' => 'Shirt', 'unit_price_cents' => 900, 'active' => 1, 'position' => 1]);
+        $this->connection->execute("CREATE TRIGGER fail_item_save BEFORE INSERT ON order_items BEGIN SELECT RAISE(ABORT, 'Simulated item save failure'); END");
+        $this->enableCsrfToken();
+        $this->post('/request', [
+            'barrister_name' => 'Failed Test', 'email' => 'failed@example.com',
+            'items' => [['service_item_id' => '1', 'quantity' => '1']],
+        ]);
+        $this->assertResponseCode(500);
+        $this->assertSame(0, $this->locator->get('Orders')->find()->count());
+        $this->assertSame(0, $this->locator->get('OrderItems')->find()->count());
+        $this->assertSessionNotHasKey('Foleys.lastOrder');
+    }
+
     public function testSubmittedRequestStoresOnlyTheHighestQualifyingTier(): void
     {
         $this->connection->insert('service_items', ['id' => 1, 'name' => 'Blouse', 'unit_price_cents' => 1000, 'active' => 1, 'position' => 1, 'price_cap_eligible' => 1]);
@@ -231,14 +289,14 @@ final class OrderNamesTest extends TestCase
             ],
         ]);
         $this->assertRedirect('/request/received');
-        $this->assertSession(10000, 'Foleys.lastOrder.total');
+        $this->assertSession(12000, 'Foleys.lastOrder.total');
         $order = $this->locator->get('Orders')->find()->firstOrFail();
         $this->assertSame(13500, $order->subtotal_cents);
-        $this->assertSame(3500, $order->discount_cents);
+        $this->assertSame(1500, $order->discount_cents);
         $lines = $this->locator->get('OrderItems')->find()->orderBy(['id' => 'ASC'])->all()->toList();
-        $this->assertSame([2539, 2461, 5000], array_map(static fn ($line) => $line->discounted_total_cents, $lines));
+        $this->assertSame([3000, 4000, 5000], array_map(static fn ($line) => $line->discounted_total_cents, $lines));
         $report = (new \App\Service\WeeklyReportService())->data();
-        $this->assertSame([2539, 2461, 5000], $report['discountedCostsByOrder'][(int)$order->id]);
+        $this->assertSame([3000, 4000, 5000], $report['discountedCostsByOrder'][(int)$order->id]);
     }
 
     public function testExcelReportRequiresAdministratorSession(): void
@@ -261,7 +319,7 @@ final class OrderNamesTest extends TestCase
         $this->assertResponseCode(403);
     }
 
-    public function testReportFiltersOldRequestsWithoutHidingThemFromIncomingRequests(): void
+    public function testReportKeepsOldUndownloadedRequestsVisible(): void
     {
         $cutoff = \Cake\I18n\FrozenTime::now('Australia/Melbourne')->modify('-1 day')->setTime(17, 0)
             ->setTimezone(new \DateTimeZone('UTC'));
@@ -280,7 +338,7 @@ final class OrderNamesTest extends TestCase
         $this->get('/admin/weekly-report');
         $this->assertResponseOk();
         $this->assertResponseContains('recent@example.com');
-        $this->assertResponseNotContains('old@example.com');
+        $this->assertResponseContains('old@example.com');
         $this->get('/admin/incoming-requests');
         $this->assertResponseOk();
         $this->assertResponseContains('recent@example.com');

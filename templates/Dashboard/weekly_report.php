@@ -6,6 +6,7 @@ $total = array_sum(array_map(fn($order) => (int)$order->total_cents, $orders));
 <section class="page-heading">
     <h1>Report download</h1>
     <p>Downloading Excel resets this data dump. For request history, see section All requests</p>
+    <p>All undownloaded requests are included, regardless of their submission date.</p>
 </section>
 
 <section class="items-card">
@@ -36,7 +37,7 @@ $total = array_sum(array_map(fn($order) => (int)$order->total_cents, $orders));
             <?php endforeach; ?>
         <?php endforeach; ?>
         <?php if (!$orders): ?>
-            <tr><td colspan="7">No undownloaded requests in this reporting period.</td></tr>
+            <tr><td colspan="7">No undownloaded requests.</td></tr>
         <?php endif; ?>
         </tbody>
     </table>

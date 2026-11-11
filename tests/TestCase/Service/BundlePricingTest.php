@@ -56,11 +56,11 @@ final class BundlePricingTest extends TestCase
         ], $definitions);
     }
 
-    public function testEveryNonRobeGarmentQualifiesRegardlessOfItsLegacyCapFlag(): void
+    public function testJabotsAndRobesAreExcludedRegardlessOfLegacyFlags(): void
     {
         foreach (['Jabot', 'JABOTS'] as $name) {
             $oldCatalogueItem = ['name' => $name, 'price_cap_eligible' => false];
-            $this->assertTrue(OrderPricingService::isBundleEligible($oldCatalogueItem));
+            $this->assertFalse(OrderPricingService::isBundleEligible($oldCatalogueItem));
             $this->assertFalse(OrderPricingService::isPriceCapEligible($oldCatalogueItem));
         }
         $this->assertFalse(OrderPricingService::isBundleEligible(['name' => 'Bar Robe', 'price_cap_eligible' => true]));

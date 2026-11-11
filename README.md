@@ -138,10 +138,10 @@ with no saved name show a dash in the admin tables and a blank name in Excel.
 ### Report window and Excel downloads
 
 The Weekly report page, Excel download, and scheduled report attachment include
-submitted requests strictly after **5:00 pm yesterday (Australia/Melbourne)**,
-up to the report generation time. Yesterday is a calendar day, including weekends
-and daylight-saving transitions. This filters reports only; older requests are
-not deleted and remain accessible under Incoming requests.
+all undownloaded submitted requests up to the report generation time, regardless
+of submission date. Requests remain pending until they are downloaded or removed
+by an administrator. Removed requests and their items are retained and can be
+restored from the Removed requests link on All requests.
 
 Downloads are `.xlsx` workbooks with a native `BarristerRequests` Excel Table,
 filterable headers, frozen headings, numeric prices, and Melbourne
@@ -151,8 +151,7 @@ the export retains each line's discounted cost. User-provided
 names are stored as literal text, never executable formulas.
 Clicking Download Excel generates the file and then marks only its included
 requests as downloaded, clearing them from the report for all administrators.
-New requests arriving during generation remain pending. The previous-day 5 pm
-cutoff still applies. Requests and item records are never deleted, and remain
+New requests arriving during generation remain pending. Requests and item records are never deleted, and remain
 visible in Incoming requests. Generation/reset is transactional: generation or
 database failures do not clear requests. The reset happens when the server
 generates the file, not when the browser confirms it was saved (browsers cannot
@@ -184,16 +183,17 @@ correct entry.
 
 ## Piece specials and safe garment removal (2 November 2026)
 
-See [pricing-specials.md](docs/pricing-specials.md) for the current offers,
+See [pricing-specials.md](docs/pricing-specials.md) for the original offers,
 the deletion repair, tests, and deployment/activation instructions.
 
 The two-piece $30 and three-piece $32 specials repeat across disjoint groups.
-Pricing chooses the cheapest combination of bundles and individual prices,
-never increasing a price. Five or more Shirts receive a $6 single-piece rate.
-Bar robes are excluded from every discount. All other garments qualify for
-piece specials, including Jabots and catalogue records whose older eligibility
-flag was false. That flag only controls legacy whole-order caps, which still
-exclude jabots. Exact discounted line costs are persisted for reports and Excel.
+Piece specials use eligible garments in ascending price order. Repeatable
+bundles are combined within that order, and each bundle must reduce its selected
+garments’ price. Five or more Shirts receive a $6 single-piece rate.
+Bar robes are excluded from every discount. Jabots are excluded from piece
+specials. Garments receiving a unit-price offer are priced separately and cannot
+also enter piece bundles. Other garments qualify regardless of legacy cap flags.
+Exact discounted line costs are persisted for reports and Excel.
 
 The three offers were activated by the user on 2 November 2026. The older rules
 have been deleted. This update changes the pricing code without modifying live

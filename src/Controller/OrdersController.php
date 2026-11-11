@@ -7,6 +7,7 @@ use App\Service\OrderPricingService;
 use App\Service\NotificationService;
 use Cake\Core\Configure;
 use Cake\I18n\FrozenTime;
+use Cake\Log\Log;
 
 final class OrdersController extends AppController
 {
@@ -28,7 +29,12 @@ final class OrdersController extends AppController
         $this->set(compact('items', 'rules'));
     }
 
-    public function received() {}
+    public function received()
+    {
+        if (!$this->request->getSession()->check('Foleys.lastOrder')) {
+            return $this->redirect(['action' => 'add']);
+        }
+    }
 
     private function submit(array $items): void
     {
@@ -53,11 +59,12 @@ final class OrdersController extends AppController
                 if (!$orderItems->save($orderItems->newEntity($line + ['order_id' => $order->id, 'created' => FrozenTime::now()]))) { throw new \RuntimeException('An item in the collection request could not be saved.'); }
             }
         });
+        Log::info(sprintf('Request %d committed with %d garment lines and total %d cents.', $order->id, count($pricing['lines']), $pricing['total']));
         $emailProblem = (new NotificationService())->sendRequestSubmitted($order, $pricing['lines']);
         if ($emailProblem !== null) {
             $this->Flash->warning($emailProblem);
         }
-        $this->request->getSession()->write('Foleys.lastOrder', ['total' => $pricing['total'], 'emailProblem' => $emailProblem]);
+        $this->request->getSession()->write('Foleys.lastOrder', ['id' => $order->id, 'total' => $pricing['total'], 'emailProblem' => $emailProblem]);
         $this->redirect(['action' => 'received']);
     }
 

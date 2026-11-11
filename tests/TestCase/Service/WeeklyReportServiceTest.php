@@ -196,11 +196,11 @@ final class WeeklyReportServiceTest extends TestCase
         $this->assertEqualsWithDelta(10800.0, $xml->evaluate('sum(//s:row[number(@r) > 1]/s:c[starts-with(@r,"H")]/s:v)'), 0.0000001);
     }
 
-    public function testCutoffIsStrictAndFutureAndNonSubmittedRequestsAreExcluded(): void
+    public function testAllUndownloadedDatesAreIncludedAndFutureAndNonSubmittedRequestsAreExcluded(): void
     {
         $report = $this->withOrders([
             ['submitted_at' => '2026-10-15 05:59:59'], // 4:59:59 pm Melbourne
-            ['submitted_at' => '2026-10-15 06:00:00'], // exactly 5 pm: excluded
+            ['submitted_at' => '2026-10-15 06:00:00'], // an old 5 pm boundary must remain included
             ['submitted_at' => '2026-10-15 06:00:01'],
             ['submitted_at' => '2026-10-16 00:00:00'],
             ['submitted_at' => '2026-10-16 12:00:00'], // exactly report time: included
@@ -208,12 +208,11 @@ final class WeeklyReportServiceTest extends TestCase
             ['submitted_at' => '2026-10-16 00:00:00', 'status' => 'draft'],
             ['submitted_at' => null],
         ], fn ($service) => $service->data());
-        $this->assertSame([5, 4, 3], array_map(fn ($order) => $order->id, $report['orders']));
-        $this->assertSame('2026-10-15 17:00:00 +11:00', $report['cutoff']->format('Y-m-d H:i:s P'));
-        $this->assertSame([3, 4, 5], array_keys($report['itemsByOrder']));
+        $this->assertSame([5, 4, 3, 2, 1], array_map(fn ($order) => $order->id, $report['orders']));
+        $this->assertSame([1, 2, 3, 4, 5], array_keys($report['itemsByOrder']));
     }
 
-    public function testCalendarCutoffHandlesWinterAndBothDaylightSavingTransitions(): void
+    public function testOlderPendingRequestsRemainAvailableAcrossDaylightSavingTransitions(): void
     {
         foreach ([
             ['2026-07-15 10:00:00 UTC', '2026-07-14 17:00:00 +10:00', '2026-07-14 07:00:00'],
@@ -226,8 +225,7 @@ final class WeeklyReportServiceTest extends TestCase
                 ['submitted_at' => $utcCutoff],
                 ['submitted_at' => (new DateTimeImmutable($utcCutoff))->modify('+1 second')->format('Y-m-d H:i:s')],
             ], fn ($service) => $service->data(), $now);
-            $this->assertSame($expectedCutoff, $report['cutoff']->format('Y-m-d H:i:s P'));
-            $this->assertSame([2], array_map(fn ($order) => $order->id, $report['orders']));
+            $this->assertSame([2, 1], array_map(fn ($order) => $order->id, $report['orders']));
         }
     }
 

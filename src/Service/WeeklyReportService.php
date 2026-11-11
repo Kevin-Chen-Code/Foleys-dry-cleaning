@@ -23,8 +23,6 @@ final class WeeklyReportService
     {
         $asOf = ($this->asOf ?? DateTimeImmutable::createFromInterface(FrozenTime::now()))
             ->setTimezone(new DateTimeZone(self::TIMEZONE));
-        // Calendar yesterday, not "24 hours ago": this also handles DST changes.
-        $cutoff = $asOf->modify('-1 day')->setTime(17, 0);
         $utc = new DateTimeZone('UTC');
         $tables = FactoryLocator::get('Table');
         $ordersTable = $tables->get('Orders');
@@ -32,7 +30,6 @@ final class WeeklyReportService
             ->where([
                 'status' => 'submitted',
                 'report_downloaded_at IS' => null,
-                'submitted_at >' => $cutoff->setTimezone($utc)->format('Y-m-d H:i:s'),
                 'submitted_at <=' => $asOf->setTimezone($utc)->format('Y-m-d H:i:s'),
             ])
             ->orderBy(['submitted_at' => 'DESC', 'id' => 'DESC']);
@@ -58,7 +55,7 @@ final class WeeklyReportService
             );
         }
 
-        return compact('orders', 'itemsByOrder', 'discountedCostsByOrder', 'cutoff', 'asOf');
+        return compact('orders', 'itemsByOrder', 'discountedCostsByOrder', 'asOf');
     }
 
     public function xlsx(): string

@@ -8,21 +8,25 @@ use App\Service\NotificationService;
 use App\Model\Table\DiscountRulesTable;
 use Cake\Http\Exception\BadRequestException;
 use Cake\I18n\FrozenTime;
+use Cake\Log\Log;
 
 final class DashboardController extends AdminController
 {
     public function analytics()
     {
-        $orders = $this->fetchTable('Orders')->find()->all()->toList();
-        $orderItems = $this->fetchTable('OrderItems')->find()->all()->toList();
+        $orders = $this->fetchTable('Orders')->find()->where(['status !=' => 'deleted'])->all()->toList();
+        $ids = array_map(static fn ($order): int => (int)$order->id, $orders);
+        $orderItems = $ids === [] ? [] : $this->fetchTable('OrderItems')->find()->where(['order_id IN' => $ids])->all()->toList();
         $this->set('metrics', ['orders' => count($orders), 'revenue' => array_sum(array_map(fn($order) => (int)$order->total_cents, $orders)), 'garments' => array_sum(array_map(fn($item) => (int)$item->quantity, $orderItems))]);
     }
 
     public function incomingRequests()
     {
         $this->setResponse($this->response->withHeader('Cache-Control', 'no-store, private'));
-        $orders = $this->fetchTable('Orders')->find()->orderBy(['submitted_at' => 'DESC'])->all()->toList();
-        $this->set(compact('orders'));
+        $showDeleted = $this->request->getQuery('deleted') === '1';
+        $filter = $showDeleted ? ['status' => 'deleted'] : ['status !=' => 'deleted'];
+        $orders = $this->fetchTable('Orders')->find()->where($filter)->orderBy(['submitted_at' => 'DESC'])->all()->toList();
+        $this->set(compact('orders', 'showDeleted'));
     }
 
     public function deleteRequest()
@@ -33,14 +37,30 @@ final class DashboardController extends AdminController
             throw new BadRequestException('Invalid request ID.');
         }
 
-        // The order_items foreign key cascades, so the database removes both in one operation.
-        $deleted = $this->fetchTable('Orders')->deleteAll(['id' => $id]);
+        // Retain the request and all item rows so accidental removals can be restored.
+        $deleted = $this->fetchTable('Orders')->updateAll(['status' => 'deleted'], ['id' => $id, 'status !=' => 'deleted']);
         if ($deleted === 0) {
             $this->Flash->success('This request has already been removed.');
         } else {
-            $this->Flash->success('Request deleted.');
+            Log::info(sprintf('Request %d removed by administrator %s; retained for restoration.', $id, (string)$this->request->getSession()->read('Foleys.admin')));
+            $this->Flash->success('Request removed. It can be restored from Removed requests.');
         }
 
+        return $this->redirect(['action' => 'incomingRequests'], 303);
+    }
+
+    public function restoreRequest()
+    {
+        $this->request->allowMethod(['post']);
+        $id = filter_var($this->request->getData('id'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if ($id === false) {
+            throw new BadRequestException('Invalid request ID.');
+        }
+        $restored = $this->fetchTable('Orders')->updateAll(['status' => 'submitted'], ['id' => $id, 'status' => 'deleted']);
+        if ($restored > 0) {
+            Log::info(sprintf('Request %d restored by administrator %s.', $id, (string)$this->request->getSession()->read('Foleys.admin')));
+        }
+        $this->Flash->success($restored > 0 ? 'Request restored.' : 'Request is already restored or could not be found.');
         return $this->redirect(['action' => 'incomingRequests'], 303);
     }
 
@@ -115,10 +135,10 @@ final class DashboardController extends AdminController
             }
             return $this->redirect(['action' => 'weeklyReport']);
         }
-        ['orders' => $orders, 'itemsByOrder' => $itemsByOrder, 'discountedCostsByOrder' => $discountedCostsByOrder, 'cutoff' => $cutoff, 'asOf' => $asOf] = (new WeeklyReportService())->data();
+        ['orders' => $orders, 'itemsByOrder' => $itemsByOrder, 'discountedCostsByOrder' => $discountedCostsByOrder, 'asOf' => $asOf] = (new WeeklyReportService())->data();
         $this->setResponse($this->response->withHeader('Cache-Control', 'no-store, private'));
         $emailDelivery = (new NotificationService())->deliveryStatus();
-        $this->set(compact('orders', 'itemsByOrder', 'discountedCostsByOrder', 'cutoff', 'asOf', 'settings', 'emailDelivery'));
+        $this->set(compact('orders', 'itemsByOrder', 'discountedCostsByOrder', 'asOf', 'settings', 'emailDelivery'));
     }
 
     public function testEmail()

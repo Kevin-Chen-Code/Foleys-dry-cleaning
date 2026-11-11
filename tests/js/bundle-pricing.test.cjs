@@ -54,41 +54,34 @@ for (const scenario of cases) {
   });
 }
 
-test('Bundle optimiser matches an independent subset oracle on heterogeneous carts', () => {
+test('Cheapest-first bundles match an independent recursive oracle on heterogeneous carts', () => {
   const rules = [
     {name: 'Two pieces', discount_type: 'bundle', minimum_item_count: 2, discount_value: 3000},
     {name: 'Three pieces', discount_type: 'bundle', minimum_item_count: 3, discount_value: 3200},
     {name: 'Five shirts', discount_type: 'unit_price', minimum_item_count: 5, discount_value: 600, qualifying_item_name: 'Shirt'},
   ];
-  // Enumerates actual pair/triple subsets; deliberately does not use sorted-prefix DP.
+  // Enumerate legal groups from the cheapest end, or stop and charge the rest normally.
   const oracle = (input) => {
     const shirtCount = input.filter((line) => line.item.name === 'Shirt').length;
     const costs = input.map((line) => line.item.name === 'Shirt' && shirtCount >= 5 ? Math.min(line.item.price, 600) : line.item.price);
     let outside = 0;
     const eligible = [];
     input.forEach((line, index) => {
-      if (line.item.name === 'Bar robe') outside += costs[index];
+      if (line.item.name === 'Bar robe' || line.item.name === 'Jabot'
+        || (line.item.name === 'Shirt' && shirtCount >= 5 && costs[index] < line.item.price)) outside += costs[index];
       else eligible.push(costs[index]);
     });
-    const memo = new Map([[0, 0]]);
-    const solve = (mask) => {
-      if (memo.has(mask)) return memo.get(mask);
-      let first = 0;
-      while (!(mask & (1 << first))) first++;
-      const rest = mask & ~(1 << first);
-      let answer = eligible[first] + solve(rest);
-      for (let second = first + 1; second < eligible.length; second++) {
-        if (!(rest & (1 << second))) continue;
-        const afterPair = rest & ~(1 << second);
-        answer = Math.min(answer, 3000 + solve(afterPair));
-        for (let third = second + 1; third < eligible.length; third++) {
-          if (afterPair & (1 << third)) answer = Math.min(answer, 3200 + solve(afterPair & ~(1 << third)));
-        }
+    eligible.sort((left, right) => left - right);
+    const solve = (start) => {
+      let answer = eligible.slice(start).reduce((sum, price) => sum + price, 0);
+      for (const [size, price] of [[2, 3000], [3, 3200]]) {
+        if (start + size > eligible.length) continue;
+        const groupTotal = eligible.slice(start, start + size).reduce((sum, value) => sum + value, 0);
+        if (groupTotal > price) answer = Math.min(answer, price + solve(start + size));
       }
-      memo.set(mask, answer);
       return answer;
     };
-    return outside + solve((1 << eligible.length) - 1);
+    return outside + solve(0);
   };
   let seed = 713405;
   const random = (limit) => {

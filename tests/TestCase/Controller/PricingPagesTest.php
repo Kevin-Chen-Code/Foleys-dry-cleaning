@@ -82,7 +82,7 @@ final class PricingPagesTest extends TestCase
         $this->session(['Foleys' => ['admin' => 'admin']]);
         $this->get('/admin/manage-pricing');
         $this->assertResponseOk();
-        $this->assertResponseContains('All garments except bar robes qualify for piece specials. The eligibility checkbox only controls legacy whole-order price caps.');
+        $this->assertResponseContains('Bar robes and jabots are excluded from piece specials. Garments receiving a unit-price offer are charged separately. The eligibility checkbox only controls legacy whole-order price caps.');
         $this->assertResponseContains('Eligible for legacy price-cap deals');
         $document = new \DOMDocument();
         @$document->loadHTML((string)$this->_response->getBody());

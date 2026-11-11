@@ -64,6 +64,7 @@ return function (RouteBuilder $routes): void {
         $builder->connect('/admin/analytics', ['controller' => 'Dashboard', 'action' => 'analytics']);
         $builder->connect('/admin/incoming-requests', ['controller' => 'Dashboard', 'action' => 'incomingRequests']);
         $builder->connect('/admin/incoming-requests/delete', ['controller' => 'Dashboard', 'action' => 'deleteRequest']);
+        $builder->connect('/admin/incoming-requests/restore', ['controller' => 'Dashboard', 'action' => 'restoreRequest']);
         $builder->connect('/admin/manage-pricing', ['controller' => 'Dashboard', 'action' => 'managePricing']);
         $builder->connect('/admin/weekly-report', ['controller' => 'Dashboard', 'action' => 'weeklyReport']);
         $builder->connect('/admin/weekly-report.csv', ['controller' => 'Dashboard', 'action' => 'weeklyReportCsv']);

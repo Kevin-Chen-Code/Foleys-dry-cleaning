@@ -28,11 +28,11 @@ final class OrderPricingService
             && (bool)($item['price_cap_eligible'] ?? true);
     }
 
-    /** Every garment except a bar robe qualifies; legacy cap flags do not restrict piece specials. */
+    /** Bar robes and jabots do not count toward piece specials. */
     public static function isBundleEligible(array $item): bool
     {
         $name = (string)($item['item_name'] ?? $item['name'] ?? '');
-        return !self::isBarRobe($name);
+        return !self::isExcludedGarment($name);
     }
 
     private static function garmentKey(string $name): string
@@ -86,13 +86,14 @@ final class OrderPricingService
         $units = [];
         foreach ($lines as $i => $line) {
             $lineTotals[$i] = $unitPrices[$i] * (int)$line['quantity'];
-            if ($this->discountsEnabled && self::isBundleEligible($line)) {
+            if ($this->discountsEnabled && self::isBundleEligible($line) && !isset($unitRules[$i])) {
                 for ($q = 0; $q < (int)$line['quantity']; $q++) {
                     $units[] = ['line' => $i, 'price' => $unitPrices[$i]];
                 }
             }
         }
-        usort($units, static fn (array $a, array $b): int => ($b['price'] <=> $a['price']) ?: ($a['line'] <=> $b['line']));
+        // Piece specials consume the cheapest eligible garments first.
+        usort($units, static fn (array $a, array $b): int => ($a['price'] <=> $b['price']) ?: ($a['line'] <=> $b['line']));
         $bundleRules = $this->discountsEnabled ? array_filter($rules, static fn (array $r): bool => $r['discount_type'] === 'bundle'
             && (int)$r['minimum_item_count'] >= 2 && (int)$r['minimum_item_count'] <= self::MAX_ITEM_COUNT) : [];
         $n = count($units);
@@ -101,12 +102,18 @@ final class OrderPricingService
         $cost[0] = 0;
         $baseline = $total = array_sum($lineTotals);
         $bestCovered = $prefix = 0;
+        $prefixAmounts = [0];
         for ($k = 1; $k <= $n; $k++) {
             $prefix += $units[$k - 1]['price'];
+            $prefixAmounts[$k] = $prefix;
             foreach ($bundleRules as $r => $rule) {
                 $size = (int)$rule['minimum_item_count'];
                 if ($k >= $size && $cost[$k - $size] !== PHP_INT_MAX) {
-                    $candidate = $cost[$k - $size] + max(0, (int)$rule['discount_value']);
+                    $bundlePrice = max(0, (int)$rule['discount_value']);
+                    if ($prefix - $prefixAmounts[$k - $size] <= $bundlePrice) {
+                        continue;
+                    }
+                    $candidate = $cost[$k - $size] + $bundlePrice;
                     if ($candidate < $cost[$k]) { $cost[$k] = $candidate; $choice[$k] = $r; }
                 }
             }

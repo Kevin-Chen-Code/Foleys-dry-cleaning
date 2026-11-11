@@ -9,8 +9,7 @@ window.FoleysPricing = {
     const isBarRobe = (name) => /\bbar[\s-]*robes?\b/i.test(String(name ?? ''));
     const isPriceCapEligible = (item) => item.price_cap_eligible !== false && item.price_cap_eligible !== 0
       && !/\b(?:bar[\s-]*robes?|jabots?)\b/i.test(String(item.name ?? ''));
-    // Piece specials include every garment except bar robes, regardless of legacy cap flags.
-    const isBundleEligible = (item) => !isBarRobe(item.name);
+    const isBundleEligible = (item) => !/\b(?:bar[\s-]*robes?|jabots?)\b/i.test(String(item.name ?? ''));
     const active = rules.map((rule, index) => ({...rule, index}))
       .filter((rule) => !Object.hasOwn(rule, 'active') || Boolean(rule.active));
     const lowerId = (candidate, current) => current !== null && candidate.id != null && current.id != null
@@ -63,16 +62,15 @@ window.FoleysPricing = {
       lineTotals[line.index] = unitPrices[line.index] * line.quantity;
     }
 
-    // For any fixed bundle coverage, the most expensive effective units are optimal.
-    // A cheaper bundled unit can always be exchanged with a dearer unbundled unit.
+    // Piece specials consume the cheapest eligible garments first.
     const units = [];
     for (const line of lines) {
-      if (!isBundleEligible(line.item)) continue;
+      if (!isBundleEligible(line.item) || chosenUnitRule[line.index] !== null) continue;
       for (let piece = 0; piece < line.quantity; piece++) {
         units.push({line: line.index, original: line.price, effective: unitPrices[line.index], piece});
       }
     }
-    units.sort((left, right) => right.effective - left.effective || left.line - right.line || left.piece - right.piece);
+    units.sort((left, right) => left.effective - right.effective || left.line - right.line || left.piece - right.piece);
     const bundleRules = active.filter((rule) => rule.discount_type === 'bundle'
       && Number.isSafeInteger(Number(rule.minimum_item_count)) && Number(rule.minimum_item_count) >= 2
       && Number.isSafeInteger(Number(rule.discount_value)) && Number(rule.discount_value) >= 0);
@@ -88,6 +86,7 @@ window.FoleysPricing = {
       for (const rule of bundleRules) {
         const size = Number(rule.minimum_item_count);
         if (count < size) continue;
+        if (prefix[count] - prefix[count - size] <= Number(rule.discount_value)) continue;
         const cost = coverCost[count - size] + Number(rule.discount_value);
         if (cost < coverCost[count]) {
           coverCost[count] = cost;
