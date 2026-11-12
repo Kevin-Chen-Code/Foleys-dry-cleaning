@@ -5,7 +5,7 @@ $this->Html->css('item-dialog', ['block' => true]);
 <section class="page-heading">
     <h1>All requests</h1>
     <p> Full history of dry cleaning requests submitted by users </p>
-    <p><?= $this->Html->link($showDeleted ? 'Back to All requests' : 'Removed requests', ['action' => 'incomingRequests', '?' => $showDeleted ? [] : ['deleted' => '1']]) ?></p>
+    <p><?= $this->Html->link($showDeleted ? 'Back to All requests' : 'Removed requests', ['action' => 'incomingRequests', '?' => $showDeleted ? [] : ['deleted' => '1']], ['class' => 'button delete-button request-action']) ?></p>
 </section>
 
 <section class="items-card">
@@ -29,10 +29,10 @@ $this->Html->css('item-dialog', ['block' => true]);
                     <?php if ($showDeleted): ?>
                         <?= $this->Form->create(null, ['url' => ['action' => 'restoreRequest']]) ?>
                         <?= $this->Form->hidden('id', ['value' => $order->id]) ?>
-                        <?= $this->Form->button('Restore request', ['class' => 'button-primary']) ?>
+                        <?= $this->Form->button('Restore request', ['class' => 'button-primary request-action']) ?>
                         <?= $this->Form->end() ?>
                     <?php else: ?>
-                    <button type="button" class="delete-button" onclick="this.nextElementSibling.showModal()">Delete</button>
+                    <button type="button" class="delete-button request-action" onclick="this.nextElementSibling.showModal()">Delete</button>
                     <dialog class="item-dialog confirm-dialog" aria-labelledby="delete-request-<?= (int)$order->id ?>">
                         <h2 id="delete-request-<?= (int)$order->id ?>">Delete this request?</h2>
                         <p>Removing request #<?= (int)$order->id ?></p>

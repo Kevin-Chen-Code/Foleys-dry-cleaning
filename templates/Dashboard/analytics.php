@@ -4,10 +4,14 @@
     <p> Service performance overview</p>
 </section>
 
-<div class="steps">
+<div class="steps analytics-summary">
     <article>
         <h2><?= (int)$metrics['orders'] ?></h2>
         <p>Requests received</p>
+    </article>
+    <article>
+        <h2><?= (int)$metrics['uniqueBarristers'] ?></h2>
+        <p>People used this platform</p>
     </article>
     <article>
         <h2><?= (int)$metrics['garments'] ?></h2>

@@ -15,9 +15,19 @@ final class DashboardController extends AdminController
     public function analytics()
     {
         $orders = $this->fetchTable('Orders')->find()->where(['status !=' => 'deleted'])->all()->toList();
+        $barristers = [];
+        foreach ($orders as $order) {
+            $email = mb_strtolower(trim((string)$order->email));
+            $name = mb_strtolower(trim(preg_replace('/\s+/u', ' ', (string)$order->barrister_name) ?? ''));
+            if ($email !== '') {
+                $barristers['email:' . $email] = true;
+            } elseif ($name !== '') {
+                $barristers['name:' . $name] = true;
+            }
+        }
         $ids = array_map(static fn ($order): int => (int)$order->id, $orders);
         $orderItems = $ids === [] ? [] : $this->fetchTable('OrderItems')->find()->where(['order_id IN' => $ids])->all()->toList();
-        $this->set('metrics', ['orders' => count($orders), 'revenue' => array_sum(array_map(fn($order) => (int)$order->total_cents, $orders)), 'garments' => array_sum(array_map(fn($item) => (int)$item->quantity, $orderItems))]);
+        $this->set('metrics', ['orders' => count($orders), 'uniqueBarristers' => count($barristers), 'revenue' => array_sum(array_map(fn($order) => (int)$order->total_cents, $orders)), 'garments' => array_sum(array_map(fn($item) => (int)$item->quantity, $orderItems))]);
     }
 
     public function incomingRequests()
