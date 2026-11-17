@@ -5,7 +5,7 @@ $this->Html->css('item-dialog', ['block' => true]);
 <section class="page-heading">
     <h1>All requests</h1>
     <p> Full history of dry cleaning requests submitted by users </p>
-    <p><?= $this->Html->link($showDeleted ? 'Back to All requests' : 'Removed requests', ['action' => 'incomingRequests', '?' => $showDeleted ? [] : ['deleted' => '1']], ['class' => 'button delete-button request-action']) ?></p>
+    <p><?= $this->Html->link($showDeleted ? 'Back to All requests' : 'See all removed requests', ['action' => 'incomingRequests', '?' => $showDeleted ? [] : ['deleted' => '1']], ['class' => 'button delete-button request-action']) ?></p>
 </section>
 
 <section class="items-card">

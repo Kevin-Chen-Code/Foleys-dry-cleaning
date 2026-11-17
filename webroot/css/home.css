@@ -59,7 +59,7 @@ hr {
     vertical-align: -1px;
 }
 .success:before {
-    color: #88c671;
+    color: #7DB942;
     content: "\0056";
 }
 .problem:before {

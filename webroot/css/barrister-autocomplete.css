@@ -19,7 +19,7 @@
 .barrister-suggestions[hidden] { display: none; }
 .barrister-suggestions [role="option"] { margin: 0; padding: .8rem 1rem; cursor: pointer; overflow-wrap: anywhere; }
 .barrister-suggestions [role="option"]:hover,
-.barrister-suggestions [aria-selected="true"] { background: #eaf7ef; }
+.barrister-suggestions [aria-selected="true"] { background: var(--green); }
 .barrister-suggestions .suggestion-name { display: block; font-weight: 700; }
 .barrister-suggestions small { display: block; color: #58656d; }
 .barrister-name-help { color: #58656d; font-size: .9em; line-height: 1.4; margin: .6rem 0 1.5rem; }
